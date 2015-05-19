@@ -1,10 +1,11 @@
 #include <QApplication>
 
-#include "paraboliczoomview.h"
+#include "ksmoothdock.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
-  ksmoothdock::ParabolicZoomView dock;
+  ksmoothdock::KSmoothDock dock;
+  dock.init();
   dock.show();
   return app.exec();
 }
