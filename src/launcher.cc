@@ -19,7 +19,6 @@
 #include "launcher.h"
 
 #include <QProcess>
-#include <QStringList>
 
 namespace ksmoothdock {
 
