@@ -1,3 +1,21 @@
+/*
+ * This file is part of KSmoothDock.
+ * Copyright (C) 2015 Viet Dang (dangvd@gmail.com)
+ *
+ * KSmoothDock is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * KSmoothDock is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #ifndef KSMOOTHDOCK_ICON_BASED_DOCK_ITEM_H_
 #define KSMOOTHDOCK_ICON_BASED_DOCK_ITEM_H_
 
@@ -12,13 +30,32 @@
 
 namespace ksmoothdock {
 
+// Base class for icon-based dock items, such as launchers and tasks.
 class IconBasedDockItem : public DockItem {
  public:
-  IconBasedDockItem(QString label, QString iconName, int minSize,
-    int maxSize, Qt::Orientation orientation);
-  ~IconBasedDockItem() {}
+  IconBasedDockItem(KSmoothDock* parent, int itemId, QString label, 
+      Qt::Orientation orientation, QString iconName, int minSize, int maxSize);
+  IconBasedDockItem(KSmoothDock* parent, int itemId, QString label, 
+      Qt::Orientation orientation, const QPixmap& icon, int minSize,
+      int maxSize);
+  virtual ~IconBasedDockItem() {}
 
-  virtual void draw(QPainter* painter, int x, int y, int size);
+  // Sets the icon on the fly.
+  void setIcon(const QPixmap& icon);
+
+  virtual void draw(QPainter* painter, int x, int y, int size) const;
+
+  virtual int getMaxWidth() const;
+
+  virtual int getMaxHeight() const;
+
+  virtual int getMinWidth() const;
+
+  virtual int getMinHeight() const;
+
+  virtual int getWidth(int size) const;
+  
+  virtual int getHeight(int size) const;
 
  protected:
   int minSize_;
@@ -28,7 +65,9 @@ class IconBasedDockItem : public DockItem {
  private:
   const int kIconLoadSize = 128;
 
-  void generateIcons(const QPixmap& icon, Qt::Orientation orientation);
+  void generateIcons(const QPixmap& icon);
+
+  const QPixmap& getIcon(int size) const;
 };
 
 }  // namespace ksmoothdock
