@@ -16,7 +16,7 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "iconbaseddockitem.h"
+#include "icon_based_dock_item.h"
 
 #include <KIconLoader>
 

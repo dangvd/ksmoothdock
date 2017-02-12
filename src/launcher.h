@@ -22,7 +22,7 @@
 #include <QString>
 #include <Qt>
 
-#include "iconbaseddockitem.h"
+#include "icon_based_dock_item.h"
 
 namespace ksmoothdock {
 

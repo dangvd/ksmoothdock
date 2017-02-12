@@ -26,7 +26,7 @@
 #include <QString>
 #include <Qt>
 
-#include "dockitem.h"
+#include "dock_item.h"
 
 namespace ksmoothdock {
 

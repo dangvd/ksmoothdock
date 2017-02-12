@@ -11,7 +11,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(KF5IconThemes REQUIRED)
 find_package(KF5WindowSystem REQUIRED)
 
-add_executable(ksmoothdock main.cc iconbaseddockitem.cc ksmoothdock.cc
+add_executable(ksmoothdock main.cc icon_based_dock_item.cc ksmoothdock.cc
     launcher.cc)
 
 target_link_libraries(ksmoothdock Qt5::Gui)

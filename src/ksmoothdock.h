@@ -25,7 +25,7 @@
 #include <QMainWindow>
 #include <QPaintEvent>
 
-#include "dockitem.h"
+#include "dock_item.h"
 
 namespace ksmoothdock {
 
