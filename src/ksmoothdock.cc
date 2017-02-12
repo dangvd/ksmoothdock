@@ -43,10 +43,15 @@ void KSmoothDock::init() {
   loadConfig();
   loadLaunchers();
 
+  for (int i = 0; i < items_.size(); ++i) {
+    items_[i]->left_ = i * maxSize_;
+    items_[i]->top_ = 0;
+  }
   int w = items_.size() * maxSize_;
-  int h = minSize_;
-  KWindowSystem::setStrut(winId(), 0, 0, 0, h);
-  resize(w, maxSize_);
+  int h = maxSize_;
+  KWindowSystem::setStrut(winId(), 0, 0, 0, minSize_);
+  resize(w, h);
+  isMinimized_ = true;
 }
 
 void KSmoothDock::resize(int w, int h) {
@@ -67,22 +72,52 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
   painter.drawRect(0, height() - minSize_, width() - 1, minSize_ - 1);
 
   for (int i = 0; i < items_.size(); ++i) {
-    items_[i]->draw(&painter, i * maxSize_, 0, maxSize_);
+    items_[i]->draw(&painter);
   }
+}
+
+void KSmoothDock::mousePressEvent(QMouseEvent* e) {
+  if (isAnimationActive_) {
+    return;
+  }
+
+  int i = findActiveItem(e->x(), e->y());
+  if (i < 0 || i >= items_.size()) {
+    return;
+  }
+
+  items_[i]->mousePressEvent(e);
 }
 
 void KSmoothDock::loadConfig() {
   minSize_ = kDefaultMinSize;
   maxSize_ = kDefaultMaxSize;
+  orientation_ = Qt::Horizontal;
 }
 
 void KSmoothDock::loadLaunchers(){
   items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 0, "Terminal", Qt::Horizontal, "utilities-terminal",
+      new Launcher(this, 0, "Home Folder", orientation_,
+      "system-file-manager", minSize_, maxSize_, "dolphin")));
+  items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, 1, "Terminal", orientation_, "utilities-terminal",
       minSize_, maxSize_, "konsole")));
   items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 1, "Web Browser", Qt::Horizontal,
-      "applications-internet", minSize_, maxSize_, "chromium-browser")));
+      new Launcher(this, 2, "Web Browser", orientation_,
+      "applications-internet", minSize_, maxSize_, "/usr/bin/google-chrome-stable")));
+  items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, 3, "System Settings", orientation_,
+      "preferences-desktop", minSize_, maxSize_, "systemsettings5")));
+}
+
+int KSmoothDock::findActiveItem(int x, int y) {
+  int i = 0;
+  while (i < items_.size() &&
+      ((orientation_ == Qt::Horizontal && items_[i]->left_ < x) ||
+      (orientation_ == Qt::Vertical && items_[i]->top_ < y))) {
+    ++i;
+  }
+  return i - 1;
 }
 
 }  // namespace ksmoothdock

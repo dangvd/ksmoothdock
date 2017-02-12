@@ -19,8 +19,8 @@
 #ifndef KSMOOTHDOCK_LAUNCHER_H_
 #define KSMOOTHDOCK_LAUNCHER_H_
 
-#include <QString>
-#include <Qt>
+#include <memory>
+#include <QProcess>
 
 #include "icon_based_dock_item.h"
 
@@ -33,9 +33,10 @@ class Launcher : public IconBasedDockItem {
       int maxSize, QString command);
   virtual ~Launcher() {}
 
-  virtual void mousePressEvent(QMouseEvent* e) const;
+  virtual void mousePressEvent(QMouseEvent* e) const override;
  private:
   QString command_;
+  std::unique_ptr<QProcess> process_;
 };
 
 }

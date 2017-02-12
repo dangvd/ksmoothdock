@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <QPaintEvent>
 
 #include "dock_item.h"
@@ -40,20 +41,27 @@ class KSmoothDock : public QMainWindow {
   virtual void resize(int w, int h);
 
  protected:
-  virtual void paintEvent(QPaintEvent* e);
+  virtual void paintEvent(QPaintEvent* e) override;
+  virtual void mousePressEvent(QMouseEvent* e) override;
 
  private:
   const int kDefaultMinSize = 48;
-  const int kDefaultMaxSize = 160;
+  const int kDefaultMaxSize = 128;
 
   void loadConfig();
   void loadLaunchers();
+
+  int findActiveItem(int x, int y);
 
   int desktopWidth_;
   int desktopHeight_;
   int minSize_;
   int maxSize_;
   std::deque<std::unique_ptr<DockItem>> items_;
+
+  Qt::Orientation orientation_;
+  bool isMinimized_;
+  bool isAnimationActive_;
 };
 
 }  // namespace ksmoothdock

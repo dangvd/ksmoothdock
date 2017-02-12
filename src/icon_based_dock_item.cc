@@ -27,8 +27,8 @@ namespace ksmoothdock {
 IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, int itemId,
     QString label, Qt::Orientation orientation, QString iconName, int minSize,
     int maxSize)
-    : DockItem(parent, itemId, label, orientation), minSize_(minSize), 
-      maxSize_(maxSize), icons_(maxSize - minSize + 1) {
+    : DockItem(parent, itemId, label, orientation, minSize, maxSize),
+    icons_(maxSize - minSize + 1) {
   QPixmap icon = KIconLoader::global()->loadIcon(iconName,
       KIconLoader::NoGroup, kIconLoadSize);
   generateIcons(icon);
@@ -37,8 +37,8 @@ IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, int itemId,
 IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, int itemId, 
     QString label, Qt::Orientation orientation, const QPixmap& icon,
     int minSize, int maxSize)
-    : DockItem(parent, itemId, label, orientation), minSize_(minSize), 
-      maxSize_(maxSize), icons_(maxSize - minSize + 1) {
+    : DockItem(parent, itemId, label, orientation, minSize, maxSize),
+    icons_(maxSize - minSize + 1) {
   generateIcons(icon);
 }
 
@@ -49,10 +49,8 @@ void IconBasedDockItem::setIcon(const QPixmap& icon) {
   generateIcons(icon);
 }
 
-void IconBasedDockItem::draw(QPainter* painter, int x, int y, int size) const {
-  if (size >= minSize_ && size <= maxSize_) {
-    painter->drawPixmap(x, y, icons_[size - minSize_]);
-  }
+void IconBasedDockItem::draw(QPainter* painter) const {
+  painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
 }
 
 int IconBasedDockItem::getMaxWidth() const {
@@ -71,12 +69,12 @@ int IconBasedDockItem::getMinHeight() const {
   return getIcon(minSize_).height();
 }
 
-int IconBasedDockItem::getWidth(int size) const {
-  return getIcon(size).width();
+int IconBasedDockItem::getWidth() const {
+  return getIcon(size_).width();
 }
 
-int IconBasedDockItem::getHeight(int size) const {
-  return getIcon(size).height();
+int IconBasedDockItem::getHeight() const {
+  return getIcon(size_).height();
 }
 
 void IconBasedDockItem::generateIcons(const QPixmap& icon) {

@@ -43,7 +43,7 @@ class IconBasedDockItem : public DockItem {
   // Sets the icon on the fly.
   void setIcon(const QPixmap& icon);
 
-  virtual void draw(QPainter* painter, int x, int y, int size) const;
+  virtual void draw(QPainter* painter) const;
 
   virtual int getMaxWidth() const;
 
@@ -53,13 +53,11 @@ class IconBasedDockItem : public DockItem {
 
   virtual int getMinHeight() const;
 
-  virtual int getWidth(int size) const;
+  virtual int getWidth() const override;
   
-  virtual int getHeight(int size) const;
+  virtual int getHeight() const override;
 
  protected:
-  int minSize_;
-  int maxSize_;
   std::vector<QPixmap> icons_;
 
  private:

@@ -34,9 +34,11 @@ class DockItem {
   const static int kAllDesktops = 0;
 
   DockItem(KSmoothDock* parent, int itemId, QString label, 
-      Qt::Orientation orientation, int desktop = kAllDesktops)
+      Qt::Orientation orientation, int minSize, int maxSize,
+      int desktop = kAllDesktops)
       : parent_(parent), itemId_(itemId), label_(label),
-        orientation_(orientation), desktop_(desktop) {}
+        orientation_(orientation), minSize_(minSize), maxSize_(maxSize),
+        size_(maxSize), desktop_(desktop) {}
   virtual ~DockItem() {}
 
   int getDesktop() { return desktop_; }
@@ -48,7 +50,7 @@ class DockItem {
   void setLabel(QString label) { label = label_; }
 
   // Draws itself on the parent's canvas.
-  virtual void draw(QPainter* painter, int x, int y, int size) const = 0;
+  virtual void draw(QPainter* painter) const = 0;
 
   virtual void mousePressEvent(QMouseEvent* e) const = 0;
 
@@ -64,18 +66,24 @@ class DockItem {
   /// Gets min height, i.e. when the item is not zoomed in.
   virtual int getMinHeight() const = 0;
 
-  /// Gets width for a specific size.
-  virtual int getWidth(int size) const = 0;
+  virtual int getWidth() const = 0;
   
-  /// Gets height for a specific size.
-  virtual int getHeight(int size) const = 0;
+  virtual int getHeight() const = 0;
 
 protected:
-  KSmoothDock* parent_; // The dock parent.
+  KSmoothDock* parent_;
   int itemId_; // Unique item ID.
   QString label_; // Label of the dock item.
   int desktop_; // The virtual desktop this dock item is on.
   Qt::Orientation orientation_; // Orientation (horizontal/vertical).
+
+  int left_;
+  int top_;
+  int size_;
+  int minSize_;
+  int maxSize_;
+
+  friend class KSmoothDock;
 };
 
 }  // namespace ksmoothdock
