@@ -38,7 +38,7 @@ class DockItem {
       int desktop = kAllDesktops)
       : parent_(parent), itemId_(itemId), label_(label),
         orientation_(orientation), minSize_(minSize), maxSize_(maxSize),
-        size_(maxSize), desktop_(desktop) {}
+        size_(minSize), desktop_(desktop) {}
   virtual ~DockItem() {}
 
   int getDesktop() { return desktop_; }
@@ -82,6 +82,9 @@ protected:
   int size_;
   int minSize_;
   int maxSize_;
+  // Center when minimized, as x or y depends on whether the orientation is
+  // horizontal or vertical.
+  int minCenter_; 
 
   friend class KSmoothDock;
 };

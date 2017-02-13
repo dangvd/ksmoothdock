@@ -18,6 +18,9 @@
 
 #include "ksmoothdock.h"
 
+#include <cstdlib>
+#include <iostream>
+
 #include <KWindowSystem>
 #include <netwm_def.h>
 
@@ -33,6 +36,7 @@ namespace ksmoothdock {
 KSmoothDock::KSmoothDock() {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
+  setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->width();
   desktopHeight_ = QApplication::desktop()->height();
 }
@@ -42,16 +46,9 @@ KSmoothDock::~KSmoothDock() {}
 void KSmoothDock::init() {
   loadConfig();
   loadLaunchers();
-
-  for (int i = 0; i < items_.size(); ++i) {
-    items_[i]->left_ = i * maxSize_;
-    items_[i]->top_ = 0;
-  }
-  int w = items_.size() * maxSize_;
-  int h = maxSize_;
-  KWindowSystem::setStrut(winId(), 0, 0, 0, minSize_);
-  resize(w, h);
-  isMinimized_ = true;
+  initLayoutVars();
+  updateLayout();
+  KWindowSystem::setStrut(winId(), 0, 0, 0, height());
 }
 
 void KSmoothDock::resize(int w, int h) {
@@ -65,15 +62,20 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
 
   QColor bgColor("#638abd");
   bgColor.setAlphaF(0.42);
-  painter.fillRect(0, height() - minSize_, width(), minSize_, bgColor);
+  int minHeight = minSize_ + itemSpacing_;
+  painter.fillRect(0, height() - minHeight, width(), minHeight, bgColor);
 
   QColor borderColor("#b1c4de");
   painter.setPen(borderColor);
-  painter.drawRect(0, height() - minSize_, width() - 1, minSize_ - 1);
+  painter.drawRect(0, height() - minHeight, width() - 1, minHeight - 1);
 
   for (int i = 0; i < items_.size(); ++i) {
     items_[i]->draw(&painter);
   }
+}
+
+void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
+  updateLayout(e->x(), e->y());
 }
 
 void KSmoothDock::mousePressEvent(QMouseEvent* e) {
@@ -89,10 +91,16 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   items_[i]->mousePressEvent(e);
 }
 
+void KSmoothDock::leaveEvent(QEvent* e) {
+  updateLayout();
+}
+
 void KSmoothDock::loadConfig() {
   minSize_ = kDefaultMinSize;
   maxSize_ = kDefaultMaxSize;
   orientation_ = Qt::Horizontal;
+  itemSpacing_ = minSize_ / 2;
+  parabolicMaxX_ = static_cast<int>(2.5 * (minSize_ + itemSpacing_));
 }
 
 void KSmoothDock::loadLaunchers(){
@@ -103,11 +111,84 @@ void KSmoothDock::loadLaunchers(){
       new Launcher(this, 1, "Terminal", orientation_, "utilities-terminal",
       minSize_, maxSize_, "konsole")));
   items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 2, "Web Browser", orientation_,
+      new Launcher(this, 2, "Text Editor", orientation_,
+      "accessories-text-editor", minSize_, maxSize_, "kate")));
+  items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, 3, "Web Browser", orientation_,
       "applications-internet", minSize_, maxSize_, "/usr/bin/google-chrome-stable")));
   items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 3, "System Settings", orientation_,
+      new Launcher(this, 4, "Software Manager", orientation_,
+      "system-software-update", minSize_, maxSize_, "mintinstall")));
+  items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, 5, "System Monitor", orientation_,
+      "utilities-system-monitor", minSize_, maxSize_, "ksysguard")));
+  items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, 6, "System Settings", orientation_,
       "preferences-desktop", minSize_, maxSize_, "systemsettings5")));
+}
+
+void KSmoothDock::initLayoutVars() {
+  const int distance = minSize_ + itemSpacing_;
+  minWidth_ = items_.size() * distance;
+  minHeight_ = distance;
+  if (items_.size() >= 5) {
+    maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
+	2 * parabolic(2 * distance) - 5 * minSize_ + minWidth_;
+  } else if (items_.size() == 4) {
+    maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
+	parabolic(2 * distance) - 4 * minSize_ + minWidth_;
+  } else if (items_.size() == 3) {
+    maxWidth_ = parabolic(0) + 2 * parabolic(distance) -
+	3 * minSize_ + minWidth_;
+  } else if (items_.size() == 2) {
+    maxWidth_ = parabolic(0) + parabolic(distance) -
+	2 * minSize_ + minWidth_;
+  } else if (items_.size() == 1) {
+    maxWidth_ = parabolic(0) - minSize_ + minWidth_;
+  }
+  maxHeight_ = itemSpacing_ + maxSize_;
+}
+
+void KSmoothDock::updateLayout() {
+  for (int i = 0; i < items_.size(); ++i) {
+    items_[i]->left_ = itemSpacing_ / 2 + i * (minSize_ + itemSpacing_);
+    items_[i]->top_ = itemSpacing_ / 2;
+    items_[i]->size_ = minSize_;
+    items_[i]->minCenter_ = items_[i]->left_ + minSize_ / 2;
+  }
+  int w = minWidth_;
+  int h = minHeight_;
+  resize(w, h);
+}
+
+void KSmoothDock::updateLayout(int x, int y) {
+  int last_update_index = 0;
+  for (int i = 0; i < items_.size(); ++i) {
+    int delta = abs(items_[i]->minCenter_ - x);
+    if (delta < parabolicMaxX_) {
+      last_update_index = i;
+    }
+    items_[i]->size_ = parabolic(delta);
+    items_[i]->top_ = itemSpacing_ / 2 + maxSize_ - items_[i]->getHeight();
+    if (i > 0) {
+      items_[i]->left_ = items_[i - 1]->left_ + items_[i - 1]->getWidth()
+	  + itemSpacing_;
+    }
+  }
+  int w;
+  if (last_update_index < items_.size() - 1) {
+    for (int i = last_update_index + 1; i < items_.size(); ++i) {
+      items_[i]->left_ = maxWidth_
+	  - (items_.size() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
+    }
+    w = maxWidth_;
+  } else {
+    w = items_[items_.size() - 1]->left_ + items_[items_.size() - 1]->getWidth()
+	  + itemSpacing_ / 2;
+  }
+  int h = maxHeight_;
+  resize(w, h);
+  repaint();
 }
 
 int KSmoothDock::findActiveItem(int x, int y) {
@@ -118,6 +199,16 @@ int KSmoothDock::findActiveItem(int x, int y) {
     ++i;
   }
   return i - 1;
+}
+
+int ksmoothdock::KSmoothDock::parabolic(int x) {
+  // Assume x >= 0.
+  if (x > parabolicMaxX_) {
+    return minSize_;
+  } else {
+    return maxSize_ -
+        (x * x * (maxSize_ - minSize_)) / (parabolicMaxX_ * parabolicMaxX_);
+  }
 }
 
 }  // namespace ksmoothdock

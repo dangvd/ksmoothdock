@@ -42,7 +42,9 @@ class KSmoothDock : public QMainWindow {
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
+  virtual void mouseMoveEvent(QMouseEvent* e) override;
   virtual void mousePressEvent(QMouseEvent* e) override;
+  virtual void leaveEvent(QEvent* e) override;
 
  private:
   const int kDefaultMinSize = 48;
@@ -51,16 +53,34 @@ class KSmoothDock : public QMainWindow {
   void loadConfig();
   void loadLaunchers();
 
+  void initLayoutVars();
+
+  // Updates width, height, items's size and position when the mouse is outside
+  // the dock.
+  void updateLayout();
+
+  // Updates width, height, items's size and position given the mouse position.
+  void updateLayout(int x, int y);
+
+  // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
+
+  // Returns the size given the distance to the mouse.
+  int parabolic(int x);
 
   int desktopWidth_;
   int desktopHeight_;
   int minSize_;
   int maxSize_;
+  int itemSpacing_;
+  int minWidth_;
+  int maxWidth_;
+  int minHeight_;
+  int maxHeight_;
+  int parabolicMaxX_;
   std::deque<std::unique_ptr<DockItem>> items_;
 
   Qt::Orientation orientation_;
-  bool isMinimized_;
   bool isAnimationActive_;
 };
 
