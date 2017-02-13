@@ -162,10 +162,14 @@ void KSmoothDock::updateLayout() {
 }
 
 void KSmoothDock::updateLayout(int x, int y) {
+  int first_update_index = -1;
   int last_update_index = 0;
   for (int i = 0; i < items_.size(); ++i) {
-    int delta = abs(items_[i]->minCenter_ - x);
+    int delta = abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
     if (delta < parabolicMaxX_) {
+      if (first_update_index == -1) {
+        first_update_index = i;
+      }
       last_update_index = i;
     }
     items_[i]->size_ = parabolic(delta);
@@ -176,16 +180,17 @@ void KSmoothDock::updateLayout(int x, int y) {
     }
   }
   int w;
-  if (last_update_index < items_.size() - 1) {
-    for (int i = last_update_index + 1; i < items_.size(); ++i) {
-      items_[i]->left_ = maxWidth_
-	  - (items_.size() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
-    }
-    w = maxWidth_;
-  } else {
-    w = items_[items_.size() - 1]->left_ + items_[items_.size() - 1]->getWidth()
-	  + itemSpacing_ / 2;
+  for (int i = last_update_index + 1; i < items_.size(); ++i) {
+    items_[i]->left_ = maxWidth_
+        - (items_.size() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
   }
+  if (first_update_index == 0 && last_update_index < items_.size() - 1) {
+    for (int i = last_update_index; i >= first_update_index; --i) {
+      items_[i]->left_ = items_[i + 1]->left_ - items_[i]->getWidth()
+          - itemSpacing_;
+    }
+  }
+  w = maxWidth_;
   int h = maxHeight_;
   resize(w, h);
   repaint();
