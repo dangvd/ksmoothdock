@@ -39,6 +39,11 @@ KSmoothDock::KSmoothDock() {
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->width();
   desktopHeight_ = QApplication::desktop()->height();
+  isActivating_ = false;
+  animationTimer_.reset(new QTimer(this));
+  connect(animationTimer_.get(), SIGNAL(timeout()), this, 
+      SLOT(updateAnimation()));
+  isAnimationActive_ = false;
 }
 
 KSmoothDock::~KSmoothDock() {}
@@ -75,6 +80,9 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
 }
 
 void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
+  if (isAnimationActive_) {
+    return;
+  }
   updateLayout(e->x(), e->y());
 }
 
@@ -87,8 +95,11 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   if (i < 0 || i >= items_.size()) {
     return;
   }
-
   items_[i]->mousePressEvent(e);
+}
+
+void KSmoothDock::enterEvent (QEvent* e) {
+  isActivating_ = true;
 }
 
 void KSmoothDock::leaveEvent(QEvent* e) {
@@ -101,6 +112,8 @@ void KSmoothDock::loadConfig() {
   orientation_ = Qt::Horizontal;
   itemSpacing_ = minSize_ / 2;
   parabolicMaxX_ = static_cast<int>(2.5 * (minSize_ + itemSpacing_));
+  numAnimationSteps_ = 20;
+  animationSpeed_ = 16;
 }
 
 void KSmoothDock::loadLaunchers(){
@@ -159,9 +172,18 @@ void KSmoothDock::updateLayout() {
   int w = minWidth_;
   int h = minHeight_;
   resize(w, h);
+  repaint();
 }
 
 void KSmoothDock::updateLayout(int x, int y) {
+  if (isActivating_) {
+    for (const auto& item : items_) {
+      item->startLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
+      item->startTop_ = item->top_ + (maxHeight_ - minHeight_);
+      item->startSize_ = item->size_;
+    }
+  }
+
   int first_update_index = -1;
   int last_update_index = 0;
   for (int i = 0; i < items_.size(); ++i) {
@@ -192,8 +214,22 @@ void KSmoothDock::updateLayout(int x, int y) {
   }
   w = maxWidth_;
   int h = maxHeight_;
-  resize(w, h);
-  repaint();
+
+  if (isActivating_) {
+    for (const auto& item : items_) {
+      item->setAnimationEndAsCurrent();
+      item->startAnimation(numAnimationSteps_);
+    }
+    currentAnimationStep_ = 0;
+    isAnimationActive_ = true;
+    isActivating_ = false;
+    animationTimer_->start(32 - animationSpeed_);
+    resize(w, h);
+    repaint();
+  } else {
+    resize(w, h);
+    repaint();
+  }
 }
 
 int KSmoothDock::findActiveItem(int x, int y) {
@@ -204,6 +240,18 @@ int KSmoothDock::findActiveItem(int x, int y) {
     ++i;
   }
   return i - 1;
+}
+
+void KSmoothDock::updateAnimation() {
+  for (const auto& item : items_) {
+    item->nextAnimationStep();
+  }
+  ++currentAnimationStep_;
+  if (currentAnimationStep_ == numAnimationSteps_) {
+    animationTimer_->stop();
+    isAnimationActive_ = false;
+  }
+  repaint();
 }
 
 int ksmoothdock::KSmoothDock::parabolic(int x) {

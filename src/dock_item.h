@@ -49,6 +49,35 @@ class DockItem {
   virtual QString getLabel() { return label_; }
   void setLabel(QString label) { label = label_; }
 
+  void setAnimationStartAsCurrent() {
+    startLeft_ = left_;
+    startTop_ = top_;
+    startSize_ = size_;
+  }
+
+  void setAnimationEndAsCurrent() {
+    endLeft_ = left_;
+    endTop_ = top_;
+    endSize_ = size_;
+  }
+
+  void startAnimation(int numSteps) {
+    left_ = startLeft_;
+    top_ = startTop_;
+    size_ = startSize_;
+    currentStep_ = 0;
+    numSteps_ = numSteps;
+  }
+
+  bool nextAnimationStep() {
+    ++currentStep_;
+    if (currentStep_ <= numSteps_) {
+      left_ = startLeft_ + (endLeft_ - startLeft_) * currentStep_ / numSteps_;
+      top_ = startTop_ + (endTop_ - startTop_) * currentStep_ / numSteps_;
+      size_ = startSize_ + (endSize_ - startSize_) * currentStep_ / numSteps_;
+    }
+  }
+
   // Draws itself on the parent's canvas.
   virtual void draw(QPainter* painter) const = 0;
 
@@ -83,8 +112,19 @@ protected:
   int minSize_;
   int maxSize_;
   // Center when minimized, as x or y depends on whether the orientation is
-  // horizontal or vertical.
+  // horizontal or vertical. This is used when calculating the size of the item
+  // when the dock is in parabolic zoom.
   int minCenter_; 
+
+  // For animation.
+  int startLeft_;
+  int startTop_;
+  int startSize_;
+  int endLeft_;
+  int endTop_;
+  int endSize_;
+  int currentStep_;
+  int numSteps_;
 
   friend class KSmoothDock;
 };

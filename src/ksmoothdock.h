@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QTimer>
 
 #include "dock_item.h"
 
@@ -40,10 +41,15 @@ class KSmoothDock : public QMainWindow {
   void init();
   virtual void resize(int w, int h);
 
+ public slots:
+  // Slot to update zoom animation.
+  void updateAnimation();
+
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
   virtual void mouseMoveEvent(QMouseEvent* e) override;
   virtual void mousePressEvent(QMouseEvent* e) override;
+  virtual void enterEvent(QEvent* e) override;
   virtual void leaveEvent(QEvent* e) override;
 
  private:
@@ -78,10 +84,16 @@ class KSmoothDock : public QMainWindow {
   int minHeight_;
   int maxHeight_;
   int parabolicMaxX_;
+  int numAnimationSteps_;
+  int animationSpeed_;  
+  Qt::Orientation orientation_;
+
   std::deque<std::unique_ptr<DockItem>> items_;
 
-  Qt::Orientation orientation_;
+  bool isActivating_;
   bool isAnimationActive_;
+  std::unique_ptr<QTimer> animationTimer_;
+  int currentAnimationStep_;
 };
 
 }  // namespace ksmoothdock
