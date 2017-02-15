@@ -94,6 +94,9 @@ class KSmoothDock : public QMainWindow {
   bool isAnimationActive_;
   std::unique_ptr<QTimer> animationTimer_;
   int currentAnimationStep_;
+  int backgroundWidth_;
+  int startBackgroundWidth_;
+  int endBackgroundWidth_;
 };
 
 }  // namespace ksmoothdock

@@ -68,11 +68,13 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
   QColor bgColor("#638abd");
   bgColor.setAlphaF(0.42);
   int minHeight = minSize_ + itemSpacing_;
-  painter.fillRect(0, height() - minHeight, width(), minHeight, bgColor);
+  painter.fillRect((width() - backgroundWidth_) / 2, height() - minHeight, 
+      backgroundWidth_, minHeight, bgColor);
 
   QColor borderColor("#b1c4de");
   painter.setPen(borderColor);
-  painter.drawRect(0, height() - minHeight, width() - 1, minHeight - 1);
+  painter.drawRect((width() - backgroundWidth_) / 2, height() - minHeight, 
+      backgroundWidth_ - 1, minHeight - 1);
 
   for (int i = 0; i < items_.size(); ++i) {
     items_[i]->draw(&painter);
@@ -169,6 +171,7 @@ void KSmoothDock::updateLayout() {
     items_[i]->size_ = minSize_;
     items_[i]->minCenter_ = items_[i]->left_ + minSize_ / 2;
   }
+  backgroundWidth_ = minWidth_;
   int w = minWidth_;
   int h = minHeight_;
   resize(w, h);
@@ -181,11 +184,13 @@ void KSmoothDock::updateLayout(int x, int y) {
       item->startLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
       item->startTop_ = item->top_ + (maxHeight_ - minHeight_);
       item->startSize_ = item->size_;
+      startBackgroundWidth_ = minWidth_;
     }
   }
 
   int first_update_index = -1;
   int last_update_index = 0;
+  items_[0]->left_ = itemSpacing_ / 2;
   for (int i = 0; i < items_.size(); ++i) {
     int delta = abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
     if (delta < parabolicMaxX_) {
@@ -219,17 +224,16 @@ void KSmoothDock::updateLayout(int x, int y) {
     for (const auto& item : items_) {
       item->setAnimationEndAsCurrent();
       item->startAnimation(numAnimationSteps_);
+      endBackgroundWidth_ = maxWidth_;
+      backgroundWidth_ = startBackgroundWidth_;
     }
     currentAnimationStep_ = 0;
     isAnimationActive_ = true;
     isActivating_ = false;
     animationTimer_->start(32 - animationSpeed_);
-    resize(w, h);
-    repaint();
-  } else {
-    resize(w, h);
-    repaint();
   }
+  resize(w, h);
+  repaint();
 }
 
 int KSmoothDock::findActiveItem(int x, int y) {
@@ -247,6 +251,9 @@ void KSmoothDock::updateAnimation() {
     item->nextAnimationStep();
   }
   ++currentAnimationStep_;
+  backgroundWidth_ = startBackgroundWidth_
+      + (endBackgroundWidth_ - startBackgroundWidth_)
+          * currentAnimationStep_ / numAnimationSteps_;
   if (currentAnimationStep_ == numAnimationSteps_) {
     animationTimer_->stop();
     isAnimationActive_ = false;
