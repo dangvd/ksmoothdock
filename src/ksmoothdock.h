@@ -90,7 +90,8 @@ class KSmoothDock : public QMainWindow {
 
   std::deque<std::unique_ptr<DockItem>> items_;
 
-  bool isActivating_;
+  bool isEntering_;
+  bool isLeaving_;
   bool isAnimationActive_;
   std::unique_ptr<QTimer> animationTimer_;
   int currentAnimationStep_;

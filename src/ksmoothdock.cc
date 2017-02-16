@@ -40,7 +40,8 @@ KSmoothDock::KSmoothDock() {
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->width();
   desktopHeight_ = QApplication::desktop()->height();
-  isActivating_ = false;
+  isEntering_ = false;
+  isLeaving_ = false;
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
@@ -102,10 +103,11 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
 }
 
 void KSmoothDock::enterEvent (QEvent* e) {
-  isActivating_ = true;
+  isEntering_ = true;
 }
 
 void KSmoothDock::leaveEvent(QEvent* e) {
+  isLeaving_ = true;
   updateLayout();
 }
 
@@ -163,6 +165,13 @@ void KSmoothDock::initLayoutVars() {
 }
 
 void KSmoothDock::updateLayout() {
+  if (isLeaving_) {
+    for (const auto& item : items_) {
+      item->setAnimationStartAsCurrent();
+      startBackgroundWidth_ = maxWidth_;
+    }
+  }
+
   for (int i = 0; i < items_.size(); ++i) {
     items_[i]->left_ = itemSpacing_ / 2 + i * (minSize_ + itemSpacing_);
     items_[i]->top_ = itemSpacing_ / 2;
@@ -172,12 +181,27 @@ void KSmoothDock::updateLayout() {
   backgroundWidth_ = minWidth_;
   int w = minWidth_;
   int h = minHeight_;
-  resize(w, h);
-  repaint();
+
+  if (isLeaving_) {
+    for (const auto& item : items_) {
+      item->endLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
+      item->endTop_ = item->top_ + (maxHeight_ - minHeight_);
+      item->endSize_ = item->size_;
+      item->startAnimation(numAnimationSteps_);
+      endBackgroundWidth_ = minWidth_;
+      backgroundWidth_ = startBackgroundWidth_;
+    }
+    currentAnimationStep_ = 0;
+    isAnimationActive_ = true;
+    animationTimer_->start(32 - animationSpeed_);
+  } else {
+    resize(w, h);
+    repaint();
+  }
 }
 
 void KSmoothDock::updateLayout(int x, int y) {
-  if (isActivating_) {
+  if (isEntering_) {
     for (const auto& item : items_) {
       item->startLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
       item->startTop_ = item->top_ + (maxHeight_ - minHeight_);
@@ -218,7 +242,7 @@ void KSmoothDock::updateLayout(int x, int y) {
   w = maxWidth_;
   int h = maxHeight_;
 
-  if (isActivating_) {
+  if (isEntering_) {
     for (const auto& item : items_) {
       item->setAnimationEndAsCurrent();
       item->startAnimation(numAnimationSteps_);
@@ -227,9 +251,10 @@ void KSmoothDock::updateLayout(int x, int y) {
     }
     currentAnimationStep_ = 0;
     isAnimationActive_ = true;
-    isActivating_ = false;
+    isEntering_ = false;
     animationTimer_->start(32 - animationSpeed_);
   }
+
   resize(w, h);
   repaint();
 }
@@ -255,6 +280,10 @@ void KSmoothDock::updateAnimation() {
   if (currentAnimationStep_ == numAnimationSteps_) {
     animationTimer_->stop();
     isAnimationActive_ = false;
+    if (isLeaving_) {
+      isLeaving_ = false;
+      updateLayout();
+    }
   }
   repaint();
 }
