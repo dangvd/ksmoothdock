@@ -28,6 +28,7 @@
 #include <QColor>
 #include <QDesktopWidget>
 #include <QPainter>
+#include <QString>
 
 #include "launcher.h"
 
@@ -118,28 +119,25 @@ void KSmoothDock::loadConfig() {
   animationSpeed_ = 16;
 }
 
-void KSmoothDock::loadLaunchers(){
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 0, "Home Folder", orientation_,
-      "system-file-manager", minSize_, maxSize_, "dolphin")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 1, "Terminal", orientation_, "utilities-terminal",
-      minSize_, maxSize_, "konsole")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 2, "Text Editor", orientation_,
-      "accessories-text-editor", minSize_, maxSize_, "kate")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 3, "Web Browser", orientation_,
-      "applications-internet", minSize_, maxSize_, "/usr/bin/google-chrome-stable")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 4, "Software Manager", orientation_,
-      "system-software-update", minSize_, maxSize_, "mintinstall")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 5, "System Monitor", orientation_,
-      "utilities-system-monitor", minSize_, maxSize_, "ksysguard")));
-  items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, 6, "System Settings", orientation_,
-      "preferences-desktop", minSize_, maxSize_, "systemsettings5")));
+void KSmoothDock::loadLaunchers() {
+  const int kNumItems = 8;
+  const char* const kItems[kNumItems][3] = {
+    // Name, icon name, command.
+    {"Home Folder", "system-file-manager", "dolphin"},
+    {"Terminal", "utilities-terminal", "konsole"},
+    {"Text Editor", "kate", "kate"},
+    {"Web Browser", "applications-internet", "/usr/bin/google-chrome-stable"},
+    {"Integrated Development Environment", "applications-development-web", 
+        "kdevelop"},
+    {"Software Manager", "system-software-update", "mintinstall"},
+    {"System Monitor", "utilities-system-monitor", "ksysguard"},
+    {"System Settings", "preferences-desktop", "systemsettings5"}
+  };
+  for (int i = 0; i < kNumItems; ++i) {
+    items_.push_back(std::unique_ptr<DockItem>(
+      new Launcher(this, i, kItems[i][0], orientation_, kItems[i][1],
+      minSize_, maxSize_, kItems[i][2])));
+  }
 }
 
 void KSmoothDock::initLayoutVars() {
