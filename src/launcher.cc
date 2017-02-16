@@ -18,19 +18,19 @@
 
 #include "launcher.h"
 
+#include <QProcess>
+
 namespace ksmoothdock {
 
 Launcher::Launcher(KSmoothDock* parent, int itemId, QString label, 
     Qt::Orientation orientation, QString iconName, int minSize,
     int maxSize, QString command)
     : IconBasedDockItem(parent, itemId, label, orientation, iconName, minSize, 
-      maxSize), command_(command) {
-  process_.reset(new QProcess);
-}
+      maxSize), command_(command) {}
 
 void Launcher::mousePressEvent(QMouseEvent* e) const {
   if (e->button() == Qt::LeftButton) { // Run the application.
-    process_->start(command_);
+    QProcess::startDetached(command_);
   }
 }
 
