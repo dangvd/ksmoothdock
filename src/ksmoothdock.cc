@@ -27,7 +27,6 @@
 #include <QApplication>
 #include <QColor>
 #include <QDesktopWidget>
-#include <QMenu>
 #include <QPainter>
 #include <QString>
 
@@ -54,6 +53,7 @@ KSmoothDock::~KSmoothDock() {}
 void KSmoothDock::init() {
   loadConfig();
   loadLaunchers();
+  initMenu();
   initLayoutVars();
   updateLayout();
   KWindowSystem::setStrut(winId(), 0, 0, 0, height());
@@ -103,7 +103,7 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
-    showPopupMenu(e->globalPos());
+    menu_->popup(e->globalPos());
   }
 }
 
@@ -145,6 +145,11 @@ void KSmoothDock::loadLaunchers() {
       new Launcher(this, i, kItems[i][0], orientation_, kItems[i][1],
       minSize_, maxSize_, kItems[i][2])));
   }
+}
+
+void KSmoothDock::initMenu() {
+  menu_.reset(new QMenu(this));
+  menu_->addAction(tr("E&xit"), this, SLOT(close()));
 }
 
 void KSmoothDock::initLayoutVars() {
@@ -290,12 +295,6 @@ void KSmoothDock::updateAnimation() {
     }
   }
   repaint();
-}
-
-void KSmoothDock::showPopupMenu(const QPoint& position) {
-  QMenu* menu = new QMenu(this);
-  menu->addAction(tr("E&xit"), this, SLOT(close()));
-  menu->popup(position);
 }
 
 int KSmoothDock::parabolic(int x) {

@@ -22,6 +22,7 @@
 #include <deque>
 #include <memory>
 
+#include <QMenu>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPoint>
@@ -61,6 +62,7 @@ class KSmoothDock : public QWidget {
   void loadConfig();
   void loadLaunchers();
 
+  void initMenu();
   void initLayoutVars();
 
   // Updates width, height, items's size and position when the mouse is outside
@@ -72,8 +74,6 @@ class KSmoothDock : public QWidget {
 
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
-
-  void showPopupMenu(const QPoint& position);
 
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
@@ -93,6 +93,7 @@ class KSmoothDock : public QWidget {
   Qt::Orientation orientation_;
 
   std::deque<std::unique_ptr<DockItem>> items_;
+  std::unique_ptr<QMenu> menu_;
 
   bool isEntering_;
   bool isLeaving_;
