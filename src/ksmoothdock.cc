@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QColor>
 #include <QDesktopWidget>
+#include <QMenu>
 #include <QPainter>
 #include <QString>
 
@@ -95,11 +96,15 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     return;
   }
 
-  int i = findActiveItem(e->x(), e->y());
-  if (i < 0 || i >= items_.size()) {
-    return;
+  if (e->button() == Qt::LeftButton) {
+    int i = findActiveItem(e->x(), e->y());
+    if (i < 0 || i >= items_.size()) {
+      return;
+    }
+    items_[i]->mousePressEvent(e);
+  } else if (e->button() == Qt::RightButton) {
+    showPopupMenu(e->globalPos());
   }
-  items_[i]->mousePressEvent(e);
 }
 
 void KSmoothDock::enterEvent (QEvent* e) {
@@ -196,7 +201,6 @@ void KSmoothDock::updateLayout() {
     animationTimer_->start(32 - animationSpeed_);
   } else {
     resize(w, h);
-    repaint();
   }
 }
 
@@ -288,7 +292,13 @@ void KSmoothDock::updateAnimation() {
   repaint();
 }
 
-int ksmoothdock::KSmoothDock::parabolic(int x) {
+void KSmoothDock::showPopupMenu(const QPoint& position) {
+  QMenu* menu = new QMenu(this);
+  menu->addAction(tr("E&xit"), this, SLOT(close()));
+  menu->popup(position);
+}
+
+int KSmoothDock::parabolic(int x) {
   // Assume x >= 0.
   if (x > parabolicMaxX_) {
     return minSize_;

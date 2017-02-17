@@ -22,16 +22,17 @@
 #include <deque>
 #include <memory>
 
-#include <QMainWindow>
 #include <QMouseEvent>
 #include <QPaintEvent>
+#include <QPoint>
 #include <QTimer>
+#include <QWidget>
 
 #include "dock_item.h"
 
 namespace ksmoothdock {
 
-class KSmoothDock : public QMainWindow {
+class KSmoothDock : public QWidget {
   Q_OBJECT
 
  public:
@@ -39,6 +40,7 @@ class KSmoothDock : public QMainWindow {
   virtual ~KSmoothDock();
 
   void init();
+
   virtual void resize(int w, int h);
 
  public slots:
@@ -70,6 +72,8 @@ class KSmoothDock : public QMainWindow {
 
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
+
+  void showPopupMenu(const QPoint& position);
 
   // Returns the size given the distance to the mouse.
   int parabolic(int x);

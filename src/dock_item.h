@@ -81,7 +81,7 @@ class DockItem {
   // Draws itself on the parent's canvas.
   virtual void draw(QPainter* painter) const = 0;
 
-  virtual void mousePressEvent(QMouseEvent* e) const = 0;
+  virtual void mousePressEvent(QMouseEvent* e) = 0;
 
   // Gets max width, i.e. the width when the item is max zoomed.
   virtual int getMaxWidth() const = 0;

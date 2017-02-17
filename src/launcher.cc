@@ -26,11 +26,23 @@ Launcher::Launcher(KSmoothDock* parent, int itemId, QString label,
     Qt::Orientation orientation, QString iconName, int minSize,
     int maxSize, QString command)
     : IconBasedDockItem(parent, itemId, label, orientation, iconName, minSize, 
-      maxSize), command_(command) {}
+      maxSize), command_(command), isLaunching_(false) {}
 
-void Launcher::mousePressEvent(QMouseEvent* e) const {
+void Launcher::draw(QPainter* painter) const {
+  if (isLaunching_) {
+    // Draws an active (i.e. just clicked-on) quick launcher. The icon will have
+    // some special effect to acknowledge launching the program.
+    // TODO
+    painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
+  } else {
+    IconBasedDockItem::draw(painter);
+  }
+}
+
+void Launcher::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.
     QProcess::startDetached(command_);
+    isLaunching_ = true;
   }
 }
 

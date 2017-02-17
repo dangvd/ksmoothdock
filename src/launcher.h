@@ -32,9 +32,13 @@ class Launcher : public IconBasedDockItem {
       int maxSize, QString command);
   virtual ~Launcher() {}
 
-  virtual void mousePressEvent(QMouseEvent* e) const override;
+  virtual void draw(QPainter* painter) const override;
+
+  virtual void mousePressEvent(QMouseEvent* e) override;
+
  private:
   QString command_;
+  bool isLaunching_;
 };
 
 }
