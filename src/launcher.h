@@ -19,8 +19,6 @@
 #ifndef KSMOOTHDOCK_LAUNCHER_H_
 #define KSMOOTHDOCK_LAUNCHER_H_
 
-#include <memory>
-
 #include "icon_based_dock_item.h"
 
 namespace ksmoothdock {
@@ -41,6 +39,6 @@ class Launcher : public IconBasedDockItem {
   bool isLaunching_;
 };
 
-}
+}  // namespace ksmoothdock
 
 #endif  // KSMOOTHDOCK_LAUNCHER_H_
