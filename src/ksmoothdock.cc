@@ -127,10 +127,11 @@ void KSmoothDock::loadConfig() {
 }
 
 void KSmoothDock::loadLaunchers() {
-  const int kNumItems = 8;
+  const int kNumItems = 9;
   const char* const kItems[kNumItems][3] = {
     // Name, icon name, command.
     {"Home Folder", "system-file-manager", "dolphin"},
+    {"Show Desktop", "user-desktop", kShowDesktopCommand},
     {"Terminal", "utilities-terminal", "konsole"},
     {"Text Editor", "kate", "kate"},
     {"Web Browser", "applications-internet", "/usr/bin/google-chrome-stable"},

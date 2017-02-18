@@ -17,6 +17,7 @@
  */
 
 #include "launcher.h"
+#include "show_desktop.h"
 
 #include <QProcess>
 
@@ -41,8 +42,12 @@ void Launcher::draw(QPainter* painter) const {
 
 void Launcher::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.
-    QProcess::startDetached(command_);
-    isLaunching_ = true;
+    if (command_ == kShowDesktopCommand) {
+      ShowDesktop::instance()->toggleShowDesktop();
+    } else {
+      QProcess::startDetached(command_);
+      isLaunching_ = true;
+    }
   }
 }
 

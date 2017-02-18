@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2015 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,32 +16,33 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_LAUNCHER_H_
-#define KSMOOTHDOCK_LAUNCHER_H_
+#ifndef KSMOOTHDOCK_SHOW_DESKTOP_H_
+#define KSMOOTHDOCK_SHOW_DESKTOP_H_
 
-#include "icon_based_dock_item.h"
+#include <vector>
+
+#include <QObject>
+
+#include <KWindowSystem>
 
 namespace ksmoothdock {
 
-static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
+// Singleton class to show/hide the desktop.
+class ShowDesktop : public QObject {
+  Q_OBJECT
 
-class Launcher : public IconBasedDockItem {
  public:
+  static ShowDesktop* instance();
 
-  Launcher(KSmoothDock* parent, int itemId, QString label, 
-      Qt::Orientation orientation, QString iconName, int minSize,
-      int maxSize, QString command);
-  virtual ~Launcher() {}
-
-  virtual void draw(QPainter* painter) const override;
-
-  virtual void mousePressEvent(QMouseEvent* e) override;
+  // Shows/hides the desktop.
+  void toggleShowDesktop();
 
  private:
-  QString command_;
-  bool isLaunching_;
+  bool isShowingDesktop_;
+  std::vector<WId> minimizedWindows_;
+  WId activeWindow_;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_LAUNCHER_H_
+#endif  // KSMOOTHDOCK_SHOW_DESKTOP_H_
