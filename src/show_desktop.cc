@@ -43,8 +43,34 @@ void ShowDesktop::toggleShowDesktop() {
     for (const WId& id : minimizedWindows_) {
       KWindowSystem::unminimizeWindow(id);
     }
+    minimizedWindows_.clear();
     KWindowSystem::activateWindow(activeWindow_);
   }
+}
+
+void ShowDesktop::reset() {
+  if (isShowingDesktop_) {
+    isShowingDesktop_ = false;
+    minimizedWindows_.clear();
+  }
+}
+
+void ShowDesktop::activeWindowChanged(WId id) {
+  KWindowInfo info(id, NET::WMWindowType);
+  const auto& type = info.windowType(NET::NormalMask | NET::DialogMask);
+  if (type == NET::Normal || type == NET::Dialog) {
+    reset();
+  }
+}
+
+ShowDesktop::ShowDesktop() : QObject(),
+    isShowingDesktop_(false),
+    minimizedWindows_(),
+    activeWindow_(0) {
+  connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
+      this, SLOT(reset()));
+  connect(KWindowSystem::self(), SIGNAL(activeWindowChanged(WId)),
+      this, SLOT(activeWindowChanged(WId)));
 }
 
 }  // namespace ksmoothdock

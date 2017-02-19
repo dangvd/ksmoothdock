@@ -37,7 +37,13 @@ class ShowDesktop : public QObject {
   // Shows/hides the desktop.
   void toggleShowDesktop();
 
+ public slots:
+  void reset();
+  void activeWindowChanged(WId id);
+
  private:
+  ShowDesktop();
+
   bool isShowingDesktop_;
   std::vector<WId> minimizedWindows_;
   WId activeWindow_;

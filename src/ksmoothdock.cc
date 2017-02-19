@@ -310,4 +310,3 @@ int KSmoothDock::parabolic(int x) {
 
 }  // namespace ksmoothdock
 
-#include "ksmoothdock.moc"
