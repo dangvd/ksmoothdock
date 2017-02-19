@@ -30,6 +30,7 @@
 #include <QWidget>
 
 #include "dock_item.h"
+#include "tooltip.h"
 
 namespace ksmoothdock {
 
@@ -75,6 +76,9 @@ class KSmoothDock : public QWidget {
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
 
+  // Shows tool tip for the item at the specified index.
+  void showTooltip(int i);
+
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
 
@@ -94,6 +98,7 @@ class KSmoothDock : public QWidget {
 
   std::deque<std::unique_ptr<DockItem>> items_;
   std::unique_ptr<QMenu> menu_;
+  Tooltip tooltip_;
 
   bool isEntering_;
   bool isLeaving_;

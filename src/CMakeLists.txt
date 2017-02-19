@@ -12,7 +12,7 @@ find_package(KF5IconThemes REQUIRED)
 find_package(KF5WindowSystem REQUIRED)
 
 add_executable(ksmoothdock main.cc icon_based_dock_item.cc ksmoothdock.cc
-    launcher.cc show_desktop.cc)
+    launcher.cc show_desktop.cc tooltip.cc)
 
 target_link_libraries(ksmoothdock Qt5::Gui)
 target_link_libraries(ksmoothdock Qt5::Widgets)

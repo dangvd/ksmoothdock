@@ -34,18 +34,19 @@
 
 namespace ksmoothdock {
 
-KSmoothDock::KSmoothDock() {
+KSmoothDock::KSmoothDock()
+    : QWidget(),
+      isEntering_(false),
+      isLeaving_(false),
+      isAnimationActive_(false) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->width();
   desktopHeight_ = QApplication::desktop()->height();
-  isEntering_ = false;
-  isLeaving_ = false;
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
-  isAnimationActive_ = false;
 }
 
 KSmoothDock::~KSmoothDock() {}
@@ -88,6 +89,14 @@ void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
   if (isAnimationActive_) {
     return;
   }
+
+  int i = findActiveItem(e->x(), e->y());
+  if (i < 0 || i >= items_.size()) {
+    tooltip_.hide();
+  } else {
+    showTooltip(i);
+  }
+
   updateLayout(e->x(), e->y());
 }
 
@@ -114,6 +123,7 @@ void KSmoothDock::enterEvent (QEvent* e) {
 void KSmoothDock::leaveEvent(QEvent* e) {
   isLeaving_ = true;
   updateLayout();
+  tooltip_.hide();
 }
 
 void KSmoothDock::loadConfig() {
@@ -124,6 +134,13 @@ void KSmoothDock::loadConfig() {
   parabolicMaxX_ = static_cast<int>(2.5 * (minSize_ + itemSpacing_));
   numAnimationSteps_ = 20;
   animationSpeed_ = 16;
+
+  tooltip_.setFontFace("Noto Sans");
+  tooltip_.setFontSize(18);
+  tooltip_.setFontBold(true);
+  tooltip_.setFontItalic(true);
+  tooltip_.setFontColor(Qt::white);
+  tooltip_.setBackgroundColor(Qt::black);
 }
 
 void KSmoothDock::loadLaunchers() {
@@ -277,6 +294,15 @@ int KSmoothDock::findActiveItem(int x, int y) {
     ++i;
   }
   return i - 1;
+}
+
+void KSmoothDock::showTooltip(int i) {
+  tooltip_.setText(items_[i]->label_);
+  const int x = (desktopWidth_ - width()) / 2 + items_[i]->left_
+    - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
+  const int y = desktopHeight_ - maxHeight_ - tooltip_.height();
+  tooltip_.move(x, y);
+  tooltip_.show();
 }
 
 void KSmoothDock::updateAnimation() {
