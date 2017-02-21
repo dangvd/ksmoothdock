@@ -33,11 +33,10 @@ namespace ksmoothdock {
 // Base class for icon-based dock items, such as launchers and tasks.
 class IconBasedDockItem : public DockItem {
  public:
-  IconBasedDockItem(KSmoothDock* parent, int itemId, QString label, 
-      Qt::Orientation orientation, QString iconName, int minSize, int maxSize);
-  IconBasedDockItem(KSmoothDock* parent, int itemId, QString label, 
-      Qt::Orientation orientation, const QPixmap& icon, int minSize,
-      int maxSize);
+  IconBasedDockItem(QString label, Qt::Orientation orientation,
+      QString iconName, int minSize, int maxSize);
+  IconBasedDockItem(QString label, Qt::Orientation orientation,
+      const QPixmap& icon, int minSize, int maxSize);
   virtual ~IconBasedDockItem() {}
 
   // Sets the icon on the fly.

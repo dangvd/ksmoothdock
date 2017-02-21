@@ -159,8 +159,8 @@ void KSmoothDock::loadLaunchers() {
   };
   for (int i = 0; i < kNumItems; ++i) {
     items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, i, kItems[i][0], orientation_, kItems[i][1],
-      minSize_, maxSize_, kItems[i][2])));
+      new Launcher(kItems[i][0], orientation_, kItems[i][1], minSize_,
+          maxSize_, kItems[i][2])));
   }
 }
 

@@ -28,9 +28,8 @@ static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
 class Launcher : public IconBasedDockItem {
  public:
 
-  Launcher(KSmoothDock* parent, int itemId, QString label, 
-      Qt::Orientation orientation, QString iconName, int minSize,
-      int maxSize, QString command);
+  Launcher(QString label,Qt::Orientation orientation,
+      QString iconName, int minSize, int maxSize, QString command);
   virtual ~Launcher() {}
 
   virtual void draw(QPainter* painter) const override;

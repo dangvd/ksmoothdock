@@ -23,11 +23,10 @@
 
 namespace ksmoothdock {
 
-Launcher::Launcher(KSmoothDock* parent, int itemId, QString label, 
-    Qt::Orientation orientation, QString iconName, int minSize,
-    int maxSize, QString command)
-    : IconBasedDockItem(parent, itemId, label, orientation, iconName, minSize, 
-      maxSize), command_(command), isLaunching_(false) {}
+Launcher::Launcher(QString label, Qt::Orientation orientation,
+    QString iconName, int minSize, int maxSize, QString command)
+    : IconBasedDockItem(label, orientation, iconName, minSize, maxSize), 
+      command_(command), isLaunching_(false) {}
 
 void Launcher::draw(QPainter* painter) const {
   if (isLaunching_) {
