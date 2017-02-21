@@ -135,7 +135,6 @@ void KSmoothDock::loadConfig() {
   numAnimationSteps_ = 20;
   animationSpeed_ = 16;
 
-  tooltip_.setFontFace("Noto Sans");
   tooltip_.setFontSize(18);
   tooltip_.setFontBold(true);
   tooltip_.setFontItalic(true);

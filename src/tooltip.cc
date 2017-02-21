@@ -18,6 +18,7 @@
 
 #include "tooltip.h"
 
+#include <QApplication>
 #include <QPainter>
 
 #include <KWindowSystem>
@@ -25,7 +26,7 @@
 
 namespace ksmoothdock {
 
-Tooltip::Tooltip() : QWidget() {
+Tooltip::Tooltip() : QWidget(), font_(QApplication::font()) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
 }
