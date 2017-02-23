@@ -42,8 +42,8 @@ KSmoothDock::KSmoothDock()
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
-  desktopWidth_ = QApplication::desktop()->width();
-  desktopHeight_ = QApplication::desktop()->height();
+  desktopWidth_ = QApplication::desktop()->screenGeometry().width();
+  desktopHeight_ = QApplication::desktop()->screenGeometry().height();
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));

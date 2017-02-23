@@ -63,7 +63,7 @@ class DockItem {
     numSteps_ = numSteps;
   }
 
-  bool nextAnimationStep() {
+  void nextAnimationStep() {
     ++currentStep_;
     if (currentStep_ <= numSteps_) {
       left_ = startLeft_ + (endLeft_ - startLeft_) * currentStep_ / numSteps_;
