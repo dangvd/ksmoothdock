@@ -36,8 +36,11 @@ void ShowDesktop::toggleShowDesktop() {
   if (isShowingDesktop_) {
     activeWindow_ = KWindowSystem::activeWindow();
     for (const WId& id : KWindowSystem::stackingOrder()) {
-      KWindowSystem::minimizeWindow(id);
-      minimizedWindows_.push_back(id);
+      KWindowInfo info(id,  NET::XAWMState);
+      if (info.mappingState() == NET::Visible) {
+        KWindowSystem::minimizeWindow(id);
+        minimizedWindows_.push_back(id);
+      }
     }
   } else {
     for (const WId& id : minimizedWindows_) {
