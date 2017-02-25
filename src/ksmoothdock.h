@@ -106,8 +106,10 @@ class KSmoothDock : public QWidget {
   // Non-config variables.
 
   // The path to the directory to store quick launchers
-  // as desktop files. This is a relative path to the home dir.
+  // as desktop files.
   QString launchersPath_;
+  // This is a relative path to the home dir.
+  QString launchersRelativePath_;
 
   // The list of all dock items.
   std::deque<std::unique_ptr<DockItem>> items_;

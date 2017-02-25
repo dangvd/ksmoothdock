@@ -45,7 +45,8 @@ KSmoothDock::KSmoothDock()
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->screenGeometry().width();
   desktopHeight_ = QApplication::desktop()->screenGeometry().height();
-  launchersPath_ = ".ksmoothdock/launchers";  // relative to home dir.
+  launchersRelativePath_ = ".ksmoothdock/launchers";
+  launchersPath_ = QDir::homePath() + "/" + launchersRelativePath_;
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
@@ -147,19 +148,22 @@ void KSmoothDock::loadConfig() {
 void KSmoothDock::initLaunchers() {
   if (!loadLaunchers()) {
     createDefaultLaunchers();
-    QDir::home().mkpath(launchersPath_);
+    QDir::home().mkpath(launchersRelativePath_);
     saveLaunchers();
   }
 }
 
 bool KSmoothDock::loadLaunchers() {
-  if (!QDir::home().exists(launchersPath_)) {
+  if (!QDir::home().exists(launchersRelativePath_)) {
     return false;
   }
-  QDir launchersDir(QDir::homePath() + "/" + launchersPath_);
+  QDir launchersDir(launchersPath_);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  if (files.isEmpty()) {
+    return false;
+  }
   for (int i = 0; i < files.size(); ++i) {
-    const QString& file = launchersDir.path() + "/" + files.at(i);
+    const QString& file = launchersPath_ + "/" + files.at(i);
     items_.push_back(std::unique_ptr<DockItem>(
         new Launcher(file, orientation_, minSize_, maxSize_)));
   }
@@ -191,8 +195,8 @@ void KSmoothDock::saveLaunchers() {
   for (int i = 0; i < items_.size(); ++i) {
     Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
     if (launcher != nullptr) {
-      launcher->saveToFile(launchersPath_ + "/" + QString::number(i + 1)
-          + ".desktop");
+      launcher->saveToFile(launchersPath_ + "/"
+          + QString::number(i + 1) + " - " + items_[i]->label_ + ".desktop");
     }
   }
 }

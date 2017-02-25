@@ -92,6 +92,8 @@ void Launcher::saveToFile(QString filePath) {
   out_s << "X-DBUS-StartupType=\n";
   out_s << "X-KDE-SubstituteUID=false\n";
   out_s << "X-KDE-Username=\n";
+
+  out.close();
 }
 
 }  // namespace ksmoothdock
