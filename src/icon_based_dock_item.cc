@@ -28,23 +28,26 @@ IconBasedDockItem::IconBasedDockItem(QString label, Qt::Orientation orientation,
     QString iconName, int minSize, int maxSize)
     : DockItem(label, orientation, minSize, maxSize),
     icons_(maxSize - minSize + 1) {
-  QPixmap icon = KIconLoader::global()->loadIcon(iconName,
-      KIconLoader::NoGroup, kIconLoadSize);
-  generateIcons(icon);
+  setIconName(iconName);
 }
 
 IconBasedDockItem::IconBasedDockItem(QString label, Qt::Orientation orientation,
     const QPixmap& icon, int minSize, int maxSize)
     : DockItem(label, orientation, minSize, maxSize),
     icons_(maxSize - minSize + 1) {
-  generateIcons(icon);
+  setIcon(icon);
 }
 
 void IconBasedDockItem::setIcon(const QPixmap& icon) {
-  icons_.clear();
-  // Just in case clear() affects capacity.
-  icons_.reserve(maxSize_ - minSize_ + 1);
   generateIcons(icon);
+}
+
+void IconBasedDockItem::setIconName(const QString& iconName) {
+  if (!iconName.isEmpty()) {
+    QPixmap icon = KIconLoader::global()->loadIcon(iconName,
+        KIconLoader::NoGroup, kIconLoadSize);
+    setIcon(icon);
+  }
 }
 
 void IconBasedDockItem::draw(QPainter* painter) const {

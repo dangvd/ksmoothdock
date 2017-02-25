@@ -17,16 +17,34 @@
  */
 
 #include "launcher.h"
-#include "show_desktop.h"
 
+#include <iostream>
+
+#include <QFile>
+#include <QIODevice>
 #include <QProcess>
+#include <QTextStream>
+
+#include <KDesktopFile>
+
+#include "show_desktop.h"
 
 namespace ksmoothdock {
 
 Launcher::Launcher(QString label, Qt::Orientation orientation,
     QString iconName, int minSize, int maxSize, QString command)
     : IconBasedDockItem(label, orientation, iconName, minSize, maxSize), 
-      command_(command), isLaunching_(false) {}
+      iconName_(iconName), command_(command), isLaunching_(false) {}
+
+Launcher::Launcher(QString file, Qt::Orientation orientation,
+    int minSize, int maxSize)
+    : IconBasedDockItem("", orientation, "", minSize, maxSize), 
+      isLaunching_(false) {
+  KDesktopFile desktopFile(file);
+  label_ = desktopFile.readName();
+  command_ = desktopFile.entryMap("Desktop Entry")["Exec"];
+  setIconName(desktopFile.readIcon());
+}
 
 void Launcher::draw(QPainter* painter) const {
   if (isLaunching_) {
@@ -48,6 +66,32 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
       isLaunching_ = true;
     }
   }
+}
+
+void Launcher::saveToFile(QString filePath) {
+  QFile out(filePath);
+  if (!out.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    std::cerr << "Failed to write to file " << filePath.toStdString()
+        << std::endl;
+  }
+
+  QTextStream out_s(&out);
+  out_s << "[Desktop Entry]\n";
+  out_s << "Comment=\n";
+  out_s << "Exec=" << command_ << endl;
+  out_s << "GenericName=\n";
+  out_s << "Icon=" << iconName_ << endl;
+  out_s << "MimeType=\n";
+  out_s << "Name=" << label_ << endl;
+  out_s << "Path=\n";
+  out_s << "StartupNotify=true\n";
+  out_s << "Terminal=false\n";
+  out_s << "TerminalOptions=\n";
+  out_s << "Type=Application\n";
+  out_s << "X-DBUS-ServiceName=\n";
+  out_s << "X-DBUS-StartupType=\n";
+  out_s << "X-KDE-SubstituteUID=false\n";
+  out_s << "X-KDE-Username=\n";
 }
 
 }  // namespace ksmoothdock

@@ -41,6 +41,7 @@ class IconBasedDockItem : public DockItem {
 
   // Sets the icon on the fly.
   void setIcon(const QPixmap& icon);
+  void setIconName(const QString& iconName);
 
   virtual void draw(QPainter* painter) const;
 

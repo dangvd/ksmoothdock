@@ -26,9 +26,10 @@
 
 #include <QApplication>
 #include <QColor>
+#include <QDir>
 #include <QDesktopWidget>
 #include <QPainter>
-#include <QString>
+#include <QStringList>
 
 #include "launcher.h"
 
@@ -44,6 +45,7 @@ KSmoothDock::KSmoothDock()
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->screenGeometry().width();
   desktopHeight_ = QApplication::desktop()->screenGeometry().height();
+  launchersPath_ = ".ksmoothdock/launchers";  // relative to home dir.
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
@@ -53,7 +55,7 @@ KSmoothDock::~KSmoothDock() {}
 
 void KSmoothDock::init() {
   loadConfig();
-  loadLaunchers();
+  initLaunchers();
   initMenu();
   initLayoutVars();
   updateLayout();
@@ -142,7 +144,28 @@ void KSmoothDock::loadConfig() {
   tooltip_.setBackgroundColor(Qt::black);
 }
 
-void KSmoothDock::loadLaunchers() {
+void KSmoothDock::initLaunchers() {
+  if (!loadLaunchers()) {
+    createDefaultLaunchers();
+    QDir::home().mkpath(launchersPath_);
+    saveLaunchers();
+  }
+}
+
+bool KSmoothDock::loadLaunchers() {
+  if (!QDir::home().exists(launchersPath_)) {
+    return false;
+  }
+  QDir launchersDir(QDir::homePath() + "/" + launchersPath_);
+  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  for (int i = 0; i < files.size(); ++i) {
+    const QString& file = launchersDir.path() + "/" + files.at(i);
+    items_.push_back(std::unique_ptr<DockItem>(
+        new Launcher(file, orientation_, minSize_, maxSize_)));
+  }
+}
+
+void KSmoothDock::createDefaultLaunchers() {
   const int kNumItems = 9;
   const char* const kItems[kNumItems][3] = {
     // Name, icon name, command.
@@ -161,6 +184,16 @@ void KSmoothDock::loadLaunchers() {
     items_.push_back(std::unique_ptr<DockItem>(
       new Launcher(kItems[i][0], orientation_, kItems[i][1], minSize_,
           maxSize_, kItems[i][2])));
+  }
+}
+
+void KSmoothDock::saveLaunchers() {
+  for (int i = 0; i < items_.size(); ++i) {
+    Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
+    if (launcher != nullptr) {
+      launcher->saveToFile(launchersPath_ + "/" + QString::number(i + 1)
+          + ".desktop");
+    }
   }
 }
 

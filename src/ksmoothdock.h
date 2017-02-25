@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPoint>
+#include <QString>
 #include <QTimer>
 #include <QWidget>
 
@@ -61,7 +62,11 @@ class KSmoothDock : public QWidget {
   const int kDefaultMaxSize = 128;
 
   void loadConfig();
-  void loadLaunchers();
+
+  void initLaunchers();
+  bool loadLaunchers();
+  void createDefaultLaunchers();
+  void saveLaunchers();
 
   void initMenu();
   void initLayoutVars();
@@ -82,6 +87,8 @@ class KSmoothDock : public QWidget {
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
 
+  // Config variables.
+
   int desktopWidth_;
   int desktopHeight_;
   int minSize_;
@@ -96,8 +103,19 @@ class KSmoothDock : public QWidget {
   int animationSpeed_;  
   Qt::Orientation orientation_;
 
+  // Non-config variables.
+
+  // The path to the directory to store quick launchers
+  // as desktop files. This is a relative path to the home dir.
+  QString launchersPath_;
+
+  // The list of all dock items.
   std::deque<std::unique_ptr<DockItem>> items_;
+
+  // Context (right-click) menu.
   std::unique_ptr<QMenu> menu_;
+
+  // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;
 
   bool isEntering_;
