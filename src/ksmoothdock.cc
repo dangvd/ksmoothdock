@@ -74,6 +74,14 @@ void KSmoothDock::openLaunchersDir() {
   QProcess::startDetached("dolphin " + launchersPath_);
 }
 
+void KSmoothDock::reloadLaunchers() {
+  items_.clear();
+  initLaunchers();
+  initLayoutVars();
+  updateLayout();
+  repaint();
+}
+
 void KSmoothDock::updateAnimation() {
   for (const auto& item : items_) {
     item->nextAnimationStep();
@@ -228,6 +236,7 @@ void KSmoothDock::saveLaunchers() {
 void KSmoothDock::initMenu() {
   menu_.reset(new QMenu(this));
   menu_->addAction(tr("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_->addAction(tr("&Reload Launchers"), this, SLOT(reloadLaunchers()));
   menu_->addSeparator();
   menu_->addAction(tr("E&xit"), this, SLOT(close()));
 }

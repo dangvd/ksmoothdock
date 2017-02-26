@@ -50,6 +50,8 @@ class KSmoothDock : public QWidget {
   // Opens launchers directory in the file manager.
   void openLaunchersDir();
 
+  void reloadLaunchers();
+
   // Slot to update zoom animation.
   void updateAnimation();
 
