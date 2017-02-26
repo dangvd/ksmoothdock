@@ -29,6 +29,7 @@
 #include <QDir>
 #include <QDesktopWidget>
 #include <QPainter>
+#include <QProcess>
 #include <QStringList>
 
 #include "launcher.h"
@@ -67,6 +68,29 @@ void KSmoothDock::resize(int w, int h) {
   QWidget::resize(w, h);
   int x = (desktopWidth_ - w) / 2;
   move(x, desktopHeight_ - h);
+}
+
+void KSmoothDock::openLaunchersDir() {
+  QProcess::startDetached("dolphin " + launchersPath_);
+}
+
+void KSmoothDock::updateAnimation() {
+  for (const auto& item : items_) {
+    item->nextAnimationStep();
+  }
+  ++currentAnimationStep_;
+  backgroundWidth_ = startBackgroundWidth_
+      + (endBackgroundWidth_ - startBackgroundWidth_)
+          * currentAnimationStep_ / numAnimationSteps_;
+  if (currentAnimationStep_ == numAnimationSteps_) {
+    animationTimer_->stop();
+    isAnimationActive_ = false;
+    if (isLeaving_) {
+      isLeaving_ = false;
+      updateLayout();
+    }
+  }
+  repaint();
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
@@ -203,6 +227,8 @@ void KSmoothDock::saveLaunchers() {
 
 void KSmoothDock::initMenu() {
   menu_.reset(new QMenu(this));
+  menu_->addAction(tr("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_->addSeparator();
   menu_->addAction(tr("E&xit"), this, SLOT(close()));
 }
 
@@ -339,25 +365,6 @@ void KSmoothDock::showTooltip(int i) {
   const int y = desktopHeight_ - maxHeight_ - tooltip_.height();
   tooltip_.move(x, y);
   tooltip_.show();
-}
-
-void KSmoothDock::updateAnimation() {
-  for (const auto& item : items_) {
-    item->nextAnimationStep();
-  }
-  ++currentAnimationStep_;
-  backgroundWidth_ = startBackgroundWidth_
-      + (endBackgroundWidth_ - startBackgroundWidth_)
-          * currentAnimationStep_ / numAnimationSteps_;
-  if (currentAnimationStep_ == numAnimationSteps_) {
-    animationTimer_->stop();
-    isAnimationActive_ = false;
-    if (isLeaving_) {
-      isLeaving_ = false;
-      updateLayout();
-    }
-  }
-  repaint();
 }
 
 int KSmoothDock::parabolic(int x) {
