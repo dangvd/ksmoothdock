@@ -22,6 +22,7 @@
 #include <deque>
 #include <memory>
 
+#include <QAction>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QPaintEvent>
@@ -34,6 +35,8 @@
 #include "tooltip.h"
 
 namespace ksmoothdock {
+
+enum class PanelPosition {Top, Bottom, Left, Right};
 
 class KSmoothDock : public QWidget {
   Q_OBJECT
@@ -52,6 +55,12 @@ class KSmoothDock : public QWidget {
 
   void reload();
 
+  void setPosition(PanelPosition position);
+  void setPositionTop() { setPosition(PanelPosition::Top); reload(); }
+  void setPositionBottom() { setPosition(PanelPosition::Bottom); reload(); }
+  void setPositionLeft() { setPosition(PanelPosition::Left); reload(); }
+  void setPositionRight() { setPosition(PanelPosition::Right); reload(); }
+
   // Slot to update zoom animation.
   void updateAnimation();
 
@@ -67,6 +76,8 @@ class KSmoothDock : public QWidget {
  private:
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
+
+  bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
   void createMenu();
 
@@ -86,6 +97,8 @@ class KSmoothDock : public QWidget {
   // Updates width, height, items's size and position given the mouse position.
   void updateLayout(int x, int y);
 
+  void setStrut();
+
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
 
@@ -97,10 +110,15 @@ class KSmoothDock : public QWidget {
 
   // Config variables.
 
-  int desktopWidth_;
-  int desktopHeight_;
+  PanelPosition position_;
   int minSize_;
   int maxSize_;
+  QColor backgroundColor_;
+  QColor borderColor_;
+  int tooltipFontSize_;
+
+  // Non-config variables.
+
   int itemSpacing_;
   int minWidth_;
   int maxWidth_;
@@ -108,10 +126,11 @@ class KSmoothDock : public QWidget {
   int maxHeight_;
   int parabolicMaxX_;
   int numAnimationSteps_;
-  int animationSpeed_;  
-  Qt::Orientation orientation_;
+  int animationSpeed_;
 
-  // Non-config variables.
+  Qt::Orientation orientation_;
+  int desktopWidth_;
+  int desktopHeight_;
 
   // The path to the directory to store quick launchers
   // as desktop files.
@@ -123,7 +142,11 @@ class KSmoothDock : public QWidget {
   std::deque<std::unique_ptr<DockItem>> items_;
 
   // Context (right-click) menu.
-  std::unique_ptr<QMenu> menu_;
+  QMenu menu_;
+  QAction* positionTop_;
+  QAction* positionBottom_;
+  QAction* positionLeft_;
+  QAction* positionRight_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;
@@ -133,9 +156,9 @@ class KSmoothDock : public QWidget {
   bool isAnimationActive_;
   std::unique_ptr<QTimer> animationTimer_;
   int currentAnimationStep_;
-  int backgroundWidth_;
-  int startBackgroundWidth_;
-  int endBackgroundWidth_;
+  int backgroundLength_;
+  int startBackgroundLength_;
+  int endBackgroundLength_;
 };
 
 }  // namespace ksmoothdock
