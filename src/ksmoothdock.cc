@@ -26,6 +26,7 @@
 
 #include <QApplication>
 #include <QColor>
+#include <QCursor>
 #include <QDir>
 #include <QDesktopWidget>
 #include <QPainter>
@@ -101,6 +102,10 @@ void KSmoothDock::updateAnimation() {
   repaint();
 }
 
+void KSmoothDock::resetCursor() {
+  setCursor(QCursor(Qt::ArrowCursor));
+}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
@@ -144,6 +149,11 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     int i = findActiveItem(e->x(), e->y());
     if (i < 0 || i >= items_.size()) {
       return;
+    }
+    Launcher* launcher = static_cast<Launcher*>(items_[i].get());
+    if (!launcher->isCommandInternal()) {  // acknowledge launching the program.
+      setCursor(QCursor(Qt::WaitCursor));
+      QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {

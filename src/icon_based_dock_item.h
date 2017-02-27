@@ -61,7 +61,7 @@ class IconBasedDockItem : public DockItem {
   std::vector<QPixmap> icons_;
 
  private:
-  const int kIconLoadSize = 128;
+  static const int kIconLoadSize = 128;
 
   void generateIcons(const QPixmap& icon);
 

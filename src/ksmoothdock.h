@@ -55,6 +55,8 @@ class KSmoothDock : public QWidget {
   // Slot to update zoom animation.
   void updateAnimation();
 
+  void resetCursor();
+
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
   virtual void mouseMoveEvent(QMouseEvent* e) override;
@@ -63,8 +65,8 @@ class KSmoothDock : public QWidget {
   virtual void leaveEvent(QEvent* e) override;
 
  private:
-  const int kDefaultMinSize = 48;
-  const int kDefaultMaxSize = 128;
+  static const int kDefaultMinSize = 48;
+  static const int kDefaultMaxSize = 128;
 
   void loadConfig();
 

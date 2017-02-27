@@ -37,6 +37,8 @@ class Launcher : public IconBasedDockItem {
 
   virtual ~Launcher() {}
 
+  bool isCommandInternal() { return command_ == kShowDesktopCommand; }
+
   virtual void draw(QPainter* painter) const override;
 
   virtual void mousePressEvent(QMouseEvent* e) override;
