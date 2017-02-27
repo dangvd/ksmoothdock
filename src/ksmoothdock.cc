@@ -52,6 +52,7 @@ KSmoothDock::KSmoothDock()
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
+  createMenu();
 }
 
 KSmoothDock::~KSmoothDock() {}
@@ -59,7 +60,6 @@ KSmoothDock::~KSmoothDock() {}
 void KSmoothDock::init() {
   loadConfig();
   initLaunchers();
-  initMenu();
   initLayoutVars();
   updateLayout();
   KWindowSystem::setStrut(winId(), 0, 0, 0, height());
@@ -75,11 +75,9 @@ void KSmoothDock::openLaunchersDir() {
   QProcess::startDetached("dolphin " + launchersPath_);
 }
 
-void KSmoothDock::reloadLaunchers() {
+void KSmoothDock::reload() {
   items_.clear();
-  initLaunchers();
-  initLayoutVars();
-  updateLayout();
+  init();
   repaint();
 }
 
@@ -171,6 +169,15 @@ void KSmoothDock::leaveEvent(QEvent* e) {
   tooltip_.hide();
 }
 
+void KSmoothDock::createMenu() {
+  menu_.reset(new QMenu(this));
+  menu_->addAction(tr("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_->addSeparator();
+  menu_->addAction(tr("&Reload"), this, SLOT(reload()));
+  menu_->addSeparator();
+  menu_->addAction(tr("E&xit"), this, SLOT(close()));
+}
+
 void KSmoothDock::loadConfig() {
   minSize_ = kDefaultMinSize;
   maxSize_ = kDefaultMaxSize;
@@ -241,14 +248,6 @@ void KSmoothDock::saveLaunchers() {
           + QString::number(i + 1) + " - " + items_[i]->label_ + ".desktop");
     }
   }
-}
-
-void KSmoothDock::initMenu() {
-  menu_.reset(new QMenu(this));
-  menu_->addAction(tr("Edit &Launchers"), this, SLOT(openLaunchersDir()));
-  menu_->addAction(tr("&Reload Launchers"), this, SLOT(reloadLaunchers()));
-  menu_->addSeparator();
-  menu_->addAction(tr("E&xit"), this, SLOT(close()));
 }
 
 void KSmoothDock::initLayoutVars() {

@@ -50,7 +50,7 @@ class KSmoothDock : public QWidget {
   // Opens launchers directory in the file manager.
   void openLaunchersDir();
 
-  void reloadLaunchers();
+  void reload();
 
   // Slot to update zoom animation.
   void updateAnimation();
@@ -68,6 +68,8 @@ class KSmoothDock : public QWidget {
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
 
+  void createMenu();
+
   void loadConfig();
 
   void initLaunchers();
@@ -75,7 +77,6 @@ class KSmoothDock : public QWidget {
   void createDefaultLaunchers();
   void saveLaunchers();
 
-  void initMenu();
   void initLayoutVars();
 
   // Updates width, height, items's size and position when the mouse is outside
