@@ -26,6 +26,7 @@
 #include <QTextStream>
 
 #include <KDesktopFile>
+#include <KLocalizedString>
 #include <KMessageBox>
 
 #include "show_desktop.h"
@@ -52,9 +53,8 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
       ShowDesktop::instance()->toggleShowDesktop();
     } else {
       if (!QProcess::startDetached(command_)) {
-        // TODO(vddang): Add i18n.
         KMessageBox::error(nullptr,
-            "Could not run the command: " + command_);
+            i18n("Could not run command: ") + command_);
       }
     }
   }

@@ -22,9 +22,6 @@
 #include <iostream>
 #include <utility>
 
-#include <KWindowSystem>
-#include <netwm_def.h>
-
 #include <QApplication>
 #include <QColor>
 #include <QCursor>
@@ -33,6 +30,10 @@
 #include <QPainter>
 #include <QProcess>
 #include <QStringList>
+
+#include <KLocalizedString>
+#include <KWindowSystem>
+#include <netwm_def.h>
 
 #include "launcher.h"
 
@@ -202,26 +203,26 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 }
 
 void KSmoothDock::createMenu() {
-  menu_.addAction(tr("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_.addAction(i18n("Edit &Launchers"), this, SLOT(openLaunchersDir()));
 
-  QMenu* position = menu_.addMenu(tr("Panel &Position"));
-  positionTop_ = position->addAction("&Top", this,
+  QMenu* position = menu_.addMenu(i18n("Panel &Position"));
+  positionTop_ = position->addAction(i18n("&Top"), this,
       SLOT(setPositionTop()));
   positionTop_->setCheckable(true);
-  positionBottom_ = position->addAction("&Bottom", this,
+  positionBottom_ = position->addAction(i18n("&Bottom"), this,
       SLOT(setPositionBottom()));
   positionBottom_->setCheckable(true);
-  positionLeft_ = position->addAction("&Left", this,
+  positionLeft_ = position->addAction(i18n("&Left"), this,
       SLOT(setPositionLeft()));
   positionLeft_->setCheckable(true);
-  positionRight_ = position->addAction("&Right", this,
+  positionRight_ = position->addAction(i18n("&Right"), this,
       SLOT(setPositionRight()));
   positionRight_->setCheckable(true);
 
   menu_.addSeparator();
-  menu_.addAction(tr("&Reload"), this, SLOT(reload()));
+  menu_.addAction(i18n("&Reload"), this, SLOT(reload()));
   menu_.addSeparator();
-  menu_.addAction(tr("E&xit"), this, SLOT(close()));
+  menu_.addAction(i18n("E&xit"), this, SLOT(close()));
 }
 
 void KSmoothDock::loadConfig() {
