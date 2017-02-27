@@ -105,6 +105,8 @@ class KSmoothDock : public QWidget {
   // Shows tool tip for the item at the specified index.
   void showTooltip(int i);
 
+  void showWaitCursor();
+
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
 

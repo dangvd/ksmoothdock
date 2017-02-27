@@ -183,8 +183,7 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     }
     Launcher* launcher = static_cast<Launcher*>(items_[i].get());
     if (!launcher->isCommandInternal()) {  // acknowledge launching the program.
-      setCursor(QCursor(Qt::WaitCursor));
-      QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
+      showWaitCursor();
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
@@ -523,6 +522,11 @@ void KSmoothDock::showTooltip(int i) {
   }
   tooltip_.move(x, y);
   tooltip_.show();
+}
+
+void KSmoothDock::showWaitCursor() {
+  setCursor(QCursor(Qt::WaitCursor));
+  QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
 }
 
 int KSmoothDock::parabolic(int x) {
