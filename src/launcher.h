@@ -39,8 +39,6 @@ class Launcher : public IconBasedDockItem {
 
   bool isCommandInternal() { return command_ == kShowDesktopCommand; }
 
-  virtual void draw(QPainter* painter) const override;
-
   virtual void mousePressEvent(QMouseEvent* e) override;
 
   // Saves to file in desktop file format.
@@ -49,7 +47,6 @@ class Launcher : public IconBasedDockItem {
  private:
   QString iconName_;
   QString command_;
-  bool isLaunching_;
 };
 
 }  // namespace ksmoothdock

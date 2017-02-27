@@ -35,27 +35,15 @@ namespace ksmoothdock {
 Launcher::Launcher(QString label, Qt::Orientation orientation,
     QString iconName, int minSize, int maxSize, QString command)
     : IconBasedDockItem(label, orientation, iconName, minSize, maxSize), 
-      iconName_(iconName), command_(command), isLaunching_(false) {}
+      iconName_(iconName), command_(command) {}
 
 Launcher::Launcher(QString file, Qt::Orientation orientation,
     int minSize, int maxSize)
-    : IconBasedDockItem("", orientation, "", minSize, maxSize), 
-      isLaunching_(false) {
+    : IconBasedDockItem("", orientation, "", minSize, maxSize) {
   KDesktopFile desktopFile(file);
   label_ = desktopFile.readName();
   command_ = desktopFile.entryMap("Desktop Entry")["Exec"];
   setIconName(desktopFile.readIcon());
-}
-
-void Launcher::draw(QPainter* painter) const {
-  if (isLaunching_) {
-    // Draws an active (i.e. just clicked-on) quick launcher. The icon will have
-    // some special effect to acknowledge launching the program.
-    // TODO
-    painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
-  } else {
-    IconBasedDockItem::draw(painter);
-  }
 }
 
 void Launcher::mousePressEvent(QMouseEvent* e) {
@@ -63,9 +51,7 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
     if (command_ == kShowDesktopCommand) {
       ShowDesktop::instance()->toggleShowDesktop();
     } else {
-      if (QProcess::startDetached(command_)) {
-        isLaunching_ = true;
-      } else {
+      if (!QProcess::startDetached(command_)) {
         // TODO(vddang): Add i18n.
         KMessageBox::error(nullptr,
             "Could not run the command: " + command_);
