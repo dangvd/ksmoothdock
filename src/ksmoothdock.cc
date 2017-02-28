@@ -38,6 +38,7 @@
 #include <netwm_def.h>
 
 #include "launcher.h"
+#include "welcome_dialog.h"
 
 namespace ksmoothdock {
 
@@ -58,7 +59,8 @@ KSmoothDock::KSmoothDock()
       configDialog_(this),
       launchersRelativePath_(".ksmoothdock/launchers"),
       launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
-      configPath_(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc"),
+      configRelativePath_(".ksmoothdock/ksmoothdockrc"),
+      configPath_(QDir::homePath() + "/" + configRelativePath_),
       config_(configPath_, KConfig::SimpleConfig) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
@@ -282,9 +284,19 @@ void KSmoothDock::createMenu() {
 
 void KSmoothDock::loadConfig() {
   KConfigGroup group(&config_, "General");
-  PanelPosition position = static_cast<PanelPosition>(group.readEntry(
-      "position", static_cast<int>(PanelPosition::Bottom)));
+
+  PanelPosition position;
+  const bool firstRun = !QDir::home().exists(configRelativePath_);
+  if (firstRun) {
+    WelcomeDialog welcome;
+    welcome.exec();
+    position = static_cast<PanelPosition>(welcome.position_->currentIndex());
+  } else {
+    position = static_cast<PanelPosition>(group.readEntry(
+        "position", static_cast<int>(PanelPosition::Bottom)));
+  }
   setPosition(position);
+
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
   maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
   backgroundColor_ = group.readEntry("backgroundColor",

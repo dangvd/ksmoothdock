@@ -159,6 +159,8 @@ class KSmoothDock : public QWidget {
   // as desktop files.
   QString launchersPath_;
 
+  // Relative path to the home dir.
+  QString configRelativePath_;
   QString configPath_;
   KConfig config_;
 
