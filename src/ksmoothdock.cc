@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2015 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,12 +40,17 @@
 
 namespace ksmoothdock {
 
+const float KSmoothDock::kBackgroundAlpha = 0.42;
+const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
+const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
+
 KSmoothDock::KSmoothDock()
     : QWidget(),
       isEntering_(false),
       isLeaving_(false),
       isAnimationActive_(false),
-      aboutDialog_(KAboutData::applicationData(), this) {
+      aboutDialog_(KAboutData::applicationData(), this),
+      configDialog_(this) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
@@ -136,6 +141,39 @@ void KSmoothDock::about() {
   aboutDialog_.show();
 }
 
+void KSmoothDock::showConfigDialog() {
+  configDialog_.minSize_->setValue(minSize_);
+  configDialog_.maxSize_->setValue(maxSize_);
+  configDialog_.backgroundColor_->setColor(QColor(backgroundColor_.rgb()));
+  configDialog_.borderColor_->setColor(borderColor_);
+  configDialog_.tooltipFontSize_->setValue(tooltipFontSize_);
+  configDialog_.show();
+}
+
+void KSmoothDock::applyConfig() {
+  minSize_ = configDialog_.minSize_->value();
+  maxSize_ = configDialog_.maxSize_->value();
+  backgroundColor_ = configDialog_.backgroundColor_->color();
+  backgroundColor_.setAlphaF(kBackgroundAlpha);
+  borderColor_ = configDialog_.borderColor_->color();
+  tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
+
+  reload();
+}
+
+void KSmoothDock::updateConfig() {
+  applyConfig();
+  configDialog_.hide();
+}
+
+void KSmoothDock::resetConfig() {
+  configDialog_.minSize_->setValue(kDefaultMinSize);
+  configDialog_.maxSize_->setValue(kDefaultMaxSize);
+  configDialog_.backgroundColor_->setColor(QColor(kDefaultBackgroundColor));
+  configDialog_.borderColor_->setColor(QColor(kDefaultBorderColor));
+  configDialog_.tooltipFontSize_->setValue(kDefaultTooltipFontSize);  
+}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
@@ -209,8 +247,9 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 
 void KSmoothDock::createMenu() {
   menu_.addAction(i18n("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_.addAction(i18n("&Settings"), this, SLOT(showConfigDialog()));
 
-  QMenu* position = menu_.addMenu(i18n("Panel &Position"));
+  QMenu* position = menu_.addMenu(i18n("&Position"));
   positionTop_ = position->addAction(i18n("&Top"), this,
       SLOT(setPositionTop()));
   positionTop_->setCheckable(true);
@@ -236,10 +275,10 @@ void KSmoothDock::loadConfig() {
   setPosition(PanelPosition::Bottom);
   minSize_ = kDefaultMinSize;
   maxSize_ = kDefaultMaxSize;
-  backgroundColor_.setNamedColor("#638abd");
-  backgroundColor_.setAlphaF(0.42);
-  borderColor_.setNamedColor("#b1c4de");
-  tooltipFontSize_ = 18;
+  backgroundColor_.setNamedColor(kDefaultBackgroundColor);
+  backgroundColor_.setAlphaF(kBackgroundAlpha);
+  borderColor_.setNamedColor(kDefaultBorderColor);
+  tooltipFontSize_ = kDefaultTooltipFontSize;
 }
 
 void KSmoothDock::initLaunchers() {

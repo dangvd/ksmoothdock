@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2015 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

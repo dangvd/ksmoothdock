@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2015 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 
 #include <KAboutApplicationDialog>
 
+#include "config_dialog.h"
 #include "dock_item.h"
 #include "tooltip.h"
 
@@ -70,6 +71,11 @@ class KSmoothDock : public QWidget {
 
   void about();
 
+  void showConfigDialog();
+  void applyConfig();
+  void updateConfig();
+  void resetConfig();
+
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
   virtual void mouseMoveEvent(QMouseEvent* e) override;
@@ -80,8 +86,13 @@ class KSmoothDock : public QWidget {
  private:
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
+  static const char kDefaultBackgroundColor[];
+  static const char kDefaultBorderColor[];
+  static const int kDefaultTooltipFontSize = 18;
+
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
+  static const float kBackgroundAlpha;
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
@@ -157,6 +168,7 @@ class KSmoothDock : public QWidget {
   QAction* positionRight_;
 
   KAboutApplicationDialog aboutDialog_;
+  ConfigDialog configDialog_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;
