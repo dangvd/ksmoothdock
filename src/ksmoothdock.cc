@@ -506,17 +506,18 @@ void KSmoothDock::showTooltip(int i) {
   if (position_ == PanelPosition::Top) {
     x = (desktopWidth_ - width()) / 2 + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
-    y = maxHeight_;
+    y = maxHeight_ + kTooltipSpacing;
   } else if (position_ == PanelPosition::Bottom) {
     x = (desktopWidth_ - width()) / 2 + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
+    // No need for additional tooltip spacing in this position.
     y = desktopHeight_ - maxHeight_ - tooltip_.height();
   } else if (position_ == PanelPosition::Left) {
-    x = maxWidth_;
+    x = maxWidth_ + kTooltipSpacing;
     y = (desktopHeight_ - height()) / 2 + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   } else {  // Right
-    x = desktopWidth_ - maxWidth_ - tooltip_.width();
+    x = desktopWidth_ - maxWidth_ - tooltip_.width() - kTooltipSpacing;
     y = (desktopHeight_ - height()) / 2 + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   }

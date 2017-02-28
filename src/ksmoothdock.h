@@ -76,6 +76,8 @@ class KSmoothDock : public QWidget {
  private:
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
+  // The space between the tooltip and the dock.
+  static const int kTooltipSpacing = 10;
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
