@@ -31,6 +31,8 @@
 #include <QTimer>
 #include <QWidget>
 
+#include <KAboutApplicationDialog>
+
 #include "dock_item.h"
 #include "tooltip.h"
 
@@ -65,6 +67,8 @@ class KSmoothDock : public QWidget {
   void updateAnimation();
 
   void resetCursor();
+
+  void about();
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
@@ -151,6 +155,8 @@ class KSmoothDock : public QWidget {
   QAction* positionBottom_;
   QAction* positionLeft_;
   QAction* positionRight_;
+
+  KAboutApplicationDialog aboutDialog_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;

@@ -18,10 +18,25 @@
 
 #include <QApplication>
 
+#include <KAboutData>
+#include <KLocalizedString>
+
 #include "ksmoothdock.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
+
+  KAboutData about(
+      "ksmoothdock",
+      "KSmoothDock",
+      "5.0",
+      i18n("A cool desktop panel for KDE Plasma 5"),
+      KAboutLicense::GPL_V3,
+      i18n("Copyright (C) 2017 Viet Dang (dangvd@gmail.com)"),
+      "",
+      "https://github.com/dangvd/ksmoothdock");
+  KAboutData::setApplicationData(about);
+
   ksmoothdock::KSmoothDock dock;
   dock.init();
   dock.show();

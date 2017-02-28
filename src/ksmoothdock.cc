@@ -31,6 +31,7 @@
 #include <QProcess>
 #include <QStringList>
 
+#include <KAboutData>
 #include <KLocalizedString>
 #include <KWindowSystem>
 #include <netwm_def.h>
@@ -43,7 +44,8 @@ KSmoothDock::KSmoothDock()
     : QWidget(),
       isEntering_(false),
       isLeaving_(false),
-      isAnimationActive_(false) {
+      isAnimationActive_(false),
+      aboutDialog_(KAboutData::applicationData(), this) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
@@ -128,6 +130,10 @@ void KSmoothDock::updateAnimation() {
 
 void KSmoothDock::resetCursor() {
   setCursor(QCursor(Qt::ArrowCursor));
+}
+
+void KSmoothDock::about() {
+  aboutDialog_.show();
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
@@ -220,6 +226,8 @@ void KSmoothDock::createMenu() {
 
   menu_.addSeparator();
   menu_.addAction(i18n("&Reload"), this, SLOT(reload()));
+  menu_.addSeparator();
+  menu_.addAction(i18n("&About KSmoothDock"), this, SLOT(about()));
   menu_.addSeparator();
   menu_.addAction(i18n("E&xit"), this, SLOT(close()));
 }
