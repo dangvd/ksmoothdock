@@ -32,6 +32,7 @@
 #include <QWidget>
 
 #include <KAboutApplicationDialog>
+#include <KConfig>
 
 #include "config_dialog.h"
 #include "dock_item.h"
@@ -86,12 +87,12 @@ class KSmoothDock : public QWidget {
  private:
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
-  static const char kDefaultBackgroundColor[];
-  static const char kDefaultBorderColor[];
   static const int kDefaultTooltipFontSize = 18;
-
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
+
+  static const char kDefaultBackgroundColor[];
+  static const char kDefaultBorderColor[];
   static const float kBackgroundAlpha;
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
@@ -99,6 +100,7 @@ class KSmoothDock : public QWidget {
   void createMenu();
 
   void loadConfig();
+  void saveConfig();
 
   void initLaunchers();
   bool loadLaunchers();
@@ -151,11 +153,14 @@ class KSmoothDock : public QWidget {
   int desktopWidth_;
   int desktopHeight_;
 
+  // This is a relative path to the home dir.
+  QString launchersRelativePath_;
   // The path to the directory to store quick launchers
   // as desktop files.
   QString launchersPath_;
-  // This is a relative path to the home dir.
-  QString launchersRelativePath_;
+
+  QString configPath_;
+  KConfig config_;
 
   // The list of all dock items.
   std::deque<std::unique_ptr<DockItem>> items_;

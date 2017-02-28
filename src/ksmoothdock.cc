@@ -32,6 +32,7 @@
 #include <QStringList>
 
 #include <KAboutData>
+#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KWindowSystem>
 #include <netwm_def.h>
@@ -40,6 +41,10 @@
 
 namespace ksmoothdock {
 
+const int KSmoothDock::kDefaultMinSize;
+const int KSmoothDock::kDefaultMaxSize;
+const int KSmoothDock::kDefaultTooltipFontSize;
+const int KSmoothDock::kTooltipSpacing;
 const float KSmoothDock::kBackgroundAlpha = 0.42;
 const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
 const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
@@ -50,14 +55,16 @@ KSmoothDock::KSmoothDock()
       isLeaving_(false),
       isAnimationActive_(false),
       aboutDialog_(KAboutData::applicationData(), this),
-      configDialog_(this) {
+      configDialog_(this),
+      launchersRelativePath_(".ksmoothdock/launchers"),
+      launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
+      configPath_(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc"),
+      config_(configPath_, KConfig::SimpleConfig) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->screenGeometry().width();
   desktopHeight_ = QApplication::desktop()->screenGeometry().height();
-  launchersRelativePath_ = ".ksmoothdock/launchers";
-  launchersPath_ = QDir::homePath() + "/" + launchersRelativePath_;
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
@@ -65,7 +72,9 @@ KSmoothDock::KSmoothDock()
   loadConfig();
 }
 
-KSmoothDock::~KSmoothDock() {}
+KSmoothDock::~KSmoothDock() {
+  saveConfig();
+}
 
 void KSmoothDock::init() {
   initLaunchers();
@@ -272,13 +281,30 @@ void KSmoothDock::createMenu() {
 }
 
 void KSmoothDock::loadConfig() {
-  setPosition(PanelPosition::Bottom);
-  minSize_ = kDefaultMinSize;
-  maxSize_ = kDefaultMaxSize;
-  backgroundColor_.setNamedColor(kDefaultBackgroundColor);
+  KConfigGroup group(&config_, "General");
+  PanelPosition position = static_cast<PanelPosition>(group.readEntry(
+      "position", static_cast<int>(PanelPosition::Bottom)));
+  setPosition(position);
+  minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
+  maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
+  backgroundColor_ = group.readEntry("backgroundColor",
+      QColor(kDefaultBackgroundColor));
   backgroundColor_.setAlphaF(kBackgroundAlpha);
-  borderColor_.setNamedColor(kDefaultBorderColor);
-  tooltipFontSize_ = kDefaultTooltipFontSize;
+  borderColor_ = group.readEntry("borderColor",
+      QColor(kDefaultBorderColor));
+  tooltipFontSize_ = group.readEntry("tooltipFontSize",
+      kDefaultTooltipFontSize);
+}
+
+void KSmoothDock::saveConfig() {
+  KConfigGroup group(&config_, "General");
+  group.writeEntry("position", static_cast<int>(position_));
+  group.writeEntry("minimumIconSize", minSize_);
+  group.writeEntry("maximumIconSize", maxSize_);
+  group.writeEntry("backgroundColor", backgroundColor_);
+  group.writeEntry("borderColor", borderColor_);
+  group.writeEntry("tooltipFontSize", tooltipFontSize_);
+  config_.sync();
 }
 
 void KSmoothDock::initLaunchers() {
