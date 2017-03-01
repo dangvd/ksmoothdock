@@ -37,7 +37,6 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
   minSize_->setMinimum(16);
   minSize_->setMaximum(64);
   minSize_->setSingleStep(8);
-  minSize_->setValue(48);
 
   maxSizeLabel_ = new QLabel(this);
   maxSizeLabel_->setText(i18n("Maximum icon size"));
@@ -47,7 +46,6 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
   maxSize_->setMinimum(32);
   maxSize_->setMaximum(192);
   maxSize_->setSingleStep(8);
-  maxSize_->setValue(128);
 
   backgroundColorLabel_ = new QLabel(this);
   backgroundColorLabel_->setText(i18n("Background color"));
@@ -69,9 +67,8 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
   tooltipFontSize_ = new QSpinBox(this);
   tooltipFontSize_->setGeometry(QRect(210, 150, 56, 36));
   tooltipFontSize_->setMinimum(8);
-  tooltipFontSize_->setMaximum(24);
+  tooltipFontSize_->setMaximum(28);
   tooltipFontSize_->setSingleStep(2);
-  tooltipFontSize_->setValue(18);
 
   buttonBox_ = new QDialogButtonBox(this);
   buttonBox_->setGeometry(QRect(170, 220, 341, 32));

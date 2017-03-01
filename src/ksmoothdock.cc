@@ -163,6 +163,9 @@ void KSmoothDock::showConfigDialog() {
 
 void KSmoothDock::applyConfig() {
   minSize_ = configDialog_.minSize_->value();
+  if (configDialog_.maxSize_->value() < minSize_) {
+    configDialog_.maxSize_->setValue(minSize_);
+  }
   maxSize_ = configDialog_.maxSize_->value();
   backgroundColor_ = configDialog_.backgroundColor_->color();
   backgroundColor_.setAlphaF(kBackgroundAlpha);
@@ -299,6 +302,9 @@ void KSmoothDock::loadConfig() {
 
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
   maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
+  if (maxSize_ < minSize_) {
+    maxSize_ = minSize_;
+  }
   backgroundColor_ = group.readEntry("backgroundColor",
       QColor(kDefaultBackgroundColor));
   backgroundColor_.setAlphaF(kBackgroundAlpha);
