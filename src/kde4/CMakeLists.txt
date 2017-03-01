@@ -16,4 +16,4 @@ add_executable(ksmoothdock ../main.cc ../icon_based_dock_item.cc
 
 target_link_libraries(ksmoothdock ${KDE4_KDEUI_LIBS})
 
-# install(TARGETS ksmoothdock RUNTIME DESTINATION bin)
+install(TARGETS ksmoothdock RUNTIME DESTINATION bin)
