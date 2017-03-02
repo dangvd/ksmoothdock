@@ -11,7 +11,7 @@ include(KDE4Defaults)
 include_directories(${KDE4_INCLUDES})
 
 add_executable(ksmoothdock ../main.cc ../icon_based_dock_item.cc
-    ../ksmoothdock.cc ../launcher.cc ../show_desktop.cc ../tooltip.cc
+    ../ksmoothdock.cc ../launcher.cc ../tooltip.cc
     ../config_dialog.cc ../welcome_dialog.cc)
 
 target_link_libraries(ksmoothdock ${KDE4_KDEUI_LIBS})

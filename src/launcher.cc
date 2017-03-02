@@ -28,8 +28,7 @@
 #include <KDesktopFile>
 #include <KLocalizedString>
 #include <KMessageBox>
-
-#include "show_desktop.h"
+#include <KWindowSystem>
 
 namespace ksmoothdock {
 
@@ -50,7 +49,7 @@ Launcher::Launcher(QString file, Qt::Orientation orientation,
 void Launcher::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.
     if (command_ == kShowDesktopCommand) {
-      ShowDesktop::instance()->toggleShowDesktop();
+      KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
     } else {
       if (!QProcess::startDetached(command_)) {
         KMessageBox::error(nullptr,
