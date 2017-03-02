@@ -32,18 +32,19 @@
 
 namespace ksmoothdock {
 
-Launcher::Launcher(QString label, Qt::Orientation orientation,
-    QString iconName, int minSize, int maxSize, QString command)
+Launcher::Launcher(const QString& label, Qt::Orientation orientation,
+    const QString& iconName, int minSize, int maxSize, const QString& command)
     : IconBasedDockItem(label, orientation, iconName, minSize, maxSize), 
       iconName_(iconName), command_(command) {}
 
-Launcher::Launcher(QString file, Qt::Orientation orientation,
+Launcher::Launcher(const QString& file, Qt::Orientation orientation,
     int minSize, int maxSize)
     : IconBasedDockItem("", orientation, "", minSize, maxSize) {
   KDesktopFile desktopFile(file);
   label_ = desktopFile.readName();
   command_ = desktopFile.entryMap("Desktop Entry")["Exec"];
-  setIconName(desktopFile.readIcon());
+  iconName_ = desktopFile.readIcon();
+  setIconName(iconName_);
 }
 
 void Launcher::mousePressEvent(QMouseEvent* e) {
@@ -56,7 +57,7 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
   }
 }
 
-void Launcher::saveToFile(QString filePath) {
+void Launcher::saveToFile(const QString& filePath) {
   QFile out(filePath);
   if (!out.open(QIODevice::WriteOnly | QIODevice::Text)) {
     std::cerr << "Failed to write to file " << filePath.toStdString()

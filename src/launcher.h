@@ -27,11 +27,12 @@ static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
 
 class Launcher : public IconBasedDockItem {
  public:
-  Launcher(QString label, Qt::Orientation orientation,
-      QString iconName, int minSize, int maxSize, QString command);
+  Launcher(const QString& label, Qt::Orientation orientation,
+      const QString& iconName, int minSize, int maxSize,
+      const QString& command);
 
   // Loads the icon name, command and label from a file in desktop file format.
-  Launcher(QString file, Qt::Orientation orientation, int minSize,
+  Launcher(const QString& file, Qt::Orientation orientation, int minSize,
       int maxSize);
 
   virtual ~Launcher() {}
@@ -41,7 +42,7 @@ class Launcher : public IconBasedDockItem {
   virtual void mousePressEvent(QMouseEvent* e) override;
 
   // Saves to file in desktop file format.
-  void saveToFile(QString filePath);
+  void saveToFile(const QString& filePath);
 
   static void launch(const QString& command);
 
