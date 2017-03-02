@@ -4,8 +4,12 @@ To build, run:
 $ cmake src
 $ make
 
-Then, to install, run:
+To launch the program:
+$ ./ksmoothdock
+
+To install and launch, run:
 $ sudo make install
+$ ksmoothdock
 
 ---
 
