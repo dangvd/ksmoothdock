@@ -51,10 +51,7 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
     if (command_ == kShowDesktopCommand) {
       KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
     } else {
-      if (!QProcess::startDetached(command_)) {
-        KMessageBox::error(nullptr,
-            i18n("Could not run command: ") + command_);
-      }
+      launch(command_);
     }
   }
 }
@@ -85,6 +82,13 @@ void Launcher::saveToFile(QString filePath) {
   out_s << "X-KDE-Username=\n";
 
   out.close();
+}
+
+void Launcher::launch(const QString& command) {
+  if (!QProcess::startDetached(command)) {
+    KMessageBox::error(nullptr,
+        i18n("Could not run command: ") + command);
+  }
 }
 
 }  // namespace ksmoothdock

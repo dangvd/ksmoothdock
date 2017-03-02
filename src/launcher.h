@@ -27,7 +27,6 @@ static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
 
 class Launcher : public IconBasedDockItem {
  public:
-
   Launcher(QString label, Qt::Orientation orientation,
       QString iconName, int minSize, int maxSize, QString command);
 
@@ -43,6 +42,8 @@ class Launcher : public IconBasedDockItem {
 
   // Saves to file in desktop file format.
   void saveToFile(QString filePath);
+
+  static void launch(const QString& command);
 
  private:
   QString iconName_;

@@ -105,7 +105,7 @@ void KSmoothDock::resize(int w, int h) {
 }
 
 void KSmoothDock::openLaunchersDir() {
-  QProcess::startDetached("xdg-open " + launchersPath_);
+  Launcher::launch("dolphin " + launchersPath_);
 }
 
 void KSmoothDock::reload() {
