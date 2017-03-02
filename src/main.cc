@@ -19,12 +19,14 @@
 #include <QApplication>
 
 #include <KAboutData>
+#include <KDBusService>
 #include <KLocalizedString>
 
 #include "ksmoothdock.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
+  KDBusService service(KDBusService::Unique);
 
   KAboutData about(
       "ksmoothdock",
