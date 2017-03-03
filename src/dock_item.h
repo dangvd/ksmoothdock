@@ -92,12 +92,12 @@ class DockItem {
 protected:
   QString label_; // Label of the dock item.
   Qt::Orientation orientation_; // Orientation (horizontal/vertical).
-
-  int left_;
-  int top_;
-  int size_;
   int minSize_;
   int maxSize_;
+
+  int size_;
+  int left_;
+  int top_;
   // Center when minimized, as x or y depends on whether the orientation is
   // horizontal or vertical. This is used when calculating the size of the item
   // when the dock is in parabolic zoom.

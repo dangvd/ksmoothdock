@@ -97,6 +97,8 @@ class KSmoothDock : public QWidget {
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
+  int numItems() { return static_cast<int>(items_.size()); }
+
   void createMenu();
 
   void loadConfig();

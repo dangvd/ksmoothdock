@@ -52,16 +52,16 @@ const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
 KSmoothDock::KSmoothDock()
     : QWidget(),
-      isEntering_(false),
-      isLeaving_(false),
-      isAnimationActive_(false),
-      aboutDialog_(KAboutData::applicationData(), this),
-      configDialog_(this),
       launchersRelativePath_(".ksmoothdock/launchers"),
       launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
       configRelativePath_(".ksmoothdock/ksmoothdockrc"),
       configPath_(QDir::homePath() + "/" + configRelativePath_),
-      config_(configPath_, KConfig::SimpleConfig) {
+      config_(configPath_, KConfig::SimpleConfig),
+      aboutDialog_(KAboutData::applicationData(), this),
+      configDialog_(this),
+      isEntering_(false),
+      isLeaving_(false),
+      isAnimationActive_(false) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   setMouseTracking(true);
@@ -209,7 +209,7 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
         minWidth_ - 1, backgroundLength_ - 1);
   }
 
-  for (int i = 0; i < items_.size(); ++i) {
+  for (int i = 0; i < numItems(); ++i) {
     items_[i]->draw(&painter);
   }
 }
@@ -220,7 +220,7 @@ void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
   }
 
   int i = findActiveItem(e->x(), e->y());
-  if (i < 0 || i >= items_.size()) {
+  if (i < 0 || i >= numItems()) {
     tooltip_.hide();
   } else {
     showTooltip(i);
@@ -236,7 +236,7 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
 
   if (e->button() == Qt::LeftButton) {
     int i = findActiveItem(e->x(), e->y());
-    if (i < 0 || i >= items_.size()) {
+    if (i < 0 || i >= numItems()) {
       return;
     }
     Launcher* launcher = static_cast<Launcher*>(items_[i].get());
@@ -347,6 +347,7 @@ bool KSmoothDock::loadLaunchers() {
     items_.push_back(std::unique_ptr<DockItem>(
         new Launcher(file, orientation_, minSize_, maxSize_)));
   }
+  return true;
 }
 
 void KSmoothDock::createDefaultLaunchers() {
@@ -369,7 +370,7 @@ void KSmoothDock::createDefaultLaunchers() {
 }
 
 void KSmoothDock::saveLaunchers() {
-  for (int i = 0; i < items_.size(); ++i) {
+  for (int i = 0; i < numItems(); ++i) {
     Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
     if (launcher != nullptr) {
       launcher->saveToFile(launchersPath_ + "/"
@@ -391,21 +392,21 @@ void KSmoothDock::initLayoutVars() {
   tooltip_.setBackgroundColor(Qt::black);
 
   const int distance = minSize_ + itemSpacing_;
-  minWidth_ = items_.size() * distance;
+  minWidth_ = numItems() * distance;
   minHeight_ = distance;
-  if (items_.size() >= 5) {
+  if (numItems() >= 5) {
     maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
 	2 * parabolic(2 * distance) - 5 * minSize_ + minWidth_;
-  } else if (items_.size() == 4) {
+  } else if (numItems() == 4) {
     maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
 	parabolic(2 * distance) - 4 * minSize_ + minWidth_;
-  } else if (items_.size() == 3) {
+  } else if (numItems() == 3) {
     maxWidth_ = parabolic(0) + 2 * parabolic(distance) -
 	3 * minSize_ + minWidth_;
-  } else if (items_.size() == 2) {
+  } else if (numItems() == 2) {
     maxWidth_ = parabolic(0) + parabolic(distance) -
 	2 * minSize_ + minWidth_;
-  } else if (items_.size() == 1) {
+  } else if (numItems() == 1) {
     maxWidth_ = parabolic(0) - minSize_ + minWidth_;
   }
   maxHeight_ = itemSpacing_ + maxSize_;
@@ -424,7 +425,7 @@ void KSmoothDock::updateLayout() {
     }
   }
 
-  for (int i = 0; i < items_.size(); ++i) {
+  for (int i = 0; i < numItems(); ++i) {
     items_[i]->size_ = minSize_;
     if (isHorizontal()) {
       items_[i]->left_ = itemSpacing_ / 2 + i * (minSize_ + itemSpacing_);
@@ -498,7 +499,7 @@ void KSmoothDock::updateLayout(int x, int y) {
   } else {  // Vertical
     items_[0]->top_ = itemSpacing_ / 2;
   }
-  for (int i = 0; i < items_.size(); ++i) {
+  for (int i = 0; i < numItems(); ++i) {
     int delta;
     if (isHorizontal()) {
       delta = abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
@@ -531,16 +532,16 @@ void KSmoothDock::updateLayout(int x, int y) {
       }
     }
   }
-  for (int i = last_update_index + 1; i < items_.size(); ++i) {
+  for (int i = last_update_index + 1; i < numItems(); ++i) {
     if (isHorizontal()) {
       items_[i]->left_ = maxWidth_
-          - (items_.size() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
+          - (numItems() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
     } else {  // Vertical
       items_[i]->top_ = maxHeight_
-          - (items_.size() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
+          - (numItems() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
     }
   }
-  if (first_update_index == 0 && last_update_index < items_.size() - 1) {
+  if (first_update_index == 0 && last_update_index < numItems() - 1) {
     for (int i = last_update_index; i >= first_update_index; --i) {
       if (isHorizontal()) {
         items_[i]->left_ = items_[i + 1]->left_ - items_[i]->getWidth()
@@ -583,7 +584,7 @@ void KSmoothDock::setStrut() {
 
 int KSmoothDock::findActiveItem(int x, int y) {
   int i = 0;
-  while (i < items_.size() &&
+  while (i < numItems() &&
       ((orientation_ == Qt::Horizontal && items_[i]->left_ < x) ||
       (orientation_ == Qt::Vertical && items_[i]->top_ < y))) {
     ++i;
