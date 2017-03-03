@@ -173,6 +173,7 @@ void KSmoothDock::applyConfig() {
   tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
 
   reload();
+  saveConfig();
 }
 
 void KSmoothDock::updateConfig() {
