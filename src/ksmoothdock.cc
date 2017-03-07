@@ -64,6 +64,7 @@ KSmoothDock::KSmoothDock()
       isAnimationActive_(false) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
+  KWindowSystem::setOnAllDesktops(winId(), true);
   setMouseTracking(true);
   desktopWidth_ = QApplication::desktop()->screenGeometry().width();
   desktopHeight_ = QApplication::desktop()->screenGeometry().height();
