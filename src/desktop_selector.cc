@@ -48,6 +48,8 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) {
     if (KWindowSystem::currentDesktop() != desktop_) {
       KWindowSystem::setCurrentDesktop(desktop_);
+    } else {
+      KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
     }
   }
 }
