@@ -37,6 +37,7 @@
 #include <KWindowSystem>
 #include <netwm_def.h>
 
+#include "desktop_selector.h"
 #include "launcher.h"
 #include "welcome_dialog.h"
 
@@ -81,6 +82,7 @@ KSmoothDock::~KSmoothDock() {
 
 void KSmoothDock::init() {
   initLaunchers();
+  initPager();
   initLayoutVars();
   updateLayout();
   setStrut();
@@ -226,6 +228,8 @@ void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
     tooltip_.hide();
   } else {
     showTooltip(i);
+    // Somehow we have to set this property again when re-showing.
+    KWindowSystem::setOnAllDesktops(tooltip_.winId(), true);
   }
 
   updateLayout(e->x(), e->y());
@@ -241,8 +245,9 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     if (i < 0 || i >= numItems()) {
       return;
     }
-    Launcher* launcher = static_cast<Launcher*>(items_[i].get());
-    if (!launcher->isCommandInternal()) {  // acknowledge launching the program.
+    Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
+    if (launcher != nullptr && !launcher->isCommandInternal()) {
+      // Acknowledge launching the program.
       showWaitCursor();
     }
     items_[i]->mousePressEvent(e);
@@ -377,6 +382,15 @@ void KSmoothDock::saveLaunchers() {
     if (launcher != nullptr) {
       launcher->saveToFile(launchersPath_ + "/"
           + QString::number(i + 1) + " - " + items_[i]->label_ + ".desktop");
+    }
+  }
+}
+
+void KSmoothDock::initPager() {
+  if (true) {
+    for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
+      items_.push_back(std::unique_ptr<DockItem>(new DesktopSelector(
+          orientation_, minSize_, maxSize_, (i + 1), &config_)));
     }
   }
 }

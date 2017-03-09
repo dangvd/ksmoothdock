@@ -109,6 +109,8 @@ class KSmoothDock : public QWidget {
   void createDefaultLaunchers();
   void saveLaunchers();
 
+  void initPager();
+
   void initLayoutVars();
 
   // Updates width, height, items's size and position when the mouse is outside
