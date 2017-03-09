@@ -41,13 +41,15 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       desktop_(desktop),
       config_(config) {
   KConfigGroup group(config_, "Pager");
-  QString wallpaper = group.readEntry(getConfigKey(), "");
-  if (!wallpaper.isEmpty()) {
-    setIcon(QPixmap(wallpaper));
+  wallpaper_ = group.readEntry(getConfigKey(), "");
+  if (!wallpaper_.isEmpty()) {
+    setIcon(QPixmap(wallpaper_));
   } else {
     setIconName("user-desktop");
   }
   createMenu();
+  connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
+      this, SLOT(updateWallpaper(int)));
 }
 
 void DesktopSelector::mousePressEvent(QMouseEvent* e) {
@@ -72,14 +74,25 @@ void DesktopSelector::changeWallpaper() {
       i18n("Select Wallpaper Image"),
       QDir::homePath(),
       i18n("Image Files (*.png *.jpg *.bmp)"));
-  setIcon(QPixmap(wallpaper));
+  if (wallpaper.isEmpty()) {
+    return;
+  }
+
+  wallpaper_ = wallpaper;
+  setIcon(QPixmap(wallpaper_));
   parent_->refresh();
 
-  setWallpaper(wallpaper);
+  setWallpaper(wallpaper_);
 
   KConfigGroup group(config_, "Pager");
-  group.writeEntry(getConfigKey(), wallpaper);
+  group.writeEntry(getConfigKey(), wallpaper_);
   config_->sync();
+}
+
+void DesktopSelector::updateWallpaper(int currentDesktop) {
+  if (currentDesktop == desktop_) {
+    setWallpaper(wallpaper_);
+  }
 }
 
 void DesktopSelector::setWallpaper(const QString& wallpaper) {

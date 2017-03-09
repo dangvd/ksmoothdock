@@ -43,6 +43,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
  public slots:
    void changeWallpaper();
 
+   void updateWallpaper(int currentDesktop);
+
  private:
    static void setWallpaper(const QString& wallpaper);
 
@@ -55,6 +57,9 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   // The desktop that this desktop selector manages, 1-based.
   int desktop_;
   KConfig* config_;
+
+  // The path to the wallpaper image file.
+  QString wallpaper_;
 
   // Context (right-click) menu.
   QMenu menu_;
