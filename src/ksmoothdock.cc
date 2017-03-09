@@ -105,6 +105,10 @@ void KSmoothDock::resize(int w, int h) {
     y = (desktopHeight_ - h) / 2;
   }
   move(x, y);
+  // This is to fix the bug that if launched from Plasma Quicklaunch,
+  // KSmoothDock still doesn't show on all desktops even though
+  // we've already called this in the constructor.
+  KWindowSystem::setOnAllDesktops(winId(), true);
 }
 
 void KSmoothDock::openLaunchersDir() {
