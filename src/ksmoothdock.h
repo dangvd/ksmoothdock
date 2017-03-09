@@ -86,6 +86,12 @@ class KSmoothDock : public QWidget {
     saveConfig();
   }
 
+  void togglePager() {
+    showPager_ = !showPager_;
+    reload();
+    saveConfig();
+  }
+
   // Slot to update zoom animation.
   void updateAnimation();
 
@@ -157,6 +163,7 @@ class KSmoothDock : public QWidget {
   // Config variables.
 
   PanelPosition position_;
+  bool showPager_;
   int minSize_;
   int maxSize_;
   QColor backgroundColor_;
@@ -198,6 +205,7 @@ class KSmoothDock : public QWidget {
   QAction* positionBottom_;
   QAction* positionLeft_;
   QAction* positionRight_;
+  QAction* pagerAction_;
 
   KAboutApplicationDialog aboutDialog_;
   ConfigDialog configDialog_;

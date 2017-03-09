@@ -53,6 +53,7 @@ const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
 KSmoothDock::KSmoothDock()
     : QWidget(),
+      showPager_(false),
       launchersRelativePath_(".ksmoothdock/launchers"),
       launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
       configRelativePath_(".ksmoothdock/ksmoothdockrc"),
@@ -299,6 +300,11 @@ void KSmoothDock::createMenu() {
       SLOT(setPositionRight()));
   positionRight_->setCheckable(true);
 
+  QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
+  pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
+      SLOT(togglePager()));
+  pagerAction_->setCheckable(true);
+
   menu_.addSeparator();
   menu_.addAction(i18n("&Reload"), this, SLOT(reload()));
   menu_.addSeparator();
@@ -322,6 +328,9 @@ void KSmoothDock::loadConfig() {
   }
   setPosition(position);
 
+  showPager_ = group.readEntry("showPager", false);
+  pagerAction_->setChecked(showPager_);
+
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
   maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
   if (maxSize_ < minSize_) {
@@ -339,6 +348,7 @@ void KSmoothDock::loadConfig() {
 void KSmoothDock::saveConfig() {
   KConfigGroup group(&config_, "General");
   group.writeEntry("position", static_cast<int>(position_));
+  group.writeEntry("showPager", showPager_);
   group.writeEntry("minimumIconSize", minSize_);
   group.writeEntry("maximumIconSize", maxSize_);
   group.writeEntry("backgroundColor", backgroundColor_);
@@ -402,7 +412,7 @@ void KSmoothDock::saveLaunchers() {
 }
 
 void KSmoothDock::initPager() {
-  if (true) {
+  if (showPager_) {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
       items_.push_back(std::unique_ptr<DockItem>(new DesktopSelector(
           this, orientation_, minSize_, maxSize_, (i + 1), &config_)));
