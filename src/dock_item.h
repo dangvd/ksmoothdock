@@ -26,13 +26,15 @@
 
 namespace ksmoothdock {
 
+class KSmoothDock;
+
 // Base class for all dock items, i.e. launchers, tasks, clock etc.
 class DockItem {
  public:
-  DockItem(const QString& label, Qt::Orientation orientation, int minSize,
-      int maxSize)
-      : label_(label), orientation_(orientation), minSize_(minSize), 
-        maxSize_(maxSize), size_(minSize) {}
+  DockItem(KSmoothDock* parent, const QString& label,
+      Qt::Orientation orientation, int minSize, int maxSize)
+      : parent_(parent), label_(label), orientation_(orientation),
+        minSize_(minSize), maxSize_(maxSize), size_(minSize) {}
   virtual ~DockItem() {}
 
   // This is virtual so dynamic label can be implemented in its subclasses.
@@ -90,6 +92,7 @@ class DockItem {
   virtual int getHeight() const = 0;
 
 protected:
+  KSmoothDock* parent_;
   QString label_; // Label of the dock item.
   Qt::Orientation orientation_; // Orientation (horizontal/vertical).
   int minSize_;

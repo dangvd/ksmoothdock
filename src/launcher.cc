@@ -32,14 +32,16 @@
 
 namespace ksmoothdock {
 
-Launcher::Launcher(const QString& label, Qt::Orientation orientation,
-    const QString& iconName, int minSize, int maxSize, const QString& command)
-    : IconBasedDockItem(label, orientation, iconName, minSize, maxSize), 
+Launcher::Launcher(KSmoothDock* parent, const QString& label,
+    Qt::Orientation orientation, const QString& iconName, int minSize,
+    int maxSize, const QString& command)
+    : IconBasedDockItem(parent, label, orientation, iconName, minSize,
+          maxSize), 
       iconName_(iconName), command_(command) {}
 
-Launcher::Launcher(const QString& file, Qt::Orientation orientation,
-    int minSize, int maxSize)
-    : IconBasedDockItem("", orientation, "", minSize, maxSize) {
+Launcher::Launcher(KSmoothDock* parent, const QString& file,
+    Qt::Orientation orientation, int minSize, int maxSize)
+    : IconBasedDockItem(parent, "", orientation, "", minSize, maxSize) {
   KDesktopFile desktopFile(file);
   label_ = desktopFile.readName();
   command_ = desktopFile.entryMap("Desktop Entry")["Exec"];

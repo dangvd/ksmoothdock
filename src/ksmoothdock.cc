@@ -121,6 +121,12 @@ void KSmoothDock::reload() {
   repaint();
 }
 
+void KSmoothDock::refresh() {
+  initLayoutVars();
+  updateLayout();
+  repaint();
+}
+
 void KSmoothDock::setPosition(PanelPosition position) {
   position_ = position;
   orientation_ = (position_ == PanelPosition::Top ||
@@ -244,19 +250,24 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     return;
   }
 
+  int i = findActiveItem(e->x(), e->y());
+  if (i < 0 || i >= numItems()) {
+    return;
+  }
+
+  Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
-    int i = findActiveItem(e->x(), e->y());
-    if (i < 0 || i >= numItems()) {
-      return;
-    }
-    Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
     if (launcher != nullptr && !launcher->isCommandInternal()) {
       // Acknowledge launching the program.
       showWaitCursor();
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
-    menu_.popup(e->globalPos());
+    if (launcher != nullptr) {
+      menu_.popup(e->globalPos());
+    } else {
+      items_[i]->mousePressEvent(e);
+    }
   }
 }
 
@@ -356,7 +367,7 @@ bool KSmoothDock::loadLaunchers() {
   for (int i = 0; i < files.size(); ++i) {
     const QString& file = launchersPath_ + "/" + files.at(i);
     items_.push_back(std::unique_ptr<DockItem>(
-        new Launcher(file, orientation_, minSize_, maxSize_)));
+        new Launcher(this, file, orientation_, minSize_, maxSize_)));
   }
   return true;
 }
@@ -375,7 +386,7 @@ void KSmoothDock::createDefaultLaunchers() {
   };
   for (int i = 0; i < kNumItems; ++i) {
     items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(kItems[i][0], orientation_, kItems[i][1], minSize_,
+      new Launcher(this, kItems[i][0], orientation_, kItems[i][1], minSize_,
           maxSize_, kItems[i][2])));
   }
 }
@@ -394,7 +405,7 @@ void KSmoothDock::initPager() {
   if (true) {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
       items_.push_back(std::unique_ptr<DockItem>(new DesktopSelector(
-          orientation_, minSize_, maxSize_, (i + 1), &config_)));
+          this, orientation_, minSize_, maxSize_, (i + 1), &config_)));
     }
   }
 }
@@ -412,7 +423,10 @@ void KSmoothDock::initLayoutVars() {
   tooltip_.setBackgroundColor(Qt::black);
 
   const int distance = minSize_ + itemSpacing_;
-  minWidth_ = numItems() * distance;
+  minWidth_ = 0;
+  for (const auto& item : items_) {
+    minWidth_ += (item->getMinWidth() + itemSpacing_);
+  }
   minHeight_ = distance;
   if (numItems() >= 5) {
     maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
@@ -448,13 +462,15 @@ void KSmoothDock::updateLayout() {
   for (int i = 0; i < numItems(); ++i) {
     items_[i]->size_ = minSize_;
     if (isHorizontal()) {
-      items_[i]->left_ = itemSpacing_ / 2 + i * (minSize_ + itemSpacing_);
+      items_[i]->left_ = (i == 0) ? itemSpacing_ / 2
+          : items_[i - 1]->left_ + items_[i - 1]->getMinWidth() + itemSpacing_;
       items_[i]->top_ = itemSpacing_ / 2;
-      items_[i]->minCenter_ = items_[i]->left_ + minSize_ / 2;
+      items_[i]->minCenter_ = items_[i]->left_ + items_[i]->getMinWidth() / 2;
     } else {  // Vertical
       items_[i]->left_ = itemSpacing_ / 2;
-      items_[i]->top_ = itemSpacing_ / 2 + i * (minSize_ + itemSpacing_);
-      items_[i]->minCenter_ = items_[i]->top_ + minSize_ / 2;
+      items_[i]->top_ = (i == 0) ? itemSpacing_ / 2
+          : items_[i - 1]->top_ + items_[i - 1]->getMinHeight() + itemSpacing_;
+      items_[i]->minCenter_ = items_[i]->top_ + items_[i]->getMinHeight() / 2;
     }
   }
   backgroundLength_ = isHorizontal() ? minWidth_ : minHeight_;
@@ -552,13 +568,15 @@ void KSmoothDock::updateLayout(int x, int y) {
       }
     }
   }
-  for (int i = last_update_index + 1; i < numItems(); ++i) {
+  for (int i = numItems() - 1; i >= last_update_index + 1; --i) {
     if (isHorizontal()) {
-      items_[i]->left_ = maxWidth_
-          - (numItems() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
+      items_[i]->left_ = (i == numItems() - 1)
+          ? maxWidth_ - itemSpacing_ / 2 - items_[i]->getMinWidth()
+          : items_[i + 1]->left_ - items_[i]->getMinWidth() - itemSpacing_;
     } else {  // Vertical
-      items_[i]->top_ = maxHeight_
-          - (numItems() - i) * (minSize_ + itemSpacing_) + itemSpacing_ / 2;
+      items_[i]->top_ = (i == numItems() - 1)
+          ? maxHeight_ - itemSpacing_ / 2 - items_[i]->getMinHeight()
+          : items_[i + 1]->top_ - items_[i]->getMinHeight() - itemSpacing_;
     }
   }
   if (first_update_index == 0 && last_update_index < numItems() - 1) {

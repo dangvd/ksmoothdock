@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror=return-type")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+find_package(Qt5DBus REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(KF5Config REQUIRED)
@@ -21,6 +22,7 @@ add_executable(ksmoothdock main.cc icon_based_dock_item.cc ksmoothdock.cc
     launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
     desktop_selector.cc)
 
+target_link_libraries(ksmoothdock Qt5::DBus)
 target_link_libraries(ksmoothdock Qt5::Gui)
 target_link_libraries(ksmoothdock Qt5::Widgets)
 target_link_libraries(ksmoothdock KF5::ConfigCore KF5::ConfigGui)

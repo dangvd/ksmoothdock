@@ -27,13 +27,13 @@ static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
 
 class Launcher : public IconBasedDockItem {
  public:
-  Launcher(const QString& label, Qt::Orientation orientation,
-      const QString& iconName, int minSize, int maxSize,
-      const QString& command);
+  Launcher(KSmoothDock* parent, const QString& label,
+      Qt::Orientation orientation, const QString& iconName, int minSize,
+      int maxSize, const QString& command);
 
   // Loads the icon name, command and label from a file in desktop file format.
-  Launcher(const QString& file, Qt::Orientation orientation, int minSize,
-      int maxSize);
+  Launcher(KSmoothDock* parent, const QString& file,
+      Qt::Orientation orientation, int minSize, int maxSize);
 
   virtual ~Launcher() {}
 

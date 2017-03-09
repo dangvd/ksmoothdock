@@ -58,12 +58,33 @@ class KSmoothDock : public QWidget {
   void openLaunchersDir();
 
   void reload();
+  void refresh();
 
   void setPosition(PanelPosition position);
-  void setPositionTop() { setPosition(PanelPosition::Top); reload(); }
-  void setPositionBottom() { setPosition(PanelPosition::Bottom); reload(); }
-  void setPositionLeft() { setPosition(PanelPosition::Left); reload(); }
-  void setPositionRight() { setPosition(PanelPosition::Right); reload(); }
+
+  void setPositionTop() {
+    setPosition(PanelPosition::Top);
+    reload(); 
+    saveConfig();
+  }
+
+  void setPositionBottom() {
+    setPosition(PanelPosition::Bottom);
+    reload();
+    saveConfig();
+  }
+
+  void setPositionLeft() {
+    setPosition(PanelPosition::Left);
+    reload();
+    saveConfig();
+  }
+
+  void setPositionRight() {
+    setPosition(PanelPosition::Right);
+    reload();
+    saveConfig();
+  }
 
   // Slot to update zoom animation.
   void updateAnimation();

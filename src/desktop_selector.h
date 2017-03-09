@@ -21,24 +21,43 @@
 
 #include "icon_based_dock_item.h"
 
+#include <QMenu>
+#include <QObject>
+#include <QString>
+
 #include <KConfig>
 
 namespace ksmoothdock {
 
-class DesktopSelector : public IconBasedDockItem {
+class DesktopSelector : public QObject, public IconBasedDockItem {
+  Q_OBJECT
+
  public:
-  DesktopSelector(Qt::Orientation orientation, int minSize, int maxSize,
-      int desktop, KConfig *config);
+  DesktopSelector(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
+      int maxSize, int desktop, KConfig *config);
 
   virtual ~DesktopSelector() {}
 
   virtual void mousePressEvent(QMouseEvent* e) override;
 
+ public slots:
+   void changeWallpaper();
+
  private:
+   static void setWallpaper(const QString& wallpaper);
+
+  QString getConfigKey() {
+      return QString("wallpaper") + QString::number(desktop_);
+  }
+
+  void createMenu();
+
   // The desktop that this desktop selector manages, 1-based.
   int desktop_;
-
   KConfig* config_;
+
+  // Context (right-click) menu.
+  QMenu menu_;
 };
 
 }  // namespace ksmoothdock
