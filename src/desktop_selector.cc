@@ -19,6 +19,7 @@
 #include "desktop_selector.h"
 
 #include <QDBusInterface>
+#include <QDBusMessage>
 #include <QDir>
 #include <QFileDialog>
 #include <QPixmap>
@@ -100,7 +101,7 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
       "org.kde.plasmashell",
       "/PlasmaShell",
       "org.kde.PlasmaShell");
-  plasmaShell.call(
+  const QDBusMessage& response = plasmaShell.call(
       "evaluateScript",
       "var allDesktops = desktops();"
       "for (i=0;i<allDesktops.length;i++) {"
@@ -109,6 +110,11 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
       "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
       "d.writeConfig('Image','file://"
       + wallpaper + "')}");
+  if (response.type() == QDBusMessage::ErrorMessage) {
+    KMessageBox::error(
+        Q_NULLPTR,
+        i18n("Failed to update wallpaper: ") + response.errorMessage());
+  }
 }
 
 void DesktopSelector::createMenu() {
