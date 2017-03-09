@@ -51,6 +51,7 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
   createMenu();
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
       this, SLOT(updateWallpaper(int)));
+  updateWallpaper(KWindowSystem::currentDesktop());
 }
 
 void DesktopSelector::mousePressEvent(QMouseEvent* e) {
@@ -97,6 +98,10 @@ void DesktopSelector::updateWallpaper(int currentDesktop) {
 }
 
 void DesktopSelector::setWallpaper(const QString& wallpaper) {
+  if (wallpaper.isEmpty()) {
+    return;
+  }
+
   QDBusInterface plasmaShell(
       "org.kde.plasmashell",
       "/PlasmaShell",
