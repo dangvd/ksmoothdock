@@ -433,31 +433,40 @@ void KSmoothDock::initLayoutVars() {
   tooltip_.setBackgroundColor(Qt::black);
 
   const int distance = minSize_ + itemSpacing_;
-  minWidth_ = 0;
-  for (const auto& item : items_) {
-    minWidth_ += (item->getMinWidth() + itemSpacing_);
-  }
-  minHeight_ = distance;
+  // The difference between minWidth_ and maxWidth_
+  // (horizontal mode) or between minHeight_ and
+  // maxHeight_ (vertical mode).
+  int delta = 0;
   if (numItems() >= 5) {
-    maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
-	2 * parabolic(2 * distance) - 5 * minSize_ + minWidth_;
+    delta = parabolic(0) + 2 * parabolic(distance) +
+        2 * parabolic(2 * distance) - 5 * minSize_;
   } else if (numItems() == 4) {
-    maxWidth_ = parabolic(0) + 2 * parabolic(distance) +
-	parabolic(2 * distance) - 4 * minSize_ + minWidth_;
+    delta = parabolic(0) + 2 * parabolic(distance) +
+        parabolic(2 * distance) - 4 * minSize_;
   } else if (numItems() == 3) {
-    maxWidth_ = parabolic(0) + 2 * parabolic(distance) -
-	3 * minSize_ + minWidth_;
+    delta = parabolic(0) + 2 * parabolic(distance) - 3 * minSize_;
   } else if (numItems() == 2) {
-    maxWidth_ = parabolic(0) + parabolic(distance) -
-	2 * minSize_ + minWidth_;
+    delta = parabolic(0) + parabolic(distance) - 2 * minSize_;
   } else if (numItems() == 1) {
-    maxWidth_ = parabolic(0) - minSize_ + minWidth_;
+    delta = parabolic(0) - minSize_;
   }
-  maxHeight_ = itemSpacing_ + maxSize_;
 
-  if (orientation_ == Qt::Vertical) {
-    std::swap(minWidth_, minHeight_);
-    std::swap(maxWidth_, maxHeight_);
+  if (orientation_ == Qt::Horizontal) {
+    minWidth_ = 0;
+    for (const auto& item : items_) {
+      minWidth_ += (item->getMinWidth() + itemSpacing_);
+    }
+    minHeight_ = distance;
+    maxWidth_ = minWidth_ + delta;
+    maxHeight_ = itemSpacing_ + maxSize_;
+  } else {  // Vertical
+    minHeight_ = 0;
+    for (const auto& item : items_) {
+      minHeight_ += (item->getMinHeight() + itemSpacing_);
+    }
+    minWidth_ = distance;
+    maxHeight_ = minHeight_ + delta;
+    maxWidth_ = itemSpacing_ + maxSize_;
   }
 }
 
