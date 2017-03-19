@@ -70,7 +70,9 @@ void DesktopSelector::changeWallpaper() {
   KMessageBox::information(
       parent_,
       i18n("Setting wallpaper requires Plasma desktop widgets to stay "
-          "unlocked."));
+          "unlocked."),
+      i18n("Information"),
+      "showWallpaperSettingInfo");
   QString wallpaper = QFileDialog::getOpenFileName(
       parent_,
       i18n("Select Wallpaper Image"),
