@@ -86,6 +86,12 @@ class KSmoothDock : public QWidget {
     saveConfig();
   }
 
+  void toggleAutoHide() {
+    autoHide_ = !autoHide_;
+    reload();
+    saveConfig();
+  }
+
   void togglePager() {
     showPager_ = !showPager_;
     reload();
@@ -163,6 +169,7 @@ class KSmoothDock : public QWidget {
   // Config variables.
 
   PanelPosition position_;
+  bool autoHide_;
   bool showPager_;
   int minSize_;
   int maxSize_;
@@ -205,6 +212,7 @@ class KSmoothDock : public QWidget {
   QAction* positionBottom_;
   QAction* positionLeft_;
   QAction* positionRight_;
+  QAction* autoHideAction_;
   QAction* pagerAction_;
 
   KAboutApplicationDialog aboutDialog_;

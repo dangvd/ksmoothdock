@@ -53,6 +53,7 @@ const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
 KSmoothDock::KSmoothDock()
     : QWidget(),
+      autoHide_(false),
       showPager_(false),
       launchersRelativePath_(".ksmoothdock/launchers"),
       launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
@@ -300,6 +301,10 @@ void KSmoothDock::createMenu() {
       SLOT(setPositionRight()));
   positionRight_->setCheckable(true);
 
+  autoHideAction_ = menu_.addAction(i18n("Auto &Hide"), this,
+      SLOT(toggleAutoHide()));
+  autoHideAction_->setCheckable(true);
+
   QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
@@ -328,6 +333,9 @@ void KSmoothDock::loadConfig() {
   }
   setPosition(position);
 
+  autoHide_ = group.readEntry("autoHide", false);
+  autoHideAction_->setChecked(autoHide_);
+
   showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
 
@@ -348,6 +356,7 @@ void KSmoothDock::loadConfig() {
 void KSmoothDock::saveConfig() {
   KConfigGroup group(&config_, "General");
   group.writeEntry("position", static_cast<int>(position_));
+  group.writeEntry("autoHide", autoHide_);
   group.writeEntry("showPager", showPager_);
   group.writeEntry("minimumIconSize", minSize_);
   group.writeEntry("maximumIconSize", maxSize_);
