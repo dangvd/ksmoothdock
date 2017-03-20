@@ -21,6 +21,7 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QPixmap>
 
@@ -43,7 +44,7 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       config_(config) {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
-  if (!wallpaper_.isEmpty()) {
+  if (!wallpaper_.isEmpty() && QFile::exists(wallpaper_)) {
     setIcon(QPixmap(wallpaper_));
   } else {
     setIconName("user-desktop");
@@ -101,6 +102,13 @@ void DesktopSelector::updateWallpaper(int currentDesktop) {
 
 void DesktopSelector::setWallpaper(const QString& wallpaper) {
   if (wallpaper.isEmpty()) {
+    return;
+  }
+
+  if (!QFile::exists(wallpaper)) {
+    KMessageBox::error(
+        Q_NULLPTR,
+        i18n("Failed to load wallpaper from: ") + wallpaper);
     return;
   }
 
