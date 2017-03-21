@@ -21,7 +21,6 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDir>
-#include <QFile>
 #include <QFileDialog>
 #include <QPainter>
 #include <QPen>
@@ -45,7 +44,7 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       config_(config) {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
-  if (!wallpaper_.isEmpty() && QFile::exists(wallpaper_)) {
+  if (isWallpaperOk()) {
     setIcon(QPixmap(wallpaper_));
   } else {
     setIconName("user-desktop");
@@ -59,17 +58,20 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
 void DesktopSelector::draw(QPainter* painter) const {
   IconBasedDockItem::draw(painter);
 
-  KConfigGroup group(config_, "General");
-  // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
-  // so they should be moved to some common place.
-  QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
-  QPen pen(borderColor);
-  pen.setJoinStyle(Qt::MiterJoin);
-  if (isCurrentDesktop()) {
-    pen.setWidth(3);
+  // Only draws the border if using a custom wallpaper.
+  if (isWallpaperOk()) {
+    KConfigGroup group(config_, "General");
+    // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
+    // so they should be moved to some common place.
+    QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
+    QPen pen(borderColor);
+    pen.setJoinStyle(Qt::MiterJoin);
+    if (isCurrentDesktop()) {
+      pen.setWidth(3);
+    }
+    painter->setPen(pen);
+    painter->drawRect(left_, top_, getWidth(), getHeight());
   }
-  painter->setPen(pen);
-  painter->drawRect(left_, top_, getWidth(), getHeight());
 }
 
 void DesktopSelector::mousePressEvent(QMouseEvent* e) {

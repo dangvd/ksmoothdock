@@ -21,6 +21,7 @@
 
 #include "icon_based_dock_item.h"
 
+#include <QFile>
 #include <QMenu>
 #include <QObject>
 #include <QString>
@@ -55,8 +56,12 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
     return KWindowSystem::currentDesktop() == desktop_;
   }
 
-  QString getConfigKey() {
+  QString getConfigKey() const {
     return QString("wallpaper") + QString::number(desktop_);
+  }
+
+  bool isWallpaperOk() const {
+    return !wallpaper_.isEmpty() && QFile::exists(wallpaper_);
   }
 
   void createMenu();
