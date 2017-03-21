@@ -24,6 +24,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QPainter>
+#include <QPen>
 #include <QPixmap>
 
 #include <KConfigGroup>
@@ -58,18 +59,16 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
 void DesktopSelector::draw(QPainter* painter) const {
   IconBasedDockItem::draw(painter);
 
-  QColor borderColor;
+  KConfigGroup group(config_, "General");
+  // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
+  // so they should be moved to some common place.
+  QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
+  QPen pen(borderColor);
+  pen.setJoinStyle(Qt::MiterJoin);
   if (isCurrentDesktop()) {
-    KConfigGroup group(config_, "Pager");
-    borderColor = group.readEntry("currentDesktopBorderColor",
-        QColor("#ffff00"));
-  } else {
-    KConfigGroup group(config_, "General");
-    // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
-    // so they should be moved to some common place.
-    borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
+    pen.setWidth(3);
   }
-  painter->setPen(borderColor);
+  painter->setPen(pen);
   painter->drawRect(left_, top_, getWidth(), getHeight());
 }
 
