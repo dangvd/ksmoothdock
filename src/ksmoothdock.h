@@ -226,9 +226,12 @@ class KSmoothDock : public QWidget {
   bool isAnimationActive_;
   std::unique_ptr<QTimer> animationTimer_;
   int currentAnimationStep_;
-  int backgroundLength_;
-  int startBackgroundLength_;
-  int endBackgroundLength_;
+  int backgroundWidth_;
+  int startBackgroundWidth_;
+  int endBackgroundWidth_;
+  int backgroundHeight_;
+  int startBackgroundHeight_;
+  int endBackgroundHeight_;
 };
 
 }  // namespace ksmoothdock

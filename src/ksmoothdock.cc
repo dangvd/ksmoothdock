@@ -145,8 +145,11 @@ void KSmoothDock::updateAnimation() {
     item->nextAnimationStep();
   }
   ++currentAnimationStep_;
-  backgroundLength_ = startBackgroundLength_
-      + (endBackgroundLength_ - startBackgroundLength_)
+  backgroundWidth_ = startBackgroundWidth_
+      + (endBackgroundWidth_ - startBackgroundWidth_)
+          * currentAnimationStep_ / numAnimationSteps_;
+  backgroundHeight_ = startBackgroundHeight_
+      + (endBackgroundHeight_ - startBackgroundHeight_)
           * currentAnimationStep_ / numAnimationSteps_;
   if (currentAnimationStep_ == numAnimationSteps_) {
     animationTimer_->stop();
@@ -208,21 +211,23 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
   if (isHorizontal()) {
-    const int y = (position_ == PanelPosition::Top) ? 0 : height() - minHeight_;
-    painter.fillRect((width() - backgroundLength_) / 2, y, 
-        backgroundLength_, minHeight_, backgroundColor_);
+    const int y = (position_ == PanelPosition::Top) ? 0
+        : height() - backgroundHeight_;
+    painter.fillRect((width() - backgroundWidth_) / 2, y, 
+        backgroundWidth_, backgroundHeight_, backgroundColor_);
 
     painter.setPen(borderColor_);
-    painter.drawRect((width() - backgroundLength_) / 2, y, 
-        backgroundLength_ - 1, minHeight_ - 1);
+    painter.drawRect((width() - backgroundWidth_) / 2, y, 
+        backgroundWidth_ - 1, backgroundHeight_ - 1);
   } else {  // Vertical
-    const int x =  (position_ == PanelPosition::Left) ? 0 : width() - minWidth_;
-    painter.fillRect(x, (height() - backgroundLength_) / 2,
-        minWidth_, backgroundLength_, backgroundColor_);
+    const int x =  (position_ == PanelPosition::Left) ? 0
+        : width() - backgroundWidth_;
+    painter.fillRect(x, (height() - backgroundHeight_) / 2,
+        backgroundWidth_, backgroundHeight_, backgroundColor_);
 
     painter.setPen(borderColor_);
-    painter.drawRect(x, (height() - backgroundLength_) / 2,
-        minWidth_ - 1, backgroundLength_ - 1);
+    painter.drawRect(x, (height() - backgroundHeight_) / 2,
+        backgroundWidth_ - 1, backgroundHeight_ - 1);
   }
 
   for (int i = 0; i < numItems(); ++i) {
@@ -465,7 +470,7 @@ void KSmoothDock::initLayoutVars() {
     for (const auto& item : items_) {
       minWidth_ += (item->getMinWidth() + itemSpacing_);
     }
-    minHeight_ = distance;
+    minHeight_ = autoHide_ ? 1 : distance;
     maxWidth_ = minWidth_ + delta;
     maxHeight_ = itemSpacing_ + maxSize_;
   } else {  // Vertical
@@ -473,17 +478,24 @@ void KSmoothDock::initLayoutVars() {
     for (const auto& item : items_) {
       minHeight_ += (item->getMinHeight() + itemSpacing_);
     }
-    minWidth_ = distance;
+    minWidth_ = autoHide_ ? 1 : distance;
     maxHeight_ = minHeight_ + delta;
     maxWidth_ = itemSpacing_ + maxSize_;
   }
 }
 
 void KSmoothDock::updateLayout() {
+  const int distance = minSize_ + itemSpacing_;
   if (isLeaving_) {
     for (const auto& item : items_) {
       item->setAnimationStartAsCurrent();
-      startBackgroundLength_ = isHorizontal() ? maxWidth_ : maxHeight_;
+      if (isHorizontal()) {
+        startBackgroundWidth_ = maxWidth_;
+        startBackgroundHeight_ = distance;
+      } else {  // Vertical
+        startBackgroundHeight_ = maxHeight_;
+        startBackgroundWidth_ = distance;
+      }
     }
   }
 
@@ -501,7 +513,13 @@ void KSmoothDock::updateLayout() {
       items_[i]->minCenter_ = items_[i]->top_ + items_[i]->getMinHeight() / 2;
     }
   }
-  backgroundLength_ = isHorizontal() ? minWidth_ : minHeight_;
+  if (isHorizontal()) {
+    backgroundWidth_ = minWidth_;
+    backgroundHeight_ = distance;
+  } else {  // Vertical
+    backgroundHeight_ = minHeight_;
+    backgroundWidth_ = distance;
+  }
 
   if (isLeaving_) {
     for (const auto& item : items_) {
@@ -509,22 +527,31 @@ void KSmoothDock::updateLayout() {
       if (isHorizontal()) {
         item->endLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
         if (position_ == PanelPosition::Top) {
-          item->endTop_ = item->top_;
+          item->endTop_ = item->top_ + minHeight_ - distance;
         } else {  // Bottom
           item->endTop_ = item->top_ + (maxHeight_ - minHeight_);
         }
       } else {  // Vertical
         item->endTop_ = item->top_ + (maxHeight_ - minHeight_) / 2;
         if (position_ == PanelPosition::Left) {
-          item->endLeft_ = item->left_;
+          item->endLeft_ = item->left_ + minWidth_ - distance;
         } else {  // Right
           item->endLeft_ = item->left_ + (maxWidth_ - minWidth_);
         }
       }
       item->startAnimation(numAnimationSteps_);
     }
-    endBackgroundLength_ = isHorizontal() ? minWidth_ : minHeight_;
-    backgroundLength_ = startBackgroundLength_;
+    if (isHorizontal()) {
+      endBackgroundWidth_ = minWidth_;
+      backgroundWidth_ = startBackgroundWidth_;
+      endBackgroundHeight_ = autoHide_ ? 1 : distance;
+      backgroundHeight_ = startBackgroundHeight_;
+    } else {  // Vertical
+      endBackgroundHeight_ = minHeight_;
+      backgroundHeight_ = startBackgroundHeight_;
+      endBackgroundWidth_ = autoHide_ ? 1 : distance;
+      backgroundWidth_ = startBackgroundWidth_;
+    }
     currentAnimationStep_ = 0;
     isAnimationActive_ = true;
     animationTimer_->start(32 - animationSpeed_);
@@ -534,26 +561,33 @@ void KSmoothDock::updateLayout() {
 }
 
 void KSmoothDock::updateLayout(int x, int y) {
+  const int distance = minSize_ + itemSpacing_;
   if (isEntering_) {
     for (const auto& item : items_) {
       item->startSize_ = item->size_;
       if (isHorizontal()) {
         item->startLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
         if (position_ == PanelPosition::Top) {
-          item->startTop_ = item->top_;
+          item->startTop_ = item->top_ + minHeight_ - distance;
         } else {  // Bottom
           item->startTop_ = item->top_ + (maxHeight_ - minHeight_);
         }
       } else {  // Vertical
         item->startTop_ = item->top_ + (maxHeight_ - minHeight_) / 2;
         if (position_ == PanelPosition::Left) {
-          item->startLeft_ = item->left_;
+          item->startLeft_ = item->left_ + minWidth_ - distance;
         } else {  // Right
           item->startLeft_ = item->left_ + (maxWidth_ - minWidth_);
         }
       }
     }
-    startBackgroundLength_ = isHorizontal() ? minWidth_ : minHeight_;
+    if (isHorizontal()) {
+      startBackgroundWidth_ = minWidth_;
+      startBackgroundHeight_ = autoHide_ ? 1 : distance;
+    } else {  // Vertical
+      startBackgroundHeight_ = minHeight_;
+      startBackgroundWidth_ = autoHide_ ? 1 : distance;
+    }
   }
 
   int first_update_index = -1;
@@ -624,8 +658,18 @@ void KSmoothDock::updateLayout(int x, int y) {
       item->setAnimationEndAsCurrent();
       item->startAnimation(numAnimationSteps_);
     }
-    endBackgroundLength_ = isHorizontal() ? maxWidth_ : maxHeight_;
-    backgroundLength_ = startBackgroundLength_;
+    if (isHorizontal()) {
+      endBackgroundWidth_ = maxWidth_;
+      backgroundWidth_ = startBackgroundWidth_;
+      endBackgroundHeight_ = distance;
+      backgroundHeight_ = startBackgroundHeight_;
+    } else {  // Vertical
+      endBackgroundHeight_ = maxHeight_;
+      backgroundHeight_ = startBackgroundHeight_;
+      endBackgroundWidth_ = distance;
+      backgroundWidth_ = startBackgroundWidth_;
+    }
+
     currentAnimationStep_ = 0;
     isAnimationActive_ = true;
     isEntering_ = false;
