@@ -45,7 +45,7 @@ class IconBasedDockItem : public DockItem {
   void setIcon(const QPixmap& icon);
   void setIconName(const QString& iconName);
 
-  virtual void draw(QPainter* painter) const;
+  virtual void draw(QPainter* painter) const override;
 
   virtual int getMaxWidth() const;
 

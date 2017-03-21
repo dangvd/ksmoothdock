@@ -23,12 +23,12 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QPainter>
 #include <QPixmap>
 
 #include <KConfigGroup>
 #include <KLocalizedString>
 #include <KMessageBox>
-#include <KWindowSystem>
 
 #include "ksmoothdock.h"
 
@@ -55,12 +55,30 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
   updateWallpaper(KWindowSystem::currentDesktop());
 }
 
+void DesktopSelector::draw(QPainter* painter) const {
+  IconBasedDockItem::draw(painter);
+
+  QColor borderColor;
+  if (isCurrentDesktop()) {
+    KConfigGroup group(config_, "Pager");
+    borderColor = group.readEntry("currentDesktopBorderColor",
+        QColor("#ffff00"));
+  } else {
+    KConfigGroup group(config_, "General");
+    // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
+    // so they should be moved to some common place.
+    borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
+  }
+  painter->setPen(borderColor);
+  painter->drawRect(left_, top_, getWidth(), getHeight());
+}
+
 void DesktopSelector::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) {
-    if (KWindowSystem::currentDesktop() != desktop_) {
-      KWindowSystem::setCurrentDesktop(desktop_);
-    } else {
+    if (isCurrentDesktop()) {
       KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
+    } else {
+      KWindowSystem::setCurrentDesktop(desktop_);
     }
   } else if (e->button() == Qt::RightButton) {
     menu_.popup(e->globalPos());
@@ -97,6 +115,7 @@ void DesktopSelector::changeWallpaper() {
 void DesktopSelector::updateWallpaper(int currentDesktop) {
   if (currentDesktop == desktop_) {
     setWallpaper(wallpaper_);
+    parent_->update();
   }
 }
 

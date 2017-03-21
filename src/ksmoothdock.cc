@@ -190,8 +190,8 @@ void KSmoothDock::applyConfig() {
   borderColor_ = configDialog_.borderColor_->color();
   tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
 
-  reload();
   saveConfig();
+  reload();
 }
 
 void KSmoothDock::updateConfig() {

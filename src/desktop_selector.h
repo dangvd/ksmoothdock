@@ -26,6 +26,7 @@
 #include <QString>
 
 #include <KConfig>
+#include <KWindowSystem>
 
 namespace ksmoothdock {
 
@@ -38,6 +39,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   virtual ~DesktopSelector() {}
 
+  virtual void draw(QPainter* painter) const override;
+
   virtual void mousePressEvent(QMouseEvent* e) override;
 
  public slots:
@@ -46,10 +49,14 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
    void updateWallpaper(int currentDesktop);
 
  private:
-   static void setWallpaper(const QString& wallpaper);
+  static void setWallpaper(const QString& wallpaper);
+
+  bool isCurrentDesktop() const {
+    return KWindowSystem::currentDesktop() == desktop_;
+  }
 
   QString getConfigKey() {
-      return QString("wallpaper") + QString::number(desktop_);
+    return QString("wallpaper") + QString::number(desktop_);
   }
 
   void createMenu();
