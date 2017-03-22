@@ -406,7 +406,7 @@ void KSmoothDock::createDefaultLaunchers() {
     {"Text Editor", "kate", "kate"},
     {"Web Browser", "applications-internet", "firefox"},
     {"Audio Player", "audio-headphones", "amarok"},
-    {"System Settings", "preferences-desktop", "systemsettings5"}
+    {"System Settings", "preferences-system", "systemsettings5"}
   };
   for (int i = 0; i < kNumItems; ++i) {
     items_.push_back(std::unique_ptr<DockItem>(
