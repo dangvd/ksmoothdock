@@ -34,6 +34,7 @@
 #include <KAboutData>
 #include <KConfigGroup>
 #include <KLocalizedString>
+#include <KMessageBox>
 #include <KWindowSystem>
 #include <netwm_def.h>
 
@@ -138,6 +139,21 @@ void KSmoothDock::setPosition(PanelPosition position) {
   positionBottom_->setChecked(position == PanelPosition::Bottom);
   positionLeft_->setChecked(position == PanelPosition::Left);
   positionRight_->setChecked(position == PanelPosition::Right);
+}
+
+void KSmoothDock::togglePager() {
+  showPager_ = !showPager_;
+  reload();
+  saveConfig();
+  if (showPager_) {
+    KMessageBox::information(
+        this,
+        i18n("It's recommended to use the pager's wallpaper setting "
+            "functionality to better distinguish between different virtual "
+            "desktops."),
+        i18n("Information"),
+        "showPagerInfo");
+  }
 }
 
 void KSmoothDock::updateAnimation() {
