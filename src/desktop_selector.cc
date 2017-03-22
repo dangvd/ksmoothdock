@@ -43,6 +43,15 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       config_(config) {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
+  if (wallpaper_.isEmpty() && desktop_ == 1) {
+    KMessageBox::information(
+        Q_NULLPTR,
+        i18n("It's recommended to use the pager's wallpaper setting "
+            "functionality to better distinguish between different virtual "
+            "desktops."),
+        i18n("Information"),
+        "showPagerInfo");
+  }
   if (isWallpaperOk()) {
     setIcon(QPixmap(wallpaper_));
   } else {
@@ -82,7 +91,7 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
 
 void DesktopSelector::changeWallpaper() {
   KMessageBox::information(
-      parent_,
+      Q_NULLPTR,
       i18n("Setting wallpaper requires Plasma desktop widgets to stay "
           "unlocked."),
       i18n("Information"),

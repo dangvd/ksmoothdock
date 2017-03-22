@@ -141,21 +141,6 @@ void KSmoothDock::setPosition(PanelPosition position) {
   positionRight_->setChecked(position == PanelPosition::Right);
 }
 
-void KSmoothDock::togglePager() {
-  showPager_ = !showPager_;
-  reload();
-  saveConfig();
-  if (showPager_) {
-    KMessageBox::information(
-        this,
-        i18n("It's recommended to use the pager's wallpaper setting "
-            "functionality to better distinguish between different virtual "
-            "desktops."),
-        i18n("Information"),
-        "showPagerInfo");
-  }
-}
-
 void KSmoothDock::updateAnimation() {
   for (const auto& item : items_) {
     item->nextAnimationStep();
