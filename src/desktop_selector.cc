@@ -152,7 +152,7 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
     KMessageBox::error(
         Q_NULLPTR,
         i18n("Failed to update wallpaper. Please make sure Plasma desktop "
-            "widgets are unlocked and try again."));
+            "widgets are unlocked in order to set wallpaper."));
   }
 }
 
