@@ -23,7 +23,6 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QPainter>
-#include <QPen>
 #include <QPixmap>
 
 #include <KConfigGroup>
@@ -58,18 +57,13 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
 void DesktopSelector::draw(QPainter* painter) const {
   IconBasedDockItem::draw(painter);
 
-  // Only draws the border if using a custom wallpaper.
-  if (isWallpaperOk()) {
+  // Only draws the border for the current desktop if using a custom wallpaper.
+  if (isCurrentDesktop() && isWallpaperOk()) {
     KConfigGroup group(config_, "General");
     // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
     // so they should be moved to some common place.
     QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
-    QPen pen(borderColor);
-    pen.setJoinStyle(Qt::MiterJoin);
-    if (isCurrentDesktop()) {
-      pen.setWidth(3);
-    }
-    painter->setPen(pen);
+    painter->setPen(borderColor);
     painter->drawRect(left_, top_, getWidth(), getHeight());
   }
 }
