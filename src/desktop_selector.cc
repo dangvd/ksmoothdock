@@ -73,7 +73,7 @@ void DesktopSelector::draw(QPainter* painter) const {
     // so they should be moved to some common place.
     QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
     painter->setPen(borderColor);
-    painter->drawRect(left_, top_, getWidth(), getHeight());
+    painter->drawRect(left_ - 1, top_ - 1, getWidth() + 1, getHeight() + 1);
   }
 }
 

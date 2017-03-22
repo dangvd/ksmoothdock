@@ -34,7 +34,6 @@
 #include <KAboutData>
 #include <KConfigGroup>
 #include <KLocalizedString>
-#include <KMessageBox>
 #include <KWindowSystem>
 #include <netwm_def.h>
 
