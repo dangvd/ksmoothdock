@@ -122,9 +122,11 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
 
 void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
     QListWidgetItem* previous) {
-  name_->setText(current->text());
-  command_->setText(current->data(Qt::UserRole).toString());
-  icon_->setIcon(current->icon());
+  if (current != nullptr) {
+    name_->setText(current->text());
+    command_->setText(current->data(Qt::UserRole).toString());
+    icon_->setIcon(current->icon());
+  }
 }
 
 void EditLaunchersDialog::populateInternalCommands() {
