@@ -18,6 +18,8 @@
 
 #include "edit_launchers_dialog.h"
 
+#include <QIcon>
+
 #include <KLocalizedString>
 
 #include "ksmoothdock.h"
@@ -39,12 +41,15 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
+  add_->setIcon(QIcon::fromTheme("list-add"));
   add_->setGeometry(QRect(500, 50, 121, 38));
   remove_ = new QPushButton(this);
   remove_->setText(i18n("Remove"));
+  remove_->setIcon(QIcon::fromTheme("list-remove"));
   remove_->setGeometry(QRect(500, 110, 121, 38));
   update_ = new QPushButton(this);
   update_->setText(i18n("Update"));
+  update_->setIcon(QIcon::fromTheme("arrow-left"));
   update_->setGeometry(QRect(500, 170, 121, 38));
 
   openDir_ = new QPushButton(this);
