@@ -61,15 +61,16 @@ class EditLaunchersDialog : public QDialog {
  public slots:
   void buttonClicked(QAbstractButton* button);
 
-  void updateInternalCommand(int index);
-  void updateDBusCommand(int index);
-
   void refreshSelectedLauncher(QListWidgetItem* current,
       QListWidgetItem* previous);
 
   void addLauncher();
   void removeSelectedLauncher();
   void updateSelectedLauncher();
+
+  void browseCommand();
+  void updateInternalCommand(int index);
+  void updateDBusCommand(int index);
 
  private:
   QIcon getListItemIcon(const QString& iconName) {
@@ -95,7 +96,7 @@ class EditLaunchersDialog : public QDialog {
   QLineEdit *name_;
   QLabel *commandLabel_;
   QLineEdit *command_;
-  QPushButton *browseExecutable_;
+  QPushButton *browseCommand_;
   QComboBox *internalCommands_;
   QComboBox *dbusCommands_;
   QLabel *iconLabel_;

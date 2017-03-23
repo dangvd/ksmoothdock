@@ -96,7 +96,7 @@ void DesktopSelector::changeWallpaper() {
           "unlocked."),
       i18n("Information"),
       "showWallpaperSettingInfo");
-  QString wallpaper = QFileDialog::getOpenFileName(
+  const QString& wallpaper = QFileDialog::getOpenFileName(
       parent_,
       i18n("Select Wallpaper Image"),
       QDir::homePath(),

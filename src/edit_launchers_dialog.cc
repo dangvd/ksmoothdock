@@ -18,6 +18,7 @@
 
 #include "edit_launchers_dialog.h"
 
+#include <QFileDialog>
 #include <QVariant>
 
 #include <KLocalizedString>
@@ -76,9 +77,11 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   commandLabel_->setGeometry(QRect(660, 110, 101, 22));
   command_ = new QLineEdit(this);
   command_->setGeometry(QRect(770, 100, 331, 36));
-  browseExecutable_ = new QPushButton(this);
-  browseExecutable_->setText(i18n("Browse Executable"));
-  browseExecutable_->setGeometry(QRect(770, 160, 251, 38));
+  browseCommand_ = new QPushButton(this);
+  browseCommand_->setText(i18n("Browse Command"));
+  connect(browseCommand_, SIGNAL(clicked()),
+      this, SLOT(browseCommand()));
+  browseCommand_->setGeometry(QRect(770, 160, 251, 38));
 
   internalCommands_ = new QComboBox(this);
   populateInternalCommands();
@@ -113,20 +116,6 @@ void EditLaunchersDialog::buttonClicked(QAbstractButton* button) {
   auto role = buttonBox_->buttonRole(button);
   if (role == QDialogButtonBox::ApplyRole) {
     parent_->applyConfig();
-  }
-}
-
-void EditLaunchersDialog::updateInternalCommand(int index) {
-  if (index > 0) {  // Excludes header.
-    command_->setText(internalCommands_->itemData(index).toString());
-    dbusCommands_->setCurrentIndex(0);
-  }
-}
-
-void EditLaunchersDialog::updateDBusCommand(int index) {
-  if (index > 0) {  // Excludes header.
-    command_->setText(dbusCommands_->itemData(index).toString());
-    internalCommands_->setCurrentIndex(0);
   }
 }
 
@@ -168,6 +157,30 @@ void EditLaunchersDialog::updateSelectedLauncher() {
     item->setIcon(getListItemIcon(icon_->icon()));
     item->setData(Qt::UserRole, QVariant::fromValue(
         LauncherInfo(icon_->icon(), command_->text())));
+  }
+}
+
+void EditLaunchersDialog::browseCommand() {
+  const QString& command = QFileDialog::getOpenFileName(
+      this,
+      i18n("Browse Command"),
+      QDir::homePath());
+  if (!command.isEmpty()) {
+    command_->setText(command);
+  }
+}
+
+void EditLaunchersDialog::updateInternalCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    command_->setText(internalCommands_->itemData(index).toString());
+    dbusCommands_->setCurrentIndex(0);
+  }
+}
+
+void EditLaunchersDialog::updateDBusCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    command_->setText(dbusCommands_->itemData(index).toString());
+    internalCommands_->setCurrentIndex(0);
   }
 }
 
