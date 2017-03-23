@@ -18,7 +18,7 @@
 
 #include "edit_launchers_dialog.h"
 
-#include <QIcon>
+#include <QVariant>
 
 #include <KLocalizedString>
 
@@ -43,14 +43,19 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   add_->setText(i18n("Add"));
   add_->setIcon(QIcon::fromTheme("list-add"));
   add_->setGeometry(QRect(500, 50, 121, 38));
+  connect(add_, SIGNAL(clicked()), this, SLOT(addLauncher()));
+
   remove_ = new QPushButton(this);
   remove_->setText(i18n("Remove"));
   remove_->setIcon(QIcon::fromTheme("list-remove"));
   remove_->setGeometry(QRect(500, 110, 121, 38));
+  connect(remove_, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
+
   update_ = new QPushButton(this);
   update_->setText(i18n("Update"));
   update_->setIcon(QIcon::fromTheme("arrow-left"));
   update_->setGeometry(QRect(500, 170, 121, 38));
+  connect(update_, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
 
   openDir_ = new QPushButton(this);
   openDir_->setText(i18n("Open Folder"));
@@ -129,8 +134,40 @@ void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
     QListWidgetItem* previous) {
   if (current != nullptr) {
     name_->setText(current->text());
-    command_->setText(current->data(Qt::UserRole).toString());
-    icon_->setIcon(current->icon());
+    LauncherInfo info = current->data(Qt::UserRole).value<LauncherInfo>();
+    command_->setText(info.command);
+    icon_->setIcon(info.iconName);
+  }
+}
+
+void EditLaunchersDialog::addLauncher() {
+  const QString name = i18n("New Launcher");
+  const QString command = "";
+  const QString iconName = "xorg";
+  name_->setText(name);
+  command_->setText(command);
+  icon_->setIcon(iconName);
+  QListWidgetItem* item = new QListWidgetItem(getListItemIcon(iconName), name);
+  item->setData(Qt::UserRole, QVariant::fromValue(
+      LauncherInfo(iconName, command)));
+  launchers_->addItem(item);
+  launchers_->setCurrentItem(item);
+}
+
+void EditLaunchersDialog::removeSelectedLauncher() {
+  QListWidgetItem* item = launchers_->takeItem(launchers_->currentRow());
+  if (item != nullptr) {
+    delete item;
+  }
+}
+
+void EditLaunchersDialog::updateSelectedLauncher() {
+  QListWidgetItem* item = launchers_->currentItem();
+  if (item != nullptr) {
+    item->setText(name_->text());
+    item->setIcon(getListItemIcon(icon_->icon()));
+    item->setData(Qt::UserRole, QVariant::fromValue(
+        LauncherInfo(icon_->icon(), command_->text())));
   }
 }
 

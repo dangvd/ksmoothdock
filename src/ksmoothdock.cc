@@ -32,6 +32,7 @@
 #include <QPainter>
 #include <QProcess>
 #include <QStringList>
+#include <QVariant>
 
 #include <KAboutData>
 #include <KConfigGroup>
@@ -211,14 +212,14 @@ void KSmoothDock::resetConfig() {
 }
 
 void KSmoothDock::showEditLaunchersDialog() {
-  static const int kListIconSize = 48;
   editLaunchersDialog_.launchers_->clear();
   for (const auto& item : items_) {
     Launcher* launcher = dynamic_cast<Launcher*>(item.get());
     if (launcher != nullptr) {
       QListWidgetItem* listItem = new QListWidgetItem(
           QIcon(launcher->getIcon(kListIconSize)), launcher->label_);
-      listItem->setData(Qt::UserRole, launcher->command_);
+          listItem->setData(Qt::UserRole, QVariant::fromValue(
+              LauncherInfo(launcher->iconName_, launcher->command_)));
       editLaunchersDialog_.launchers_->addItem(listItem);
     }
   }

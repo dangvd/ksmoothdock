@@ -25,16 +25,31 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
 
 #include <KIconButton>
+#include <KIconLoader>
 
 namespace ksmoothdock {
 
+static constexpr int kListIconSize = 48;
+
 class KSmoothDock;
+
+// User data for the items in the QListWidget.
+struct LauncherInfo {
+  // The name(label) is already stored as item text in the QListWidget.
+  QString iconName;
+  QString command;
+
+  LauncherInfo() {}
+  LauncherInfo(QString iconName2, QString command2)
+      : iconName(iconName2), command(command2) {}
+};
 
 class EditLaunchersDialog : public QDialog {
   Q_OBJECT
@@ -47,13 +62,21 @@ class EditLaunchersDialog : public QDialog {
   void buttonClicked(QAbstractButton* button);
 
   void updateInternalCommand(int index);
-
   void updateDBusCommand(int index);
 
   void refreshSelectedLauncher(QListWidgetItem* current,
       QListWidgetItem* previous);
 
+  void addLauncher();
+  void removeSelectedLauncher();
+  void updateSelectedLauncher();
+
  private:
+  QIcon getListItemIcon(const QString& iconName) {
+    return QIcon(KIconLoader::global()->loadIcon(iconName,
+        KIconLoader::NoGroup, kListIconSize));
+  }
+
   void populateInternalCommands();
 
   void populateDBusCommands();
@@ -84,5 +107,7 @@ class EditLaunchersDialog : public QDialog {
 };
 
 }  // namespace ksmoothdock
+
+Q_DECLARE_METATYPE(ksmoothdock::LauncherInfo);
 
 #endif  // KSMOOTHDOCK_EDIT_LAUNCHERS_DIALOG_H_
