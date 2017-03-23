@@ -20,7 +20,7 @@ find_package(KF5WindowSystem REQUIRED)
 
 add_executable(ksmoothdock main.cc icon_based_dock_item.cc ksmoothdock.cc
     launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
-    desktop_selector.cc)
+    desktop_selector.cc edit_launchers_dialog.cc)
 
 target_link_libraries(ksmoothdock Qt5::DBus)
 target_link_libraries(ksmoothdock Qt5::Gui)

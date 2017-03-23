@@ -62,6 +62,7 @@ KSmoothDock::KSmoothDock()
       config_(configPath_, KConfig::SimpleConfig),
       aboutDialog_(KAboutData::applicationData(), this),
       configDialog_(this),
+      editLaunchersDialog_(this),
       isEntering_(false),
       isLeaving_(false),
       isAnimationActive_(false) {
@@ -207,6 +208,10 @@ void KSmoothDock::resetConfig() {
   configDialog_.tooltipFontSize_->setValue(kDefaultTooltipFontSize);  
 }
 
+void KSmoothDock::showEditLaunchersDialog() {
+  editLaunchersDialog_.show();
+}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
@@ -289,7 +294,8 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 }
 
 void KSmoothDock::createMenu() {
-  menu_.addAction(i18n("Edit &Launchers"), this, SLOT(openLaunchersDir()));
+  menu_.addAction(i18n("Edit &Launchers"), this,
+      SLOT(showEditLaunchersDialog()));
   menu_.addAction(i18n("&Settings"), this, SLOT(showConfigDialog()));
 
   QMenu* position = menu_.addMenu(i18n("&Position"));

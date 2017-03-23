@@ -36,6 +36,7 @@
 
 #include "config_dialog.h"
 #include "dock_item.h"
+#include "edit_launchers_dialog.h"
 #include "tooltip.h"
 
 namespace ksmoothdock {
@@ -109,6 +110,8 @@ class KSmoothDock : public QWidget {
   void applyConfig();
   void updateConfig();
   void resetConfig();
+
+  void showEditLaunchersDialog();
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
@@ -217,6 +220,7 @@ class KSmoothDock : public QWidget {
 
   KAboutApplicationDialog aboutDialog_;
   ConfigDialog configDialog_;
+  EditLaunchersDialog editLaunchersDialog_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;

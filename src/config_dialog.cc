@@ -77,7 +77,7 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
       | QDialogButtonBox::Apply | QDialogButtonBox::RestoreDefaults
       | QDialogButtonBox::Cancel);
 
-  connect(buttonBox_, SIGNAL(accepted()), parent, SLOT(updateConfig()));
+  connect(buttonBox_, SIGNAL(accepted()), parent_, SLOT(updateConfig()));
   connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));
   connect(buttonBox_, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));
