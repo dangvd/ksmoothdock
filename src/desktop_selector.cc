@@ -109,7 +109,9 @@ void DesktopSelector::changeWallpaper() {
   setIcon(QPixmap(wallpaper_));
   parent_->refresh();
 
-  setWallpaper(wallpaper_);
+  if (isCurrentDesktop()) {
+    setWallpaper(wallpaper_);
+  }
 
   KConfigGroup group(config_, "Pager");
   group.writeEntry(getConfigKey(), wallpaper_);
