@@ -211,7 +211,7 @@ void KSmoothDock::resetConfig() {
 }
 
 void KSmoothDock::showEditLaunchersDialog() {
-  static const int kListIconSize = 32;
+  static const int kListIconSize = 48;
   editLaunchersDialog_.launchers_->clear();
   for (const auto& item : items_) {
     Launcher* launcher = dynamic_cast<Launcher*>(item.get());
@@ -222,6 +222,7 @@ void KSmoothDock::showEditLaunchersDialog() {
       editLaunchersDialog_.launchers_->addItem(listItem);
     }
   }
+  editLaunchersDialog_.launchers_->setCurrentRow(0);
   editLaunchersDialog_.show();
 }
 

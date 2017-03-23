@@ -31,6 +31,11 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
 
   launchers_ = new QListWidget(this);
   launchers_->setGeometry(QRect(20, 20, 441, 491));
+  connect(
+      launchers_,
+      SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+      this,
+      SLOT(refreshSelectedLauncher(QListWidgetItem*, QListWidgetItem*)));
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
@@ -113,6 +118,13 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
     command_->setText(dbusCommands_->itemData(index).toString());
     internalCommands_->setCurrentIndex(0);
   }
+}
+
+void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
+    QListWidgetItem* previous) {
+  name_->setText(current->text());
+  command_->setText(current->data(Qt::UserRole).toString());
+  icon_->setIcon(current->icon());
 }
 
 void EditLaunchersDialog::populateInternalCommands() {

@@ -28,6 +28,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QListWidgetItem>
 
 #include <KIconButton>
 
@@ -48,6 +49,9 @@ class EditLaunchersDialog : public QDialog {
   void updateInternalCommand(int index);
 
   void updateDBusCommand(int index);
+
+  void refreshSelectedLauncher(QListWidgetItem* current,
+      QListWidgetItem* previous);
 
  private:
   void populateInternalCommands();
