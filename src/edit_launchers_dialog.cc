@@ -29,7 +29,7 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   setWindowTitle(i18n("Edit Launchers"));
   resize(1120, 610);
 
-  launchers_ = new QListView(this);
+  launchers_ = new QListWidget(this);
   launchers_->setGeometry(QRect(20, 20, 441, 491));
 
   add_ = new QPushButton(this);
@@ -45,6 +45,7 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   openDir_ = new QPushButton(this);
   openDir_->setText(i18n("Open Folder"));
   openDir_->setGeometry(QRect(500, 300, 121, 38));
+  connect(openDir_, SIGNAL(clicked()), parent_, SLOT(openLaunchersDir()));
   syncFromDir_ = new QPushButton(this);
   syncFromDir_->setText(i18n("Sync From\nFolder"));
   syncFromDir_->setGeometry(QRect(500, 360, 121, 61));
@@ -63,12 +64,18 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   browseExecutable_ = new QPushButton(this);
   browseExecutable_->setText(i18n("Browse Executable"));
   browseExecutable_->setGeometry(QRect(770, 160, 251, 38));
+
   internalCommands_ = new QComboBox(this);
-  internalCommands_->addItem(i18n("Use an internal command"));
+  populateInternalCommands();
   internalCommands_->setGeometry(QRect(770, 220, 251, 36));
+  connect(internalCommands_, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(updateInternalCommand(int)));
+
   dbusCommands_ = new QComboBox(this);
-  dbusCommands_->addItem(i18n("Use a D-Bus command"));
+  populateDBusCommands();
   dbusCommands_->setGeometry(QRect(770, 280, 251, 36));
+  connect(dbusCommands_, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(updateDBusCommand(int)));
 
   iconLabel_ = new QLabel(this);
   iconLabel_->setText(i18n("Icon"));
@@ -81,8 +88,6 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
       |QDialogButtonBox::Cancel);
-
-  connect(openDir_, SIGNAL(clicked()), parent_, SLOT(openLaunchersDir()));
   connect(buttonBox_, SIGNAL(accepted()), parent_, SLOT(updateConfig()));
   connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));
   connect(buttonBox_, SIGNAL(clicked(QAbstractButton*)), this,
@@ -93,6 +98,43 @@ void EditLaunchersDialog::buttonClicked(QAbstractButton* button) {
   auto role = buttonBox_->buttonRole(button);
   if (role == QDialogButtonBox::ApplyRole) {
     parent_->applyConfig();
+  }
+}
+
+void EditLaunchersDialog::updateInternalCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    command_->setText(internalCommands_->itemData(index).toString());
+    dbusCommands_->setCurrentIndex(0);
+  }
+}
+
+void EditLaunchersDialog::updateDBusCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    command_->setText(dbusCommands_->itemData(index).toString());
+    internalCommands_->setCurrentIndex(0);
+  }
+}
+
+void EditLaunchersDialog::populateInternalCommands() {
+  internalCommands_->addItem(i18n("Use an internal command"));  // header
+  internalCommands_->addItem(i18n("Show desktop"), "SHOW_DESKTOP");
+}
+
+void EditLaunchersDialog::populateDBusCommands() {
+  static const int kNumItems = 3;
+  static const char* const kItems[kNumItems][2] = {
+    // Description, D-Bus command.
+    {"Lock the screen",
+      "qdbus org.kde.screensaver /ScreenSaver Lock"},
+    {"Suspend the computer",
+      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
+      "Suspend"},
+    {"Show the application menu",
+      "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
+  };
+  dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
+  for (int i = 0; i < kNumItems; ++i) {
+    dbusCommands_->addItem(i18n(kItems[i][0]), kItems[i][1]);
   }
 }
 

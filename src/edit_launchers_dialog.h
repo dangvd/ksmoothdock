@@ -27,7 +27,7 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLineEdit>
-#include <QListView>
+#include <QListWidget>
 
 #include <KIconButton>
 
@@ -45,10 +45,18 @@ class EditLaunchersDialog : public QDialog {
  public slots:
   void buttonClicked(QAbstractButton* button);
 
+  void updateInternalCommand(int index);
+
+  void updateDBusCommand(int index);
+
  private:
+  void populateInternalCommands();
+
+  void populateDBusCommands();
+
   KSmoothDock* parent_;
 
-  QListView *launchers_;
+  QListWidget *launchers_;
 
   QPushButton *add_;
   QPushButton *remove_;
