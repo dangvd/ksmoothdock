@@ -49,6 +49,8 @@ class Launcher : public IconBasedDockItem {
  private:
   QString iconName_;
   QString command_;
+
+  friend class KSmoothDock;
 };
 
 }  // namespace ksmoothdock

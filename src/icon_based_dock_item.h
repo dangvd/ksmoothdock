@@ -68,6 +68,8 @@ class IconBasedDockItem : public DockItem {
   void generateIcons(const QPixmap& icon);
 
   const QPixmap& getIcon(int size) const;
+
+  friend class KSmoothDock;
 };
 
 }  // namespace ksmoothdock

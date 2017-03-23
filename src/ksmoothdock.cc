@@ -27,6 +27,8 @@
 #include <QCursor>
 #include <QDir>
 #include <QDesktopWidget>
+#include <QIcon>
+#include <QListWidgetItem>
 #include <QPainter>
 #include <QProcess>
 #include <QStringList>
@@ -209,6 +211,17 @@ void KSmoothDock::resetConfig() {
 }
 
 void KSmoothDock::showEditLaunchersDialog() {
+  static const int kListIconSize = 32;
+  editLaunchersDialog_.launchers_->clear();
+  for (const auto& item : items_) {
+    Launcher* launcher = dynamic_cast<Launcher*>(item.get());
+    if (launcher != nullptr) {
+      QListWidgetItem* listItem = new QListWidgetItem(
+          QIcon(launcher->getIcon(kListIconSize)), launcher->label_);
+      listItem->setData(Qt::UserRole, launcher->command_);
+      editLaunchersDialog_.launchers_->addItem(listItem);
+    }
+  }
   editLaunchersDialog_.show();
 }
 
