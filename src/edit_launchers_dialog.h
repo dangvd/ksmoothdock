@@ -25,6 +25,9 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 #include <QIcon>
 #include <QLabel>
 #include <QLineEdit>
@@ -51,12 +54,30 @@ struct LauncherInfo {
       : iconName(iconName2), command(command2) {}
 };
 
+class EditLaunchersDialog;
+
+class LauncherList : public QListWidget {
+ public:
+  explicit LauncherList(EditLaunchersDialog* parent);
+
+ protected:
+  void dragEnterEvent(QDragEnterEvent *event) override;
+  void dragMoveEvent(QDragMoveEvent* event) override;
+  void dropEvent(QDropEvent *event) override;
+
+ private:
+  EditLaunchersDialog* parent_;
+};
+
 class EditLaunchersDialog : public QDialog {
   Q_OBJECT
 
  public:
   EditLaunchersDialog(KSmoothDock* parent);
   ~EditLaunchersDialog() {}
+
+  void addLauncher(const QString& name, const QString& command,
+      const QString& iconName);
 
  public slots:
   void buttonClicked(QAbstractButton* button);
@@ -84,7 +105,7 @@ class EditLaunchersDialog : public QDialog {
 
   KSmoothDock* parent_;
 
-  QListWidget *launchers_;
+  LauncherList *launchers_;
 
   QPushButton *add_;
   QPushButton *remove_;

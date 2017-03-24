@@ -19,26 +19,61 @@
 #include "edit_launchers_dialog.h"
 
 #include <QFileDialog>
+#include <QMimeData>
+#include <QUrl>
 #include <QVariant>
 
+#include <KDesktopFile>
 #include <KLocalizedString>
 
 #include "ksmoothdock.h"
 
 namespace ksmoothdock {
 
+LauncherList::LauncherList(EditLaunchersDialog* parent)
+    : QListWidget(parent), parent_(parent) {}
+
+void LauncherList::dragEnterEvent(QDragEnterEvent *event) {
+  if (event->mimeData()->hasFormat("text/uri-list")) {
+    QString fileUrl =
+        QString(event->mimeData()->data("text/uri-list")).trimmed();
+    if (fileUrl.endsWith(".desktop")) {
+      event->acceptProposedAction();
+    }
+  }
+}
+
+void LauncherList::dragMoveEvent(QDragMoveEvent* event) {
+  event->acceptProposedAction();
+}
+
+void LauncherList::dropEvent(QDropEvent* event) {
+    QString fileUrl =
+        QString(event->mimeData()->data("text/uri-list")).trimmed();
+  KDesktopFile desktopFile(QUrl(fileUrl).toLocalFile());
+  const QString name = desktopFile.readName();
+  const QString command = desktopFile.entryMap("Desktop Entry")["Exec"];
+  const QString iconName = desktopFile.readIcon();
+  parent_->addLauncher(name, command, iconName);
+}
+
 EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
     : QDialog(parent), parent_(parent) {
   setWindowTitle(i18n("Edit Launchers"));
   resize(1120, 610);
 
-  launchers_ = new QListWidget(this);
+  launchers_ = new LauncherList(this);
   launchers_->setGeometry(QRect(20, 20, 441, 491));
   connect(
       launchers_,
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
       this,
       SLOT(refreshSelectedLauncher(QListWidgetItem*, QListWidgetItem*)));
+  launchers_->setSelectionMode(QAbstractItemView::SingleSelection);
+  launchers_->setDragEnabled(true);
+  launchers_->setAcceptDrops(true);
+  launchers_->setDropIndicatorShown(true);
+  launchers_->setDragDropMode(QAbstractItemView::DragDrop);
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
@@ -112,6 +147,18 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
       SLOT(buttonClicked(QAbstractButton*)));
 }
 
+void EditLaunchersDialog::addLauncher(const QString& name,
+    const QString& command, const QString& iconName) {
+  name_->setText(name);
+  command_->setText(command);
+  icon_->setIcon(iconName);
+  QListWidgetItem* item = new QListWidgetItem(getListItemIcon(iconName), name);
+  item->setData(Qt::UserRole, QVariant::fromValue(
+      LauncherInfo(iconName, command)));
+  launchers_->addItem(item);
+  launchers_->setCurrentItem(item);
+}
+
 void EditLaunchersDialog::buttonClicked(QAbstractButton* button) {
   auto role = buttonBox_->buttonRole(button);
   if (role == QDialogButtonBox::ApplyRole) {
@@ -130,17 +177,7 @@ void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
 }
 
 void EditLaunchersDialog::addLauncher() {
-  const QString name = i18n("New Launcher");
-  const QString command = "";
-  const QString iconName = "xorg";
-  name_->setText(name);
-  command_->setText(command);
-  icon_->setIcon(iconName);
-  QListWidgetItem* item = new QListWidgetItem(getListItemIcon(iconName), name);
-  item->setData(Qt::UserRole, QVariant::fromValue(
-      LauncherInfo(iconName, command)));
-  launchers_->addItem(item);
-  launchers_->setCurrentItem(item);
+  addLauncher(i18n("New Launcher"), "", "xorg");
 }
 
 void EditLaunchersDialog::removeSelectedLauncher() {
