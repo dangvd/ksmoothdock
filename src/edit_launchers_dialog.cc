@@ -255,7 +255,7 @@ void EditLaunchersDialog::populateInternalCommands() {
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
-  static const int kNumItems = 3;
+  static const int kNumItems = 4;
   static const char* const kItems[kNumItems][2] = {
     // Description, D-Bus command.
     {"Lock the screen",
@@ -263,6 +263,9 @@ void EditLaunchersDialog::populateDBusCommands() {
     {"Suspend the computer",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
       "Suspend"},
+    {"Hibernate the computer",
+      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
+      "Hibernate"},
     {"Show the application menu",
       "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
   };
