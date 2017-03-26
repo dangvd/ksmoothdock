@@ -23,6 +23,7 @@
 #include <QAction>
 #include <QButtonGroup>
 #include <QComboBox>
+#include <QDataStream>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QDragEnterEvent>
@@ -33,6 +34,7 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QMetaType>
 
 #include <KIconButton>
 #include <KIconLoader>
@@ -53,6 +55,9 @@ struct LauncherInfo {
   LauncherInfo(QString iconName2, QString command2)
       : iconName(iconName2), command(command2) {}
 };
+
+QDataStream &operator<<(QDataStream &out, const LauncherInfo& launcher);
+QDataStream &operator>>(QDataStream &in, LauncherInfo& launcher);
 
 class EditLaunchersDialog;
 

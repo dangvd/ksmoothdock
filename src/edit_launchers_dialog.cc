@@ -30,15 +30,35 @@
 
 namespace ksmoothdock {
 
+QDataStream &operator<<(QDataStream &out, const LauncherInfo& launcher) {
+  out << launcher.iconName << launcher.command;
+  return out;
+}
+
+QDataStream &operator>>(QDataStream &in, LauncherInfo& launcher) {
+  in >> launcher.iconName >> launcher.command;
+  return in;
+}
+
 LauncherList::LauncherList(EditLaunchersDialog* parent)
     : QListWidget(parent), parent_(parent) {}
 
 void LauncherList::dragEnterEvent(QDragEnterEvent *event) {
+  // Internal drag-and-drop.
+  LauncherList* source = dynamic_cast<LauncherList*>(event->source());
+  if (source != nullptr && source == this) {
+    event->acceptProposedAction();
+    setDragDropMode(QAbstractItemView::InternalMove);
+    return;
+  }
+
+  // External drag-and-drop.
   if (event->mimeData()->hasFormat("text/uri-list")) {
     QString fileUrl =
         QString(event->mimeData()->data("text/uri-list")).trimmed();
     if (fileUrl.endsWith(".desktop")) {
       event->acceptProposedAction();
+      setDragDropMode(QAbstractItemView::DragDrop);
     }
   }
 }
@@ -48,19 +68,27 @@ void LauncherList::dragMoveEvent(QDragMoveEvent* event) {
 }
 
 void LauncherList::dropEvent(QDropEvent* event) {
+  // External drag-and-drop.
+  if (event->mimeData()->hasFormat("text/uri-list")) {
     QString fileUrl =
         QString(event->mimeData()->data("text/uri-list")).trimmed();
-  KDesktopFile desktopFile(QUrl(fileUrl).toLocalFile());
-  const QString name = desktopFile.readName();
-  const QString command = desktopFile.entryMap("Desktop Entry")["Exec"];
-  const QString iconName = desktopFile.readIcon();
-  parent_->addLauncher(name, command, iconName);
+    KDesktopFile desktopFile(QUrl(fileUrl).toLocalFile());
+    const QString name = desktopFile.readName();
+    const QString command = desktopFile.entryMap("Desktop Entry")["Exec"];
+    const QString iconName = desktopFile.readIcon();
+    parent_->addLauncher(name, command, iconName);
+  } else {  // Internal drag-and-drop.
+    QListWidget::dropEvent(event);
+  }
 }
 
 EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
     : QDialog(parent), parent_(parent) {
   setWindowTitle(i18n("Edit Launchers"));
   resize(1120, 610);
+
+  qRegisterMetaType<LauncherInfo>();
+  qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
 
   launchers_ = new LauncherList(this);
   launchers_->setGeometry(QRect(20, 20, 441, 491));
