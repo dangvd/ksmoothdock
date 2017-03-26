@@ -250,7 +250,7 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
         backgroundWidth_ - 1, backgroundHeight_ - 1);
   }
 
-  for (int i = 0; i < numItems(); ++i) {
+  for (int i = numItems() - 1; i >= 0; --i) {
     items_[i]->draw(&painter);
   }
 }
