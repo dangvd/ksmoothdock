@@ -169,7 +169,8 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
       |QDialogButtonBox::Cancel);
-  connect(buttonBox_, SIGNAL(accepted()), parent_, SLOT(updateConfig()));
+  connect(buttonBox_, SIGNAL(accepted()),
+      parent_, SLOT(updateLauncherConfig()));
   connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));
   connect(buttonBox_, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));
@@ -190,7 +191,7 @@ void EditLaunchersDialog::addLauncher(const QString& name,
 void EditLaunchersDialog::buttonClicked(QAbstractButton* button) {
   auto role = buttonBox_->buttonRole(button);
   if (role == QDialogButtonBox::ApplyRole) {
-    parent_->applyConfig();
+    parent_->applyLauncherConfig();
   }
 }
 

@@ -227,6 +227,28 @@ void KSmoothDock::showEditLaunchersDialog() {
   editLaunchersDialog_.show();
 }
 
+void KSmoothDock::applyLauncherConfig() {
+  items_.clear();
+  for (int i = 0; i < editLaunchersDialog_.launchers_->count(); ++i) {
+    QListWidgetItem* listItem = editLaunchersDialog_.launchers_->item(i);
+    LauncherInfo info = listItem->data(Qt::UserRole).value<LauncherInfo>();
+    items_.push_back(std::unique_ptr<DockItem>(
+        new Launcher(this, listItem->text(), orientation_, info.iconName,
+            minSize_, maxSize_, info.command)));
+  }
+  saveLaunchers();
+
+  initPager();
+  initLayoutVars();
+  updateLayout();
+  repaint();
+}
+
+void KSmoothDock::updateLauncherConfig() {
+  applyLauncherConfig();
+  editLaunchersDialog_.close();
+}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
@@ -437,11 +459,19 @@ void KSmoothDock::createDefaultLaunchers() {
 }
 
 void KSmoothDock::saveLaunchers() {
+  QDir launchersDir(launchersPath_);
+  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  for (int i = 0; i < files.size(); ++i) {
+    launchersDir.remove(files.at(i));
+  }
+
   for (int i = 0; i < numItems(); ++i) {
     Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
     if (launcher != nullptr) {
-      launcher->saveToFile(launchersPath_ + "/"
-          + QString::number(i + 1) + " - " + items_[i]->label_ + ".desktop");
+      launcher->saveToFile(QString("%1/%2 - %3.desktop")
+          .arg(launchersPath_)
+          .arg(i + 1, 2, 10, QChar('0'))
+          .arg(items_[i]->label_));
     }
   }
 }

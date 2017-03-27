@@ -112,6 +112,8 @@ class KSmoothDock : public QWidget {
   void resetConfig();
 
   void showEditLaunchersDialog();
+  void applyLauncherConfig();
+  void updateLauncherConfig();
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
