@@ -98,6 +98,11 @@ class EditLaunchersDialog : public QDialog {
   void updateInternalCommand(int index);
   void updateDBusCommand(int index);
 
+  void resetInternalAndDBusCommands() {
+    internalCommands_->setCurrentIndex(0);
+    dbusCommands_->setCurrentIndex(0);
+  }
+
  private:
   QIcon getListItemIcon(const QString& iconName) {
     return QIcon(KIconLoader::global()->loadIcon(iconName,

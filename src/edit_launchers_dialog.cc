@@ -134,6 +134,9 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   commandLabel_->setGeometry(QRect(660, 110, 101, 22));
   command_ = new QLineEdit(this);
   command_->setGeometry(QRect(770, 100, 331, 36));
+  connect(command_, SIGNAL(textEdited(const QString&)),
+      this, SLOT(resetInternalAndDBusCommands()));
+
   browseCommand_ = new QPushButton(this);
   browseCommand_->setText(i18n("Browse Command"));
   connect(browseCommand_, SIGNAL(clicked()),
@@ -201,6 +204,7 @@ void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
 
 void EditLaunchersDialog::addLauncher() {
   addLauncher(i18n("New Launcher"), "", "xorg");
+  resetInternalAndDBusCommands();
 }
 
 void EditLaunchersDialog::removeSelectedLauncher() {
@@ -227,6 +231,7 @@ void EditLaunchersDialog::browseCommand() {
       QDir::homePath());
   if (!command.isEmpty()) {
     command_->setText(command);
+    resetInternalAndDBusCommands();
   }
 }
 
