@@ -20,11 +20,10 @@
 
 #include <iostream>
 
-#include <QFile>
-#include <QIODevice>
 #include <QProcess>
-#include <QTextStream>
 
+#include <KConfig>
+#include <KConfigGroup>
 #include <KDesktopFile>
 #include <KLocalizedString>
 #include <KMessageBox>
@@ -60,31 +59,14 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
 }
 
 void Launcher::saveToFile(const QString& filePath) {
-  QFile out(filePath);
-  if (!out.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    std::cerr << "Failed to write to file " << filePath.toStdString()
-        << std::endl;
-  }
-
-  QTextStream out_s(&out);
-  out_s << "[Desktop Entry]\n";
-  out_s << "Comment=\n";
-  out_s << "Exec=" << command_ << endl;
-  out_s << "GenericName=\n";
-  out_s << "Icon=" << iconName_ << endl;
-  out_s << "MimeType=\n";
-  out_s << "Name=" << label_ << endl;
-  out_s << "Path=\n";
-  out_s << "StartupNotify=true\n";
-  out_s << "Terminal=false\n";
-  out_s << "TerminalOptions=\n";
-  out_s << "Type=Application\n";
-  out_s << "X-DBUS-ServiceName=\n";
-  out_s << "X-DBUS-StartupType=\n";
-  out_s << "X-KDE-SubstituteUID=false\n";
-  out_s << "X-KDE-Username=\n";
-
-  out.close();
+  KConfig config(filePath, KConfig::SimpleConfig);
+  KConfigGroup group(&config, "Desktop Entry");
+  group.writeEntry("Name", label_);
+  group.writeEntry("Exec", command_);
+  group.writeEntry("Icon", iconName_);
+  group.writeEntry("Type", "Application");
+  group.writeEntry("Terminal", false);
+  config.sync();
 }
 
 void Launcher::launch(const QString& command) {

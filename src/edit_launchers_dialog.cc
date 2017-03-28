@@ -246,7 +246,7 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
 
 void EditLaunchersDialog::populateInternalCommands() {
   internalCommands_->addItem(i18n("Use an internal command"));  // header
-  internalCommands_->addItem(i18n("Show the desktop"), "SHOW_DESKTOP");
+  internalCommands_->addItem(i18n("Show the desktop"), kShowDesktopCommand);
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
