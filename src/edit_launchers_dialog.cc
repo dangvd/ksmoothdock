@@ -106,28 +106,20 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
   add_->setIcon(QIcon::fromTheme("list-add"));
-  add_->setGeometry(QRect(500, 50, 121, 38));
+  add_->setGeometry(QRect(500, 120, 121, 38));
   connect(add_, SIGNAL(clicked()), this, SLOT(addLauncher()));
 
   remove_ = new QPushButton(this);
   remove_->setText(i18n("Remove"));
   remove_->setIcon(QIcon::fromTheme("list-remove"));
-  remove_->setGeometry(QRect(500, 110, 121, 38));
+  remove_->setGeometry(QRect(500, 190, 121, 38));
   connect(remove_, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
 
   update_ = new QPushButton(this);
   update_->setText(i18n("Update"));
   update_->setIcon(QIcon::fromTheme("arrow-left"));
-  update_->setGeometry(QRect(500, 170, 121, 38));
+  update_->setGeometry(QRect(500, 260, 121, 38));
   connect(update_, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
-
-  openDir_ = new QPushButton(this);
-  openDir_->setText(i18n("Open Folder"));
-  openDir_->setGeometry(QRect(500, 300, 121, 38));
-  connect(openDir_, SIGNAL(clicked()), parent_, SLOT(openLaunchersDir()));
-  syncFromDir_ = new QPushButton(this);
-  syncFromDir_->setText(i18n("Sync From\nFolder"));
-  syncFromDir_->setGeometry(QRect(500, 360, 121, 61));
 
   nameLabel_ = new QLabel(this);
   nameLabel_->setText(i18n("Name"));

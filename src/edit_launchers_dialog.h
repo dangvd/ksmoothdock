@@ -115,8 +115,6 @@ class EditLaunchersDialog : public QDialog {
   QPushButton *add_;
   QPushButton *remove_;
   QPushButton *update_;
-  QPushButton *openDir_;
-  QPushButton *syncFromDir_;
 
   QLabel *nameLabel_;
   QLineEdit *name_;
