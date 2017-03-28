@@ -27,6 +27,7 @@
 #include <KLocalizedString>
 
 #include "ksmoothdock.h"
+#include "launcher.h"
 
 namespace ksmoothdock {
 
@@ -74,7 +75,8 @@ void LauncherList::dropEvent(QDropEvent* event) {
         QString(event->mimeData()->data("text/uri-list")).trimmed();
     KDesktopFile desktopFile(QUrl(fileUrl).toLocalFile());
     const QString name = desktopFile.readName();
-    const QString command = desktopFile.entryMap("Desktop Entry")["Exec"];
+    const QString command = Launcher::filterFieldCodes(
+        desktopFile.entryMap("Desktop Entry")["Exec"]);
     const QString iconName = desktopFile.readIcon();
     parent_->addLauncher(name, command, iconName);
   } else {  // Internal drag-and-drop.

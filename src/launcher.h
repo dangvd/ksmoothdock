@@ -47,6 +47,11 @@ class Launcher : public IconBasedDockItem {
 
   static void launch(const QString& command);
 
+  // Filters out the field codes (%x) from the command.
+  // It simply removes all the arguments if they contain a field code.
+  // Returns the filtered command.
+  static QString filterFieldCodes(const QString& command);
+
  private:
   QString iconName_;
   QString command_;

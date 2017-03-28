@@ -44,7 +44,7 @@ Launcher::Launcher(KSmoothDock* parent, const QString& file,
     : IconBasedDockItem(parent, "", orientation, "", minSize, maxSize) {
   KDesktopFile desktopFile(file);
   label_ = desktopFile.readName();
-  command_ = desktopFile.entryMap("Desktop Entry")["Exec"];
+  command_ = filterFieldCodes(desktopFile.entryMap("Desktop Entry")["Exec"]);
   iconName_ = desktopFile.readIcon();
   setIconName(iconName_);
 }
@@ -92,6 +92,13 @@ void Launcher::launch(const QString& command) {
     KMessageBox::error(nullptr,
         i18n("Could not run command: ") + command);
   }
+}
+
+QString Launcher::filterFieldCodes(const QString& command) {
+  if (command.contains('%')) {
+    return command.left(command.indexOf(' '));
+  }
+  return command;
 }
 
 }  // namespace ksmoothdock
