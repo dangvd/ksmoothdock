@@ -332,9 +332,10 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 }
 
 void KSmoothDock::createMenu() {
-  menu_.addAction(i18n("Edit &Launchers"), this,
+  menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
       SLOT(showEditLaunchersDialog()));
-  menu_.addAction(i18n("&Settings"), this, SLOT(showConfigDialog()));
+  menu_.addAction(QIcon::fromTheme("configure"), i18n("&Settings"), this,
+      SLOT(showConfigDialog()));
 
   QMenu* position = menu_.addMenu(i18n("&Position"));
   positionTop_ = position->addAction(i18n("&Top"), this,
@@ -360,9 +361,8 @@ void KSmoothDock::createMenu() {
   pagerAction_->setCheckable(true);
 
   menu_.addSeparator();
-  menu_.addAction(i18n("&Reload"), this, SLOT(reload()));
-  menu_.addSeparator();
-  menu_.addAction(i18n("&About KSmoothDock"), this, SLOT(about()));
+  menu_.addAction(QIcon::fromTheme("help-about"), i18n("&About KSmoothDock"),
+      this, SLOT(about()));
   menu_.addSeparator();
   menu_.addAction(i18n("E&xit"), this, SLOT(close()));
 }
