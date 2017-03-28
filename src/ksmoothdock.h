@@ -99,6 +99,12 @@ class KSmoothDock : public QWidget {
     saveConfig();
   }
 
+  void updatePager() {
+    if (showPager_) {
+      reload();
+    }
+  }
+
   // Slot to update zoom animation.
   void updateAnimation();
 

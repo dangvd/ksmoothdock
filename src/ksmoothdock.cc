@@ -78,6 +78,8 @@ KSmoothDock::KSmoothDock()
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this, 
       SLOT(updateAnimation()));
+  connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
+      this, SLOT(updatePager()));
   createMenu();
   loadConfig();
 }
