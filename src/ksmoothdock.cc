@@ -306,7 +306,8 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
 
   Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
-    if (launcher != nullptr && !launcher->isCommandInternal()) {
+    if (launcher != nullptr && !launcher->isCommandInternal()
+        && !launcher->isCommandDBus()) {
       // Acknowledge launching the program.
       showWaitCursor();
     }

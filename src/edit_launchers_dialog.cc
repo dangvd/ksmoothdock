@@ -244,7 +244,7 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
 
 void EditLaunchersDialog::populateInternalCommands() {
   internalCommands_->addItem(i18n("Use an internal command"));  // header
-  internalCommands_->addItem(i18n("Show desktop"), "SHOW_DESKTOP");
+  internalCommands_->addItem(i18n("Show the desktop"), "SHOW_DESKTOP");
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
@@ -259,7 +259,7 @@ void EditLaunchersDialog::populateDBusCommands() {
     {"Hibernate the computer",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
       "Hibernate"},
-    {"Show the application menu",
+    {"Activate the K Menu",
       "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
   };
   dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header

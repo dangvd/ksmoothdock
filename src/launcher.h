@@ -38,6 +38,7 @@ class Launcher : public IconBasedDockItem {
   virtual ~Launcher() {}
 
   bool isCommandInternal() { return command_ == kShowDesktopCommand; }
+  bool isCommandDBus() { return command_.startsWith("qdbus"); }
 
   virtual void mousePressEvent(QMouseEvent* e) override;
 
