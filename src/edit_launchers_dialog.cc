@@ -261,8 +261,10 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
 
 void EditLaunchersDialog::populateInternalCommands() {
   internalCommands_->addItem(i18n("Use an internal command"));  // header
-  internalCommands_->addItem(i18n("Show Desktop"), QVariant::fromValue(
-      LauncherInfo("user-desktop", kShowDesktopCommand)));
+  internalCommands_->addItem(
+      getListItemIcon("user-desktop"),
+      i18n("Show Desktop"),
+      QVariant::fromValue(LauncherInfo("user-desktop", kShowDesktopCommand)));
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
@@ -298,8 +300,10 @@ void EditLaunchersDialog::populateDBusCommands() {
   };
   dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
   for (int i = 0; i < kNumItems; ++i) {
-    dbusCommands_->addItem(i18n(kItems[i][0]), QVariant::fromValue(
-        LauncherInfo(kItems[i][1], kItems[i][2])));
+    dbusCommands_->addItem(
+        getListItemIcon(kItems[i][1]),
+        i18n(kItems[i][0]),
+        QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
   }
 }
 
