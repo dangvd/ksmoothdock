@@ -99,6 +99,11 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
       this,
       SLOT(refreshSelectedLauncher(QListWidgetItem*, QListWidgetItem*)));
+  connect(
+      launchers_,
+      SIGNAL(currentRowChanged(int)),
+      this,
+      SLOT(resetInternalAndDBusCommands()));
   launchers_->setSelectionMode(QAbstractItemView::SingleSelection);
   launchers_->setDragEnabled(true);
   launchers_->setAcceptDrops(true);
