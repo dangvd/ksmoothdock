@@ -276,12 +276,9 @@ void EditLaunchersDialog::populateInternalCommands() {
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
-  static const int kNumItems = 8;
+  static const int kNumItems = 7;
   static const char* const kItems[kNumItems][3] = {
     // Name, icon, D-Bus command.
-    {"Lock Screen",
-      "system-lock-screen",
-      "qdbus org.kde.screensaver /ScreenSaver Lock"},
     {"System - Log Out",
       "system-log-out",
       "qdbus org.kde.ksmserver /KSMServer logout 1 0 3"},
