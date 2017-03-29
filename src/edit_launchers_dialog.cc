@@ -87,13 +87,13 @@ void LauncherList::dropEvent(QDropEvent* event) {
 EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
     : QDialog(parent), parent_(parent) {
   setWindowTitle(i18n("Edit Launchers"));
-  resize(1120, 610);
+  resize(1120, 570);
 
   qRegisterMetaType<LauncherInfo>();
   qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
 
   launchers_ = new LauncherList(this);
-  launchers_->setGeometry(QRect(20, 20, 441, 491));
+  launchers_->setGeometry(QRect(20, 20, 441, 451));
   connect(
       launchers_,
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
@@ -165,12 +165,12 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
 
   iconLabel_ = new QLabel(this);
   iconLabel_->setText(i18n("Icon"));
-  iconLabel_->setGeometry(QRect(660, 450, 72, 22));
+  iconLabel_->setGeometry(QRect(660, 418, 72, 22));
   icon_ = new KIconButton(this);
-  icon_->setGeometry(QRect(770, 417, 101, 91));
+  icon_->setGeometry(QRect(770, 390, 80, 80));
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(360, 550, 341, 32));
+  buttonBox_->setGeometry(QRect(360, 510, 341, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
       |QDialogButtonBox::Cancel);
