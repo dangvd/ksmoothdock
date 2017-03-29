@@ -109,6 +109,9 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   launchers_->setAcceptDrops(true);
   launchers_->setDropIndicatorShown(true);
   launchers_->setDragDropMode(QAbstractItemView::DragDrop);
+  launchers_->setToolTip(i18n("Drag and drop within the launcher list "
+      "to reorder the launchers, or drag and drop from an external source "
+      "such as K Menu to create new launchers"));
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
