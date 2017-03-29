@@ -45,9 +45,9 @@ static constexpr int kListIconSize = 48;
 
 class KSmoothDock;
 
-// User data for the items in the QListWidget.
+// User data for the items in QListWidget/QComboBox.
 struct LauncherInfo {
-  // The name(label) is already stored as item text in the QListWidget.
+  // The name(label) is already stored as item text in QListWidget/QComboBox.
   QString iconName;
   QString command;
 

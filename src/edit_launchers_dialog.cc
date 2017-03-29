@@ -237,41 +237,69 @@ void EditLaunchersDialog::browseCommand() {
 
 void EditLaunchersDialog::updateInternalCommand(int index) {
   if (index > 0) {  // Excludes header.
-    command_->setText(internalCommands_->itemData(index).toString());
+    name_->setText(internalCommands_->itemText(index));
+    LauncherInfo info =
+        internalCommands_->itemData(index).value<LauncherInfo>();
+    command_->setText(info.command);
+    icon_->setIcon(info.iconName);
+
     dbusCommands_->setCurrentIndex(0);
   }
 }
 
 void EditLaunchersDialog::updateDBusCommand(int index) {
   if (index > 0) {  // Excludes header.
-    command_->setText(dbusCommands_->itemData(index).toString());
+    name_->setText(dbusCommands_->itemText(index));
+    LauncherInfo info =
+        dbusCommands_->itemData(index).value<LauncherInfo>();
+    command_->setText(info.command);
+    icon_->setIcon(info.iconName);
+
     internalCommands_->setCurrentIndex(0);
   }
 }
 
 void EditLaunchersDialog::populateInternalCommands() {
   internalCommands_->addItem(i18n("Use an internal command"));  // header
-  internalCommands_->addItem(i18n("Show the desktop"), kShowDesktopCommand);
+  internalCommands_->addItem(i18n("Show Desktop"), QVariant::fromValue(
+      LauncherInfo("user-desktop", kShowDesktopCommand)));
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
-  static const int kNumItems = 4;
-  static const char* const kItems[kNumItems][2] = {
-    // Description, D-Bus command.
-    {"Lock the screen",
+  static const int kNumItems = 8;
+  static const char* const kItems[kNumItems][3] = {
+    // Name, icon, D-Bus command.
+    {"Lock Screen",
+      "system-lock-screen",
       "qdbus org.kde.screensaver /ScreenSaver Lock"},
-    {"Suspend the computer",
+    {"System - Log Out",
+      "system-log-out",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 0 3"},
+    {"System - Switch User",
+      "system-switch-user",
+      "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog"},
+    {"System - Suspend",
+      "system-suspend",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
       "Suspend"},
-    {"Hibernate the computer",
+    {"System - Hibernate",
+      "system-suspend-hibernate",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
       "Hibernate"},
-    {"Activate the K Menu",
+    {"System - Reboot",
+      "system-reboot",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 1 3"},
+    {"System - Shut Down",
+      "system-shutdown",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 2 3"},
+    {"Activate K Menu",
+      "start-here-kde",
       "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
   };
   dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
   for (int i = 0; i < kNumItems; ++i) {
-    dbusCommands_->addItem(i18n(kItems[i][0]), kItems[i][1]);
+    dbusCommands_->addItem(i18n(kItems[i][0]), QVariant::fromValue(
+        LauncherInfo(kItems[i][1], kItems[i][2])));
   }
 }
 
