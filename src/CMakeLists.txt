@@ -35,3 +35,4 @@ target_link_libraries(ksmoothdock KF5::WidgetsAddons)
 target_link_libraries(ksmoothdock KF5::WindowSystem)
 
 install(TARGETS ksmoothdock RUNTIME DESTINATION bin)
+install(FILES ksd.ksmoothdock.desktop DESTINATION /usr/share/applications)

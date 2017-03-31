@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=KSmoothDock
+GenericName=Desktop Panel
+Icon=user-desktop
+Exec=ksmoothdock
+Terminal=false
+Categories=Qt;KDE;Utility;
