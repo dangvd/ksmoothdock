@@ -13,6 +13,11 @@ $ make
 To launch the program:
 $ ./ksmoothdock
 
-To install and launch, run:
+To install, run:
 $ sudo make install
+
+After the installation, KSmoothDock can be launched from the Application Menu (Utilities category), or from the command line:
 $ ksmoothdock
+
+To uninstall, run:
+$ sudo make uninstall
