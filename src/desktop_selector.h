@@ -52,6 +52,9 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
  private:
   static void setWallpaper(const QString& wallpaper);
 
+  // Sets the icon but scales the pixmap to the screen's width/height ratio.
+  void setIconScaled(const QPixmap& icon);
+
   bool isCurrentDesktop() const {
     return KWindowSystem::currentDesktop() == desktop_;
   }
@@ -75,6 +78,9 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   // Context (right-click) menu.
   QMenu menu_;
+
+  int desktopWidth_;
+  int desktopHeight_;
 };
 
 }  // namespace ksmoothdock

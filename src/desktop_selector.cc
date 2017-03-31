@@ -18,8 +18,10 @@
 
 #include "desktop_selector.h"
 
+#include <QApplication>
 #include <QDBusInterface>
 #include <QDBusMessage>
+#include <QDesktopWidget>
 #include <QDir>
 #include <QFileDialog>
 #include <QPainter>
@@ -40,7 +42,9 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
           i18n("Desktop ") + QString::number(desktop),
           orientation, "" /* no icon yet */, minSize, maxSize),
       desktop_(desktop),
-      config_(config) {
+      config_(config),
+      desktopWidth_(QApplication::desktop()->screenGeometry().width()),
+      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
   if (wallpaper_.isEmpty() && desktop_ == 1) {
@@ -53,7 +57,7 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
         "showPagerInfo");
   }
   if (isWallpaperOk()) {
-    setIcon(QPixmap(wallpaper_));
+    setIconScaled(QPixmap(wallpaper_));
   } else {
     setIconName("user-desktop");
   }
@@ -106,7 +110,7 @@ void DesktopSelector::changeWallpaper() {
   }
 
   wallpaper_ = wallpaper;
-  setIcon(QPixmap(wallpaper_));
+  setIconScaled(QPixmap(wallpaper_));
   parent_->refresh();
 
   if (isCurrentDesktop()) {
@@ -155,6 +159,15 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
         Q_NULLPTR,
         i18n("Failed to update wallpaper. Please make sure Plasma desktop "
             "widgets are unlocked in order to set wallpaper."));
+  }
+}
+
+void DesktopSelector::setIconScaled(const QPixmap& icon) {
+  if (icon.width() * desktopHeight_ != icon.height() * desktopWidth_) {
+    QPixmap scaledIcon = icon.scaled(desktopWidth_, desktopHeight_);
+    setIcon(scaledIcon);
+  } else {
+    setIcon(icon);
   }
 }
 
