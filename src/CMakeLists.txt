@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 
 project(ksmoothdock)
 
@@ -6,38 +6,30 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Werror=return-type")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5DBus REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(KF5Config REQUIRED)
-find_package(KF5CoreAddons REQUIRED)
-find_package(KF5DBusAddons REQUIRED)
-find_package(KF5I18n REQUIRED)
-find_package(KF5IconThemes REQUIRED)
-find_package(KF5XmlGui REQUIRED)
-find_package(KF5WidgetsAddons REQUIRED)
-find_package(KF5WindowSystem REQUIRED)
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-add_executable(ksmoothdock main.cc icon_based_dock_item.cc ksmoothdock.cc
-    launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
-    desktop_selector.cc edit_launchers_dialog.cc)
+find_package(Qt5 REQUIRED COMPONENTS DBus Gui Test Widgets)
+find_package(KF5 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
+    IconThemes XmlGui WidgetsAddons WindowSystem)
 
-target_link_libraries(ksmoothdock Qt5::DBus)
-target_link_libraries(ksmoothdock Qt5::Gui)
-target_link_libraries(ksmoothdock Qt5::Widgets)
-target_link_libraries(ksmoothdock KF5::ConfigCore KF5::ConfigGui)
-target_link_libraries(ksmoothdock KF5::CoreAddons)
-target_link_libraries(ksmoothdock KF5::DBusAddons)
-target_link_libraries(ksmoothdock KF5::I18n)
-target_link_libraries(ksmoothdock KF5::IconThemes)
-target_link_libraries(ksmoothdock KF5::XmlGui)
-target_link_libraries(ksmoothdock KF5::WidgetsAddons)
-target_link_libraries(ksmoothdock KF5::WindowSystem)
+set(SRCS icon_based_dock_item.cc ksmoothdock.cc
+  launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
+  desktop_selector.cc edit_launchers_dialog.cc)
+add_executable(ksmoothdock main.cc ${SRCS})
+
+set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
+    KF5::CoreAddons KF5::DBusAddons KF5::I18n KF5::IconThemes KF5::XmlGui
+    KF5::WidgetsAddons KF5::WindowSystem)
+target_link_libraries(ksmoothdock ${LIBS})
+
+# Install
 
 install(TARGETS ksmoothdock RUNTIME DESTINATION bin)
 install(FILES ksd.ksmoothdock.desktop DESTINATION /usr/share/applications)
 
 # Uninstall
+
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -45,3 +37,10 @@ configure_file(
 
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND}
     -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+# Test
+
+enable_testing()
+add_executable(config_dialog_test config_dialog_test.cc ${SRCS})
+target_link_libraries(config_dialog_test Qt5::Test ${LIBS})
+add_test(config_dialog_test config_dialog_test)
