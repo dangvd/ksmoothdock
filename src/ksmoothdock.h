@@ -47,12 +47,17 @@ class KSmoothDock : public QWidget {
   Q_OBJECT
 
  public:
+  KSmoothDock(const QString& configPath, const QString& launchersPath);
   KSmoothDock();
+
   virtual ~KSmoothDock();
 
   void init();
 
   virtual void resize(int w, int h);
+
+  // For testing only.
+  ConfigDialog* configDialog() { return &configDialog_; }
 
  public slots:
   // Opens launchers directory in the file manager.
@@ -209,8 +214,6 @@ class KSmoothDock : public QWidget {
   // as desktop files.
   QString launchersPath_;
 
-  // Relative path to the home dir.
-  QString configRelativePath_;
   QString configPath_;
   KConfig config_;
 

@@ -54,14 +54,14 @@ const float KSmoothDock::kBackgroundAlpha = 0.42;
 const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
 const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
-KSmoothDock::KSmoothDock()
+KSmoothDock::KSmoothDock(const QString& configPath,
+                         const QString& launchersPath)
     : QWidget(),
       autoHide_(false),
       showPager_(false),
       launchersRelativePath_(".ksmoothdock/launchers"),
       launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
-      configRelativePath_(".ksmoothdock/ksmoothdockrc"),
-      configPath_(QDir::homePath() + "/" + configRelativePath_),
+      configPath_(configPath),
       config_(configPath_, KConfig::SimpleConfig),
       aboutDialog_(KAboutData::applicationData(), this),
       configDialog_(this),
@@ -83,6 +83,10 @@ KSmoothDock::KSmoothDock()
   createMenu();
   loadConfig();
 }
+
+KSmoothDock::KSmoothDock()
+    : KSmoothDock(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
+                  QDir::homePath() + "/.ksmoothdock/launchers") {}
 
 KSmoothDock::~KSmoothDock() {
   saveConfig();
@@ -373,7 +377,7 @@ void KSmoothDock::loadConfig() {
   KConfigGroup group(&config_, "General");
 
   PanelPosition position;
-  const bool firstRun = !QDir::home().exists(configRelativePath_);
+  const bool firstRun = !QFile(configPath_).exists();
   if (firstRun) {
     WelcomeDialog welcome;
     welcome.exec();

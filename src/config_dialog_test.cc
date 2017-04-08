@@ -18,17 +18,61 @@
 
 #include "config_dialog.h"
 
+#include <memory>
+
+#include <QTemporaryFile>
 #include <QtTest>
+
+#include <KConfig>
+#include <KConfigGroup>
+
+#include "ksmoothdock.h"
+
+namespace ksmoothdock {
 
 class ConfigDialogTest: public QObject {
   Q_OBJECT
 
  private slots:
+  void init() {
+    configFile_.reset(new QTemporaryFile);
+    QVERIFY(configFile_->open());
+
+    dock_.reset(new KSmoothDock(configFile_->fileName(),
+                                "" /* launchersPath */));
+    dialog_ = dock_->configDialog();
+    dialog_->minSize_->setValue(48);
+    dialog_->maxSize_->setValue(128);
+    dock_->updateConfig();
+
+    dialog_->show();
+  }
+
+  // Tests Cancel button/logic.
   void cancel();
+
+ private:
+  ConfigDialog* dialog_;
+  std::unique_ptr<KSmoothDock> dock_;
+  std::unique_ptr<QTemporaryFile> configFile_;
 };
 
 void ConfigDialogTest::cancel() {
+  dialog_->minSize_->setValue(40);
+  dialog_->maxSize_->setValue(80);
+
+  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Cancel),
+                    Qt::LeftButton);
+
+  QVERIFY(!dialog_->isVisible());
+  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
+  KConfigGroup group(&config, "General");
+  // Tests that config values haven't changed.
+  QCOMPARE(group.readEntry("minimumIconSize", 0), 48);
+  QCOMPARE(group.readEntry("maximumIconSize", 0), 128);
 }
 
-QTEST_MAIN(ConfigDialogTest)
+}  // namespace ksmoothdock
+
+QTEST_MAIN(ksmoothdock::ConfigDialogTest)
 #include "config_dialog_test.moc"
