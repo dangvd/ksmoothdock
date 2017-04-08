@@ -41,6 +41,11 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND}
 # Test
 
 enable_testing()
+
 add_executable(config_dialog_test config_dialog_test.cc ${SRCS})
 target_link_libraries(config_dialog_test Qt5::Test ${LIBS})
 add_test(config_dialog_test config_dialog_test)
+
+add_executable(desktop_selector_test desktop_selector_test.cc ${SRCS})
+target_link_libraries(desktop_selector_test Qt5::Test ${LIBS})
+add_test(desktop_selector_test desktop_selector_test)

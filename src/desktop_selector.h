@@ -38,11 +38,16 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   DesktopSelector(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
       int maxSize, int desktop, KConfig *config);
 
+  void init();
+
   virtual ~DesktopSelector() {}
 
   virtual void draw(QPainter* painter) const override;
 
   virtual void mousePressEvent(QMouseEvent* e) override;
+
+  // Sets the icon but scales the pixmap to the screen's width/height ratio.
+  void setIconScaled(const QPixmap& icon);
 
  public slots:
    void changeWallpaper();
@@ -51,9 +56,6 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
  private:
   static void setWallpaper(const QString& wallpaper);
-
-  // Sets the icon but scales the pixmap to the screen's width/height ratio.
-  void setIconScaled(const QPixmap& icon);
 
   bool isCurrentDesktop() const {
     return KWindowSystem::currentDesktop() == desktop_;

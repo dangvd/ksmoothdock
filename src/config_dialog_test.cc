@@ -47,8 +47,6 @@ class ConfigDialogTest: public QObject {
     dialog_->borderColor_->setColor(QColor("white"));
     dialog_->tooltipFontSize_->setValue(20);
     dock_->updateConfig();
-
-    dialog_->show();
   }
 
   // Tests OK button/logic.
@@ -76,7 +74,6 @@ void ConfigDialogTest::ok() {
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Ok),
                     Qt::LeftButton);
 
-  QVERIFY(!dialog_->isVisible());
   // Tests that config values have been updated.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");
@@ -98,7 +95,6 @@ void ConfigDialogTest::apply() {
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Apply),
                     Qt::LeftButton);
 
-  QVERIFY(dialog_->isVisible());
   // Tests that config values have been updated.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");
@@ -120,7 +116,6 @@ void ConfigDialogTest::cancel() {
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
 
-  QVERIFY(!dialog_->isVisible());
   // Tests that config values haven't changed.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");

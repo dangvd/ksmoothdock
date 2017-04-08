@@ -51,6 +51,15 @@ void IconBasedDockItem::setIconName(const QString& iconName) {
   }
 }
 
+const QPixmap& IconBasedDockItem::getIcon(int size) const {
+  if (size < minSize_) {
+    size = minSize_;
+  } else if (size > maxSize_) {
+    size = maxSize_;
+  }
+  return icons_[size - minSize_];
+}
+
 void IconBasedDockItem::draw(QPainter* painter) const {
   painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
 }
@@ -87,15 +96,6 @@ void IconBasedDockItem::generateIcons(const QPixmap& icon) {
             ? image.scaledToHeight(size, Qt::SmoothTransformation)
             : image.scaledToWidth(size, Qt::SmoothTransformation));
   }
-}
-
-const QPixmap& IconBasedDockItem::getIcon(int size) const {
-  if (size < minSize_) {
-    size = minSize_;
-  } else if (size > maxSize_) {
-    size = maxSize_;
-  }
-  return icons_[size - minSize_];
 }
 
 }  // namespace ksmoothdock

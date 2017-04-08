@@ -44,6 +44,7 @@ class IconBasedDockItem : public DockItem {
   // Sets the icon on the fly.
   void setIcon(const QPixmap& icon);
   void setIconName(const QString& iconName);
+  const QPixmap& getIcon(int size) const;
 
   virtual void draw(QPainter* painter) const override;
 
@@ -66,8 +67,6 @@ class IconBasedDockItem : public DockItem {
   static const int kIconLoadSize = 128;
 
   void generateIcons(const QPixmap& icon);
-
-  const QPixmap& getIcon(int size) const;
 
   friend class KSmoothDock;
 };

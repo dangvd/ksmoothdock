@@ -68,7 +68,13 @@ KSmoothDock::KSmoothDock(const QString& configPath,
       editLaunchersDialog_(this),
       isEntering_(false),
       isLeaving_(false),
-      isAnimationActive_(false) {
+      isAnimationActive_(false) {}
+
+KSmoothDock::KSmoothDock()
+    : KSmoothDock(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
+                  QDir::homePath() + "/.ksmoothdock/launchers") {}
+
+void KSmoothDock::init() {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
@@ -76,28 +82,22 @@ KSmoothDock::KSmoothDock(const QString& configPath,
   desktopWidth_ = QApplication::desktop()->screenGeometry().width();
   desktopHeight_ = QApplication::desktop()->screenGeometry().height();
   animationTimer_.reset(new QTimer(this));
-  connect(animationTimer_.get(), SIGNAL(timeout()), this, 
+  connect(animationTimer_.get(), SIGNAL(timeout()), this,
       SLOT(updateAnimation()));
   connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
       this, SLOT(updatePager()));
   createMenu();
   loadConfig();
-}
 
-KSmoothDock::KSmoothDock()
-    : KSmoothDock(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
-                  QDir::homePath() + "/.ksmoothdock/launchers") {}
-
-KSmoothDock::~KSmoothDock() {
-  saveConfig();
-}
-
-void KSmoothDock::init() {
   initLaunchers();
   initPager();
   initLayoutVars();
   updateLayout();
   setStrut();
+}
+
+KSmoothDock::~KSmoothDock() {
+  saveConfig();
 }
 
 void KSmoothDock::resize(int w, int h) {
@@ -486,8 +486,10 @@ void KSmoothDock::saveLaunchers() {
 void KSmoothDock::initPager() {
   if (showPager_) {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
-      items_.push_back(std::unique_ptr<DockItem>(new DesktopSelector(
-          this, orientation_, minSize_, maxSize_, (i + 1), &config_)));
+      auto* item = new DesktopSelector(
+          this, orientation_, minSize_, maxSize_, (i + 1), &config_);
+      items_.push_back(std::unique_ptr<DockItem>(item));
+      item->init();
     }
   }
 }

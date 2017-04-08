@@ -44,7 +44,9 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       desktop_(desktop),
       config_(config),
       desktopWidth_(QApplication::desktop()->screenGeometry().width()),
-      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {
+      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
+
+void DesktopSelector::init() {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
   if (wallpaper_.isEmpty() && desktop_ == 1) {
@@ -90,6 +92,15 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
     }
   } else if (e->button() == Qt::RightButton) {
     menu_.popup(e->globalPos());
+  }
+}
+
+void DesktopSelector::setIconScaled(const QPixmap& icon) {
+  if (icon.width() * desktopHeight_ != icon.height() * desktopWidth_) {
+    QPixmap scaledIcon = icon.scaled(desktopWidth_, desktopHeight_);
+    setIcon(scaledIcon);
+  } else {
+    setIcon(icon);
   }
 }
 
@@ -159,15 +170,6 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
         Q_NULLPTR,
         i18n("Failed to update wallpaper. Please make sure Plasma desktop "
             "widgets are unlocked in order to set wallpaper."));
-  }
-}
-
-void DesktopSelector::setIconScaled(const QPixmap& icon) {
-  if (icon.width() * desktopHeight_ != icon.height() * desktopWidth_) {
-    QPixmap scaledIcon = icon.scaled(desktopWidth_, desktopHeight_);
-    setIcon(scaledIcon);
-  } else {
-    setIcon(icon);
   }
 }
 

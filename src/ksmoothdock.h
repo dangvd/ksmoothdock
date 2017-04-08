@@ -50,9 +50,9 @@ class KSmoothDock : public QWidget {
   KSmoothDock(const QString& configPath, const QString& launchersPath);
   KSmoothDock();
 
-  virtual ~KSmoothDock();
-
   void init();
+
+  virtual ~KSmoothDock();
 
   virtual void resize(int w, int h);
 
