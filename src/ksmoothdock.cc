@@ -54,15 +54,14 @@ const float KSmoothDock::kBackgroundAlpha = 0.42;
 const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
 const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
-KSmoothDock::KSmoothDock(const QString& configPath,
-                         const QString& launchersPath)
+KSmoothDock::KSmoothDock(const QString& configFile,
+                         const QString& launchersDir)
     : QWidget(),
       autoHide_(false),
       showPager_(false),
-      launchersRelativePath_(".ksmoothdock/launchers"),
-      launchersPath_(QDir::homePath() + "/" + launchersRelativePath_),
-      configPath_(configPath),
-      config_(configPath_, KConfig::SimpleConfig),
+      launchersDir_(launchersDir),
+      configFile_(configFile),
+      config_(configFile, KConfig::SimpleConfig),
       aboutDialog_(KAboutData::applicationData(), this),
       configDialog_(this),
       editLaunchersDialog_(this),
@@ -89,11 +88,7 @@ void KSmoothDock::init() {
   createMenu();
   loadConfig();
 
-  initLaunchers();
-  initPager();
-  initLayoutVars();
-  updateLayout();
-  setStrut();
+  initUi();
 }
 
 KSmoothDock::~KSmoothDock() {
@@ -124,12 +119,12 @@ void KSmoothDock::resize(int w, int h) {
 }
 
 void KSmoothDock::openLaunchersDir() {
-  Launcher::launch("dolphin " + launchersPath_);
+  Launcher::launch("dolphin " + launchersDir_);
 }
 
 void KSmoothDock::reload() {
   items_.clear();
-  init();
+  initUi();
   repaint();
 }
 
@@ -337,6 +332,14 @@ void KSmoothDock::leaveEvent(QEvent* e) {
   tooltip_.hide();
 }
 
+void KSmoothDock::initUi() {
+  initLaunchers();
+  initPager();
+  initLayoutVars();
+  updateLayout();
+  setStrut();
+}
+
 void KSmoothDock::createMenu() {
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
       SLOT(showEditLaunchersDialog()));
@@ -377,7 +380,7 @@ void KSmoothDock::loadConfig() {
   KConfigGroup group(&config_, "General");
 
   PanelPosition position;
-  const bool firstRun = !QFile(configPath_).exists();
+  const bool firstRun = !QFile(configFile_).exists();
   if (firstRun) {
     WelcomeDialog welcome;
     welcome.exec();
@@ -424,22 +427,22 @@ void KSmoothDock::saveConfig() {
 void KSmoothDock::initLaunchers() {
   if (!loadLaunchers()) {
     createDefaultLaunchers();
-    QDir::home().mkpath(launchersRelativePath_);
+    QDir::root().mkpath(launchersDir_);
     saveLaunchers();
   }
 }
 
 bool KSmoothDock::loadLaunchers() {
-  if (!QDir::home().exists(launchersRelativePath_)) {
+  if (!QDir::root().exists(launchersDir_)) {
     return false;
   }
-  QDir launchersDir(launchersPath_);
+  QDir launchersDir(launchersDir_);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   if (files.isEmpty()) {
     return false;
   }
   for (int i = 0; i < files.size(); ++i) {
-    const QString& file = launchersPath_ + "/" + files.at(i);
+    const QString& file = launchersDir_ + "/" + files.at(i);
     items_.push_back(std::unique_ptr<DockItem>(
         new Launcher(this, file, orientation_, minSize_, maxSize_)));
   }
@@ -466,7 +469,7 @@ void KSmoothDock::createDefaultLaunchers() {
 }
 
 void KSmoothDock::saveLaunchers() {
-  QDir launchersDir(launchersPath_);
+  QDir launchersDir(launchersDir_);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   for (int i = 0; i < files.size(); ++i) {
     launchersDir.remove(files.at(i));
@@ -476,7 +479,7 @@ void KSmoothDock::saveLaunchers() {
     Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
     if (launcher != nullptr) {
       launcher->saveToFile(QString("%1/%2 - %3.desktop")
-          .arg(launchersPath_)
+          .arg(launchersDir_)
           .arg(i + 1, 2, 10, QChar('0'))
           .arg(items_[i]->label_));
     }

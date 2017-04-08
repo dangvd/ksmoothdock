@@ -45,10 +45,14 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND}
 
 enable_testing()
 
-add_executable(config_dialog_test config_dialog_test.cc ${SRCS})
+add_executable(config_dialog_test config_dialog_test.cc)
 target_link_libraries(config_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(config_dialog_test config_dialog_test)
 
-add_executable(desktop_selector_test desktop_selector_test.cc ${SRCS})
+add_executable(desktop_selector_test desktop_selector_test.cc)
 target_link_libraries(desktop_selector_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(desktop_selector_test desktop_selector_test)
+
+add_executable(edit_launchers_dialog_test edit_launchers_dialog_test.cc)
+target_link_libraries(edit_launchers_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(edit_launchers_dialog_test edit_launchers_dialog_test)

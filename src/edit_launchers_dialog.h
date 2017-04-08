@@ -134,6 +134,7 @@ class EditLaunchersDialog : public QDialog {
   QDialogButtonBox *buttonBox_;
 
   friend class KSmoothDock;
+  friend class EditLaunchersDialogTest;
 };
 
 }  // namespace ksmoothdock

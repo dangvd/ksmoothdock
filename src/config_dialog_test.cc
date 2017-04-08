@@ -20,6 +20,7 @@
 
 #include <memory>
 
+#include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtTest>
 
@@ -37,9 +38,11 @@ class ConfigDialogTest: public QObject {
   void init() {
     configFile_.reset(new QTemporaryFile);
     QVERIFY(configFile_->open());
+    launchersDir_.reset(new QTemporaryDir);
+    QVERIFY(launchersDir_->isValid());
 
     dock_.reset(new KSmoothDock(configFile_->fileName(),
-                                "" /* launchersPath */));
+                                launchersDir_->path()));
     dialog_ = dock_->configDialog();
     dialog_->minSize_->setValue(48);
     dialog_->maxSize_->setValue(128);
@@ -62,6 +65,7 @@ class ConfigDialogTest: public QObject {
   ConfigDialog* dialog_;
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
+  std::unique_ptr<QTemporaryDir> launchersDir_;
 };
 
 void ConfigDialogTest::ok() {
