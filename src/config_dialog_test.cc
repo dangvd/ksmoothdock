@@ -43,10 +43,19 @@ class ConfigDialogTest: public QObject {
     dialog_ = dock_->configDialog();
     dialog_->minSize_->setValue(48);
     dialog_->maxSize_->setValue(128);
+    dialog_->backgroundColor_->setColor(QColor("white"));
+    dialog_->borderColor_->setColor(QColor("white"));
+    dialog_->tooltipFontSize_->setValue(20);
     dock_->updateConfig();
 
     dialog_->show();
   }
+
+  // Tests OK button/logic.
+  void ok();
+
+  // Tests Apply button/logic.
+  void apply();
 
   // Tests Cancel button/logic.
   void cancel();
@@ -57,9 +66,56 @@ class ConfigDialogTest: public QObject {
   std::unique_ptr<QTemporaryFile> configFile_;
 };
 
+void ConfigDialogTest::ok() {
+  dialog_->minSize_->setValue(40);
+  dialog_->maxSize_->setValue(80);
+  dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->borderColor_->setColor(QColor("blue"));
+  dialog_->tooltipFontSize_->setValue(24);
+
+  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Ok),
+                    Qt::LeftButton);
+
+  QVERIFY(!dialog_->isVisible());
+  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
+  KConfigGroup group(&config, "General");
+  // Tests that config values have been updated.
+  QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
+  QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
+  QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
+           QColor("green").rgb());
+  QCOMPARE(group.readEntry("borderColor", QColor()), QColor("blue"));
+  QCOMPARE(group.readEntry("tooltipFontSize", 0), 24);
+}
+
+void ConfigDialogTest::apply() {
+  dialog_->minSize_->setValue(40);
+  dialog_->maxSize_->setValue(80);
+  dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->borderColor_->setColor(QColor("blue"));
+  dialog_->tooltipFontSize_->setValue(24);
+
+  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Apply),
+                    Qt::LeftButton);
+
+  QVERIFY(dialog_->isVisible());
+  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
+  KConfigGroup group(&config, "General");
+  // Tests that config values have been updated.
+  QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
+  QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
+  QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
+           QColor("green").rgb());
+  QCOMPARE(group.readEntry("borderColor", QColor()), QColor("blue"));
+  QCOMPARE(group.readEntry("tooltipFontSize", 0), 24);
+}
+
 void ConfigDialogTest::cancel() {
   dialog_->minSize_->setValue(40);
   dialog_->maxSize_->setValue(80);
+  dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->borderColor_->setColor(QColor("blue"));
+  dialog_->tooltipFontSize_->setValue(24);
 
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
@@ -70,6 +126,10 @@ void ConfigDialogTest::cancel() {
   // Tests that config values haven't changed.
   QCOMPARE(group.readEntry("minimumIconSize", 0), 48);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 128);
+  QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
+           QColor("white").rgb());
+  QCOMPARE(group.readEntry("borderColor", QColor()), QColor("white"));
+  QCOMPARE(group.readEntry("tooltipFontSize", 0), 20);
 }
 
 }  // namespace ksmoothdock
