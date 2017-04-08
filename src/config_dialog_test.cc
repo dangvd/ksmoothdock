@@ -77,9 +77,9 @@ void ConfigDialogTest::ok() {
                     Qt::LeftButton);
 
   QVERIFY(!dialog_->isVisible());
+  // Tests that config values have been updated.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");
-  // Tests that config values have been updated.
   QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
@@ -99,9 +99,9 @@ void ConfigDialogTest::apply() {
                     Qt::LeftButton);
 
   QVERIFY(dialog_->isVisible());
+  // Tests that config values have been updated.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");
-  // Tests that config values have been updated.
   QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
@@ -121,9 +121,9 @@ void ConfigDialogTest::cancel() {
                     Qt::LeftButton);
 
   QVERIFY(!dialog_->isVisible());
+  // Tests that config values haven't changed.
   KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
   KConfigGroup group(&config, "General");
-  // Tests that config values haven't changed.
   QCOMPARE(group.readEntry("minimumIconSize", 0), 48);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 128);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
