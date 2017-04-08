@@ -16,12 +16,15 @@ find_package(KF5 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
 set(SRCS icon_based_dock_item.cc ksmoothdock.cc
   launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
   desktop_selector.cc edit_launchers_dialog.cc)
-add_executable(ksmoothdock main.cc ${SRCS})
+add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
     KF5::CoreAddons KF5::DBusAddons KF5::I18n KF5::IconThemes KF5::XmlGui
     KF5::WidgetsAddons KF5::WindowSystem)
-target_link_libraries(ksmoothdock ${LIBS})
+target_link_libraries(ksmoothdock_lib ${LIBS})
+
+add_executable(ksmoothdock main.cc)
+target_link_libraries(ksmoothdock ksmoothdock_lib ${LIBS})
 
 # Install
 
@@ -43,9 +46,9 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND}
 enable_testing()
 
 add_executable(config_dialog_test config_dialog_test.cc ${SRCS})
-target_link_libraries(config_dialog_test Qt5::Test ${LIBS})
+target_link_libraries(config_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(config_dialog_test config_dialog_test)
 
 add_executable(desktop_selector_test desktop_selector_test.cc ${SRCS})
-target_link_libraries(desktop_selector_test Qt5::Test ${LIBS})
+target_link_libraries(desktop_selector_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(desktop_selector_test desktop_selector_test)
