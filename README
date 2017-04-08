@@ -21,3 +21,6 @@ $ ksmoothdock
 
 To uninstall, run:
 $ sudo make uninstall
+
+To execute the automated tests, run:
+$ make test
