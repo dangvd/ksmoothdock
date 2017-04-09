@@ -38,7 +38,7 @@ class Tooltip : public QWidget {
   void setFontBold(bool val);
   void setFontSize(int size);
   void setFontColor(const QColor& color);
-  void setBackgroundColor(const QColor& color); 
+  void setBackgroundColor(const QColor& color);
 
   void updateLayout();
 
@@ -46,6 +46,9 @@ class Tooltip : public QWidget {
   virtual void paintEvent(QPaintEvent* e) override;
 
  private:
+  // Additional padding around the text e.g. to avoid clipping.
+  static const int kPadding = 10;
+
   QString text_;
   QFont font_;
   QColor fontColor_;

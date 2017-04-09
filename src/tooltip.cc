@@ -26,6 +26,8 @@
 
 namespace ksmoothdock {
 
+const int Tooltip::kPadding;
+
 Tooltip::Tooltip() : QWidget(), font_(QApplication::font()) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
@@ -64,8 +66,8 @@ void Tooltip::setText(const QString& text) {
 
 void Tooltip::updateLayout() {
     QFontMetrics metrics(font_);
-    int w = metrics.width(text_) + 6; // 6 pixels more
-    int h = metrics.height() + 6; // 6 pixels more
+    int w = metrics.width(text_) + 2 * kPadding;
+    int h = metrics.height() + 2 * kPadding;
 
     resize(w,h);
     repaint();
@@ -80,14 +82,14 @@ void Tooltip::paintEvent(QPaintEvent* e) {
 
   for (int i = -2; i <= 2; ++i) {
     for (int j = -2; j <= 2; ++j) {
-      painter.drawText(3 + i, 3 + fontSize_ + j, text_);
+      painter.drawText(kPadding + i, kPadding + fontSize_ + j, text_);
     }
   }
 
   // Now draws the normal text.
   painter.setPen(fontColor_);
   painter.setFont(font_);
-  painter.drawText(3, 3 + fontSize_, text_);
+  painter.drawText(kPadding, kPadding + fontSize_, text_);
 }
 
 }  // namespace ksmoothdock
