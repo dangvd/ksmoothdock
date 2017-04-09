@@ -20,6 +20,8 @@
 
 #include <memory>
 
+#include <QDir>
+#include <QStringList>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QtTest>
@@ -42,7 +44,12 @@ class EditLaunchersDialogTest: public QObject {
     QVERIFY(launchersDir_->isValid());
     dock_.reset(new KSmoothDock(configFile_->fileName(),
                                 launchersDir_->path()));
+    dock_->init();
+
     dialog_ = dock_->editLaunchersDialog();
+    dialog_->addLauncher("Home Folder", "dolphin", "system-file-manager");
+    dialog_->addLauncher("Terminal", "konsole", "utilities-terminal");
+    dock_->updateLauncherConfig();
   }
 
   // Tests OK button/logic.
@@ -62,18 +69,32 @@ class EditLaunchersDialogTest: public QObject {
 };
 
 void EditLaunchersDialogTest::ok() {
+  dialog_->addLauncher("Text Editor", "kate", "kate");
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Ok),
                     Qt::LeftButton);
+  // Tests that launchers dir has been updated.
+  QDir launchersDir(launchersDir_->path());
+  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  QCOMPARE(files.size(), 3);
 }
 
 void EditLaunchersDialogTest::apply() {
+  dialog_->addLauncher("Text Editor", "kate", "kate");
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Apply),
                     Qt::LeftButton);
+  QDir launchersDir(launchersDir_->path());
+  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  QCOMPARE(files.size(), 3);
 }
 
 void EditLaunchersDialogTest::cancel() {
+  dialog_->addLauncher("Text Editor", "kate", "kate");
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
+  // Tests that launchers dir hasn't changed.
+  QDir launchersDir(launchersDir_->path());
+  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  QCOMPARE(files.size(), 2);
 }
 
 }  // namespace ksmoothdock

@@ -40,9 +40,10 @@ class ConfigDialogTest: public QObject {
     QVERIFY(configFile_->open());
     launchersDir_.reset(new QTemporaryDir);
     QVERIFY(launchersDir_->isValid());
-
     dock_.reset(new KSmoothDock(configFile_->fileName(),
                                 launchersDir_->path()));
+    dock_->init();
+
     dialog_ = dock_->configDialog();
     dialog_->minSize_->setValue(48);
     dialog_->maxSize_->setValue(128);
