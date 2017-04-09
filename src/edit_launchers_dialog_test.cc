@@ -82,6 +82,7 @@ void EditLaunchersDialogTest::apply() {
   dialog_->addLauncher("Text Editor", "kate", "kate");
   QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Apply),
                     Qt::LeftButton);
+  // Tests that launchers dir has been updated.
   QDir launchersDir(launchersDir_->path());
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   QCOMPARE(files.size(), 3);
