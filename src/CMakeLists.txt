@@ -58,6 +58,10 @@ target_link_libraries(edit_launchers_dialog_test Qt5::Test ksmoothdock_lib
     ${LIBS})
 add_test(edit_launchers_dialog_test edit_launchers_dialog_test)
 
+add_executable(ksmoothdock_test ksmoothdock_test.cc)
+target_link_libraries(ksmoothdock_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(ksmoothdock_test ksmoothdock_test)
+
 add_executable(launcher_test launcher_test.cc)
 target_link_libraries(launcher_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(launcher_test launcher_test)

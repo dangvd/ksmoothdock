@@ -450,8 +450,8 @@ bool KSmoothDock::loadLaunchers() {
 }
 
 void KSmoothDock::createDefaultLaunchers() {
-  const int kNumItems = 7;
-  const char* const kItems[kNumItems][3] = {
+  static const int kNumItems = 7;
+  static const char* const kItems[kNumItems][3] = {
     // Name, icon name, command.
     {"Home Folder", "system-file-manager", "dolphin"},
     {"Show Desktop", "user-desktop", kShowDesktopCommand},
