@@ -248,6 +248,8 @@ class KSmoothDock : public QWidget {
   int backgroundHeight_;
   int startBackgroundHeight_;
   int endBackgroundHeight_;
+
+  friend class KSmoothDockTest;
 };
 
 }  // namespace ksmoothdock

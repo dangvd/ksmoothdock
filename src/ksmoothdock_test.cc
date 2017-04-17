@@ -40,10 +40,28 @@ class KSmoothDockTest: public QObject {
     dock_->init();
   }
 
-  // Test creating default launchers.
+  // Tests creating default launchers.
   void createDefaultLaunchers();
 
+  // Tests setting position.
+  void setPosition();
+
  private:
+  void verifyPosition(PanelPosition position) {
+    QCOMPARE(dock_->position_, position);
+    QCOMPARE(dock_->orientation_,
+             (position == PanelPosition::Bottom
+                  || position == PanelPosition::Top)
+             ? Qt::Horizontal : Qt::Vertical);
+    QCOMPARE(dock_->positionTop_->isChecked(), position == PanelPosition::Top);
+    QCOMPARE(dock_->positionBottom_->isChecked(),
+             position == PanelPosition::Bottom);
+    QCOMPARE(dock_->positionLeft_->isChecked(),
+             position == PanelPosition::Left);
+    QCOMPARE(dock_->positionRight_->isChecked(),
+             position == PanelPosition::Right);
+  }
+
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
   std::unique_ptr<QTemporaryDir> launchersDir_;
@@ -54,6 +72,18 @@ void KSmoothDockTest::createDefaultLaunchers() {
   QDir launchersDir(launchersDir_->path());
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   QCOMPARE(files.size(), 7);
+}
+
+void KSmoothDockTest::setPosition() {
+  verifyPosition(PanelPosition::Bottom);
+  dock_->positionLeft_->trigger();
+  verifyPosition(PanelPosition::Left);
+  dock_->positionRight_->trigger();
+  verifyPosition(PanelPosition::Right);
+  dock_->positionTop_->trigger();
+  verifyPosition(PanelPosition::Top);
+  dock_->positionBottom_->trigger();
+  verifyPosition(PanelPosition::Bottom);
 }
 
 }  // namespace ksmoothdock
