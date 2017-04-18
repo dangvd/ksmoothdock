@@ -24,6 +24,8 @@
 #include <QTemporaryFile>
 #include <QtTest>
 
+#include <KWindowSystem>
+
 namespace ksmoothdock {
 
 class KSmoothDockTest: public QObject {
@@ -46,13 +48,26 @@ class KSmoothDockTest: public QObject {
   // Tests setting position.
   void setPosition();
 
+  // Tests setting Auto Hide on/off.
+  void autoHide();
+
+  // Tests toggling the pager.
+  void togglePager();
+
  private:
+  static const int kNumDefaultLaunchers = 7;
+
   void verifyPosition(PanelPosition position) {
     QCOMPARE(dock_->position_, position);
     QCOMPARE(dock_->orientation_,
              (position == PanelPosition::Bottom
                   || position == PanelPosition::Top)
              ? Qt::Horizontal : Qt::Vertical);
+    if (dock_->orientation_ == Qt::Horizontal) {
+      QVERIFY(dock_->width() > dock_->height());
+    } else {
+      QVERIFY(dock_->width() < dock_->height());
+    }
     QCOMPARE(dock_->positionTop_->isChecked(), position == PanelPosition::Top);
     QCOMPARE(dock_->positionBottom_->isChecked(),
              position == PanelPosition::Bottom);
@@ -62,16 +77,36 @@ class KSmoothDockTest: public QObject {
              position == PanelPosition::Right);
   }
 
+  void verifyAutoHide(bool enabled) {
+    QCOMPARE(dock_->autoHide_, enabled);
+    QCOMPARE(dock_->autoHideAction_->isChecked(), enabled);
+    if (enabled) {
+      QVERIFY(dock_->width() == 1 || dock_->height() == 1);
+    }
+  }
+
+  void verifyPager(bool enabled) {
+    QCOMPARE(dock_->showPager_, enabled);
+    QCOMPARE(dock_->pagerAction_->isChecked(), enabled);
+    if (enabled) {
+      QCOMPARE(dock_->numItems(),
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops());
+    } else {
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
+    }
+  }
+
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
   std::unique_ptr<QTemporaryDir> launchersDir_;
 };
+const int KSmoothDockTest::kNumDefaultLaunchers;
 
 void KSmoothDockTest::createDefaultLaunchers() {
   // Tests that default launchers have been created.
   QDir launchersDir(launchersDir_->path());
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
-  QCOMPARE(files.size(), 7);
+  QCOMPARE(files.size(), kNumDefaultLaunchers);
 }
 
 void KSmoothDockTest::setPosition() {
@@ -84,6 +119,19 @@ void KSmoothDockTest::setPosition() {
   verifyPosition(PanelPosition::Top);
   dock_->positionBottom_->trigger();
   verifyPosition(PanelPosition::Bottom);
+}
+
+void KSmoothDockTest::autoHide() {
+  verifyAutoHide(false);
+  dock_->autoHideAction_->trigger();
+  verifyAutoHide(true);
+  dock_->autoHideAction_->trigger();
+  verifyAutoHide(false);
+}
+
+void KSmoothDockTest::togglePager() {
+  verifyPager(false);
+  // TODO: Test when the pager is enabled.
 }
 
 }  // namespace ksmoothdock
