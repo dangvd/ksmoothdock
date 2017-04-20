@@ -230,7 +230,10 @@ void KSmoothDock::showEditLaunchersDialog() {
 
 void KSmoothDock::applyLauncherConfig() {
   items_.clear();
-  for (int i = 0; i < editLaunchersDialog_.launchers_->count(); ++i) {
+  const int numLaunchers = editLaunchersDialog_.launchers_->count();
+  items_.reserve(showPager_ ? numLaunchers + KWindowSystem::numberOfDesktops()
+                            : numLaunchers);
+  for (int i = 0; i < numLaunchers; ++i) {
     QListWidgetItem* listItem = editLaunchersDialog_.launchers_->item(i);
     LauncherInfo info = listItem->data(Qt::UserRole).value<LauncherInfo>();
     items_.push_back(std::unique_ptr<DockItem>(
@@ -441,6 +444,8 @@ bool KSmoothDock::loadLaunchers() {
   if (files.isEmpty()) {
     return false;
   }
+  items_.reserve(showPager_ ? files.size() + KWindowSystem::numberOfDesktops()
+                            : files.size());
   for (int i = 0; i < files.size(); ++i) {
     const QString& file = launchersDir_ + "/" + files.at(i);
     items_.push_back(std::unique_ptr<DockItem>(
@@ -461,6 +466,8 @@ void KSmoothDock::createDefaultLaunchers() {
     {"Audio Player", "audio-headphones", "amarok"},
     {"System Settings", "preferences-system", "systemsettings5"}
   };
+  items_.reserve(showPager_ ? kNumItems + KWindowSystem::numberOfDesktops()
+                            : kNumItems);
   for (int i = 0; i < kNumItems; ++i) {
     items_.push_back(std::unique_ptr<DockItem>(
       new Launcher(this, kItems[i][0], orientation_, kItems[i][1], minSize_,

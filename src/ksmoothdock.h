@@ -19,8 +19,8 @@
 #ifndef KSMOOTHDOCK_KSMOOTHDOCK_H_
 #define KSMOOTHDOCK_KSMOOTHDOCK_H_
 
-#include <deque>
 #include <memory>
+#include <vector>
 
 #include <QAction>
 #include <QMenu>
@@ -219,7 +219,7 @@ class KSmoothDock : public QWidget {
   KConfig config_;
 
   // The list of all dock items.
-  std::deque<std::unique_ptr<DockItem>> items_;
+  std::vector<std::unique_ptr<DockItem>> items_;
 
   // Context (right-click) menu.
   QMenu menu_;
