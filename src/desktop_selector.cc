@@ -19,7 +19,6 @@
 #include "desktop_selector.h"
 
 #include <QApplication>
-#include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDesktopWidget>
 #include <QDir>
@@ -43,6 +42,9 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
           orientation, "" /* no icon yet */, minSize, maxSize),
       desktop_(desktop),
       config_(config),
+      plasmaShellDBus_("org.kde.plasmashell",
+                       "/PlasmaShell",
+                       "org.kde.PlasmaShell"),
       desktopWidth_(QApplication::desktop()->screenGeometry().width()),
       desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
 
@@ -141,6 +143,10 @@ void DesktopSelector::updateWallpaper(int currentDesktop) {
 }
 
 void DesktopSelector::setWallpaper(const QString& wallpaper) {
+  if (!plasmaShellDBus_.isValid()) {  // Not running in KDE Plasma 5.
+    return;
+  }
+
   if (wallpaper.isEmpty()) {
     return;
   }
@@ -152,11 +158,7 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
     return;
   }
 
-  QDBusInterface plasmaShell(
-      "org.kde.plasmashell",
-      "/PlasmaShell",
-      "org.kde.PlasmaShell");
-  const QDBusMessage& response = plasmaShell.call(
+  const QDBusMessage response = plasmaShellDBus_.call(
       "evaluateScript",
       "var allDesktops = desktops();"
       "for (i=0;i<allDesktops.length;i++) {"

@@ -21,6 +21,7 @@
 
 #include "icon_based_dock_item.h"
 
+#include <QDBusInterface>
 #include <QFile>
 #include <QMenu>
 #include <QObject>
@@ -50,13 +51,11 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   void setIconScaled(const QPixmap& icon);
 
  public slots:
-   void changeWallpaper();
+  void changeWallpaper();
 
-   void updateWallpaper(int currentDesktop);
+  void updateWallpaper(int currentDesktop);
 
  private:
-  static void setWallpaper(const QString& wallpaper);
-
   bool isCurrentDesktop() const {
     return KWindowSystem::currentDesktop() == desktop_;
   }
@@ -69,6 +68,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
     return !wallpaper_.isEmpty() && QFile::exists(wallpaper_);
   }
 
+  void setWallpaper(const QString& wallpaper);
+
   void createMenu();
 
   // The desktop that this desktop selector manages, 1-based.
@@ -80,6 +81,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   // Context (right-click) menu.
   QMenu menu_;
+
+  QDBusInterface plasmaShellDBus_;
 
   int desktopWidth_;
   int desktopHeight_;
