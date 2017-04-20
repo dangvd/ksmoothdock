@@ -237,6 +237,7 @@ class KSmoothDock : public QWidget {
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;
 
+  bool isMinimized_;
   bool isEntering_;
   bool isLeaving_;
   bool isAnimationActive_;

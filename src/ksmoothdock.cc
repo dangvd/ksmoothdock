@@ -65,6 +65,7 @@ KSmoothDock::KSmoothDock(const QString& configFile,
       aboutDialog_(KAboutData::applicationData(), this),
       configDialog_(this),
       editLaunchersDialog_(this),
+      isMinimized_(true),
       isEntering_(false),
       isLeaving_(false),
       isAnimationActive_(false) {}
@@ -330,6 +331,10 @@ void KSmoothDock::enterEvent (QEvent* e) {
 }
 
 void KSmoothDock::leaveEvent(QEvent* e) {
+  if (isMinimized_) {
+    return;
+  }
+
   isLeaving_ = true;
   updateLayout();
   tooltip_.hide();
@@ -627,6 +632,7 @@ void KSmoothDock::updateLayout() {
     animationTimer_->start(32 - animationSpeed_);
   } else {
     resize(minWidth_, minHeight_);
+    isMinimized_ = true;
   }
 }
 
@@ -747,6 +753,7 @@ void KSmoothDock::updateLayout(int x, int y) {
   }
 
   resize(maxWidth_, maxHeight_);
+  isMinimized_ = false;
   repaint();
 }
 
