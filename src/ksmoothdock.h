@@ -54,7 +54,7 @@ class KSmoothDock : public QWidget {
 
   virtual ~KSmoothDock();
 
-  virtual void resize(int w, int h);
+  void resize(int w, int h);
 
   // For testing only.
   ConfigDialog* configDialog() { return &configDialog_; }
