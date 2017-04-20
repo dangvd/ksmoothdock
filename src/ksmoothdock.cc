@@ -560,10 +560,10 @@ void KSmoothDock::updateLayout() {
     for (const auto& item : items_) {
       item->setAnimationStartAsCurrent();
       if (isHorizontal()) {
-        startBackgroundWidth_ = maxWidth_;
+        startBackgroundWidth_ = backgroundWidth_;
         startBackgroundHeight_ = distance;
       } else {  // Vertical
-        startBackgroundHeight_ = maxHeight_;
+        startBackgroundHeight_ = backgroundHeight_;
         startBackgroundWidth_ = distance;
       }
     }
