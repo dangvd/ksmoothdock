@@ -43,6 +43,7 @@ namespace ksmoothdock {
 
 enum class PanelPosition {Top, Bottom, Left, Right};
 
+// KSmoothDock's main class that represents the dock itself.
 class KSmoothDock : public QWidget {
   Q_OBJECT
 

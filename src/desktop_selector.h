@@ -32,6 +32,7 @@
 
 namespace ksmoothdock {
 
+// Pager icons.
 class DesktopSelector : public QObject, public IconBasedDockItem {
   Q_OBJECT
 

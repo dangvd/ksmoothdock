@@ -30,7 +30,7 @@
 
 namespace ksmoothdock {
 
-// Base class for icon-based dock items, such as launchers and tasks.
+// Base class for icon-based dock items, such as launchers and pager icons.
 class IconBasedDockItem : public DockItem {
  public:
   IconBasedDockItem(KSmoothDock* parent, const QString& label,

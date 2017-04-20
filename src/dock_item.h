@@ -28,7 +28,7 @@ namespace ksmoothdock {
 
 class KSmoothDock;
 
-// Base class for all dock items, i.e. launchers, tasks, clock etc.
+// Base class for all dock items, e.g. launchers and pager icons.
 class DockItem {
  public:
   DockItem(KSmoothDock* parent, const QString& label,
