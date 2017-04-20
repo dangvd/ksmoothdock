@@ -35,46 +35,47 @@ Tooltip::Tooltip() : QWidget(), font_(QApplication::font()) {
 }
 
 void Tooltip::setFontColor(const QColor& color) {
-    fontColor_ = color;
+  fontColor_ = color;
 }
 
 void Tooltip::setBackgroundColor(const QColor& color) {
-    backgroundColor_ = color;
+  backgroundColor_ = color;
 }
 
 void Tooltip::setFontFace(const QString& fontFace) {
-    font_.setFamily(fontFace);
+  font_.setFamily(fontFace);
 }
 
 void Tooltip::setFontItalic(bool val) {
-    font_.setItalic(val);
+  font_.setItalic(val);
 }
 
 void Tooltip::setFontBold(bool val) {
-    font_.setBold(val);
+  font_.setBold(val);
 }
 
 void Tooltip::setFontSize(int size) {
-    fontSize_ = size;
-    font_.setPointSize(size);
+  font_.setPointSize(size);
 }
 
 void Tooltip::setText(const QString& text) {
-    text_ = text;
-    updateLayout();
+  text_ = text;
+  updateLayout();
 }
 
 void Tooltip::updateLayout() {
-    QFontMetrics metrics(font_);
-    int w = metrics.width(text_) + 2 * kPadding;
-    int h = metrics.height() + 2 * kPadding;
+  QFontMetrics metrics(font_);
+  int w = metrics.width(text_) + 2 * kPadding;
+  int h = metrics.height() + 2 * kPadding;
 
-    resize(w,h);
-    repaint();
+  resize(w,h);
+  repaint();
 }
 
 void Tooltip::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
+  QFontMetrics metrics(font_);
+  const int kDeltaY = metrics.height() / 2;
 
   // Draws the bounding shadow.
   painter.setPen(backgroundColor_);
@@ -82,14 +83,14 @@ void Tooltip::paintEvent(QPaintEvent* e) {
 
   for (int i = -2; i <= 2; ++i) {
     for (int j = -2; j <= 2; ++j) {
-      painter.drawText(kPadding + i, kPadding + fontSize_ + j, text_);
+      painter.drawText(kPadding + i, kPadding + kDeltaY + j, text_);
     }
   }
 
   // Now draws the normal text.
   painter.setPen(fontColor_);
   painter.setFont(font_);
-  painter.drawText(kPadding, kPadding + fontSize_, text_);
+  painter.drawText(kPadding, kPadding + kDeltaY, text_);
 }
 
 }  // namespace ksmoothdock

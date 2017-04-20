@@ -52,7 +52,6 @@ class Tooltip : public QWidget {
   QString text_;
   QFont font_;
   QColor fontColor_;
-  int fontSize_;
   QColor backgroundColor_;
 };
 
