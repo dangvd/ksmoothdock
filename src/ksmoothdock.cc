@@ -66,6 +66,7 @@ KSmoothDock::KSmoothDock(const QString& configFile,
       configDialog_(this),
       editLaunchersDialog_(this),
       isMinimized_(true),
+      isResizing_(false),
       isEntering_(false),
       isLeaving_(false),
       isAnimationActive_(false) {}
@@ -97,6 +98,7 @@ KSmoothDock::~KSmoothDock() {
 }
 
 void KSmoothDock::resize(int w, int h) {
+  isResizing_ = true;
   QWidget::resize(w, h);
   int x, y;
   if (position_ == PanelPosition::Top) {
@@ -117,6 +119,7 @@ void KSmoothDock::resize(int w, int h) {
   // KSmoothDock still doesn't show on all desktops even though
   // we've already called this in the constructor.
   KWindowSystem::setOnAllDesktops(winId(), true);
+  isResizing_ = false;
 }
 
 void KSmoothDock::openLaunchersDir() {
@@ -126,13 +129,13 @@ void KSmoothDock::openLaunchersDir() {
 void KSmoothDock::reload() {
   items_.clear();
   initUi();
-  repaint();
+  update();
 }
 
 void KSmoothDock::refresh() {
   initLayoutVars();
   updateLayout();
-  repaint();
+  update();
 }
 
 void KSmoothDock::setPosition(PanelPosition position) {
@@ -246,7 +249,7 @@ void KSmoothDock::applyLauncherConfig() {
   initPager();
   initLayoutVars();
   updateLayout();
-  repaint();
+  update();
 }
 
 void KSmoothDock::updateLauncherConfig() {
@@ -255,6 +258,10 @@ void KSmoothDock::updateLauncherConfig() {
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
+  if (isResizing_) {
+    return;  // to avoid potential flicker.
+  }
+
   QPainter painter(this);
 
   if (isHorizontal()) {
@@ -633,6 +640,7 @@ void KSmoothDock::updateLayout() {
   } else {
     resize(minWidth_, minHeight_);
     isMinimized_ = true;
+    update();
   }
 }
 
@@ -754,7 +762,7 @@ void KSmoothDock::updateLayout(int x, int y) {
 
   resize(maxWidth_, maxHeight_);
   isMinimized_ = false;
-  repaint();
+  update();
 }
 
 void KSmoothDock::setStrut() {

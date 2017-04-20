@@ -69,7 +69,7 @@ void Tooltip::updateLayout() {
   int h = metrics.height() + 2 * kPadding;
 
   resize(w,h);
-  repaint();
+  update();
 }
 
 void Tooltip::paintEvent(QPaintEvent* e) {

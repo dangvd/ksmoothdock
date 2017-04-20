@@ -238,6 +238,7 @@ class KSmoothDock : public QWidget {
   Tooltip tooltip_;
 
   bool isMinimized_;
+  bool isResizing_;
   bool isEntering_;
   bool isLeaving_;
   bool isAnimationActive_;
