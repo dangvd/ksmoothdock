@@ -22,8 +22,10 @@
 #include <QAbstractButton>
 #include <QAction>
 #include <QButtonGroup>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QSpinBox>
 
@@ -51,8 +53,12 @@ class ConfigDialog : public QDialog {
   QLabel *maxSizeLabel_;
   QSpinBox *maxSize_;
 
+  QLabel *backgroundAlphaLabel_;
+  QDoubleSpinBox *backgroundAlpha_;
   QLabel *backgroundColorLabel_;
   KColorButton *backgroundColor_;
+
+  QCheckBox *showBorder_;
   QLabel *borderColorLabel_;
   KColorButton *borderColor_;
 

@@ -74,13 +74,10 @@ void DesktopSelector::init() {
 void DesktopSelector::draw(QPainter* painter) const {
   IconBasedDockItem::draw(painter);
 
-  // Only draws the border for the current desktop if using a custom wallpaper.
-  if (isCurrentDesktop() && isWallpaperOk()) {
-    KConfigGroup group(config_, "General");
-    // TODO(dangvd): This is the same default value as that in ksmoothdock.cc
-    // so they should be moved to some common place.
-    QColor borderColor = group.readEntry("borderColor", QColor("#b1c4de"));
-    painter->setPen(borderColor);
+  // Only draws the border for the current desktop if using a custom wallpaper
+  // and dock has border.
+  if (isCurrentDesktop() && isWallpaperOk() && parent_->hasBorder()) {
+    painter->setPen(parent_->getBorderColor());
     painter->drawRect(left_ - 1, top_ - 1, getWidth() + 1, getHeight() + 1);
   }
 }

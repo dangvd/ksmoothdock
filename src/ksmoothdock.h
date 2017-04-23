@@ -57,6 +57,9 @@ class KSmoothDock : public QWidget {
 
   void resize(int w, int h);
 
+  bool hasBorder() { return showBorder_; }
+  QColor getBorderColor() { return borderColor_; }
+
   // For testing only.
   ConfigDialog* configDialog() { return &configDialog_; }
   EditLaunchersDialog* editLaunchersDialog() { return &editLaunchersDialog_; }
@@ -142,9 +145,9 @@ class KSmoothDock : public QWidget {
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
 
+  static const float kDefaultBackgroundAlpha;
   static const char kDefaultBackgroundColor[];
   static const char kDefaultBorderColor[];
-  static const float kBackgroundAlpha;
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
@@ -193,8 +196,9 @@ class KSmoothDock : public QWidget {
   bool showPager_;
   int minSize_;
   int maxSize_;
-  QColor backgroundColor_;
-  QColor borderColor_;
+  QColor backgroundColor_;  // including alpha.
+  bool showBorder_;
+  QColor borderColor_;  // no alpha.
   int tooltipFontSize_;
 
   // Non-config variables.

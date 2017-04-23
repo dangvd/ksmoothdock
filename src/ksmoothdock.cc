@@ -50,7 +50,7 @@ const int KSmoothDock::kDefaultMinSize;
 const int KSmoothDock::kDefaultMaxSize;
 const int KSmoothDock::kDefaultTooltipFontSize;
 const int KSmoothDock::kTooltipSpacing;
-const float KSmoothDock::kBackgroundAlpha = 0.42;
+const float KSmoothDock::kDefaultBackgroundAlpha = 0.42;
 const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
 const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
@@ -59,6 +59,7 @@ KSmoothDock::KSmoothDock(const QString& configFile,
     : QWidget(),
       autoHide_(false),
       showPager_(false),
+      showBorder_(true),
       launchersDir_(launchersDir),
       configFile_(configFile),
       config_(configFile, KConfig::SimpleConfig),
@@ -182,7 +183,9 @@ void KSmoothDock::about() {
 void KSmoothDock::showConfigDialog() {
   configDialog_.minSize_->setValue(minSize_);
   configDialog_.maxSize_->setValue(maxSize_);
+  configDialog_.backgroundAlpha_->setValue(backgroundColor_.alphaF());
   configDialog_.backgroundColor_->setColor(QColor(backgroundColor_.rgb()));
+  configDialog_.showBorder_->setChecked(showBorder_);
   configDialog_.borderColor_->setColor(borderColor_);
   configDialog_.tooltipFontSize_->setValue(tooltipFontSize_);
   configDialog_.show();
@@ -195,7 +198,8 @@ void KSmoothDock::applyConfig() {
   }
   maxSize_ = configDialog_.maxSize_->value();
   backgroundColor_ = configDialog_.backgroundColor_->color();
-  backgroundColor_.setAlphaF(kBackgroundAlpha);
+  backgroundColor_.setAlphaF(configDialog_.backgroundAlpha_->value());
+  showBorder_ = configDialog_.showBorder_->isChecked();
   borderColor_ = configDialog_.borderColor_->color();
   tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
 
@@ -211,7 +215,9 @@ void KSmoothDock::updateConfig() {
 void KSmoothDock::resetConfig() {
   configDialog_.minSize_->setValue(kDefaultMinSize);
   configDialog_.maxSize_->setValue(kDefaultMaxSize);
+  configDialog_.backgroundAlpha_->setValue(kDefaultBackgroundAlpha);
   configDialog_.backgroundColor_->setColor(QColor(kDefaultBackgroundColor));
+  configDialog_.showBorder_->setChecked(true);
   configDialog_.borderColor_->setColor(QColor(kDefaultBorderColor));
   configDialog_.tooltipFontSize_->setValue(kDefaultTooltipFontSize);  
 }
@@ -265,25 +271,31 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
 
   if (isHorizontal()) {
-    const int y = (position_ == PanelPosition::Top) ? 0
-        : height() - backgroundHeight_;
-    painter.fillRect((width() - backgroundWidth_) / 2, y, 
-        backgroundWidth_, backgroundHeight_, backgroundColor_);
+    const int y = (position_ == PanelPosition::Top)
+                  ? 0 : height() - backgroundHeight_;
+    painter.fillRect((width() - backgroundWidth_) / 2, y,
+                     backgroundWidth_, backgroundHeight_, backgroundColor_);
 
-    painter.setPen(borderColor_);
-    painter.drawRect((width() - backgroundWidth_) / 2, y, 
-        backgroundWidth_ - 1, backgroundHeight_ - 1);
+    if (showBorder_) {
+      painter.setPen(borderColor_);
+      painter.drawRect((width() - backgroundWidth_) / 2, y,
+                       backgroundWidth_ - 1, backgroundHeight_ - 1);
+    }
   } else {  // Vertical
-    const int x =  (position_ == PanelPosition::Left) ? 0
-        : width() - backgroundWidth_;
+    const int x =  (position_ == PanelPosition::Left)
+                   ? 0 : width() - backgroundWidth_;
     painter.fillRect(x, (height() - backgroundHeight_) / 2,
-        backgroundWidth_, backgroundHeight_, backgroundColor_);
+                     backgroundWidth_, backgroundHeight_, backgroundColor_);
 
-    painter.setPen(borderColor_);
-    painter.drawRect(x, (height() - backgroundHeight_) / 2,
-        backgroundWidth_ - 1, backgroundHeight_ - 1);
+    if (showBorder_) {
+      painter.setPen(borderColor_);
+      painter.drawRect(x, (height() - backgroundHeight_) / 2,
+                       backgroundWidth_ - 1, backgroundHeight_ - 1);
+    }
   }
 
+  // Draw the items from the end to avoid zoomed items getting clipped by
+  // non-zoomed items.
   for (int i = numItems() - 1; i >= 0; --i) {
     items_[i]->draw(&painter);
   }
@@ -417,13 +429,15 @@ void KSmoothDock::loadConfig() {
   if (maxSize_ < minSize_) {
     maxSize_ = minSize_;
   }
+  QColor defaultBackgroundColor(kDefaultBackgroundColor);
+  defaultBackgroundColor.setAlphaF(kDefaultBackgroundAlpha);
   backgroundColor_ = group.readEntry("backgroundColor",
-      QColor(kDefaultBackgroundColor));
-  backgroundColor_.setAlphaF(kBackgroundAlpha);
+                                     defaultBackgroundColor);
+  showBorder_ = group.readEntry("showBorder", true);
   borderColor_ = group.readEntry("borderColor",
-      QColor(kDefaultBorderColor));
+                                 QColor(kDefaultBorderColor));
   tooltipFontSize_ = group.readEntry("tooltipFontSize",
-      kDefaultTooltipFontSize);
+                                     kDefaultTooltipFontSize);
 }
 
 void KSmoothDock::saveConfig() {
@@ -434,6 +448,7 @@ void KSmoothDock::saveConfig() {
   group.writeEntry("minimumIconSize", minSize_);
   group.writeEntry("maximumIconSize", maxSize_);
   group.writeEntry("backgroundColor", backgroundColor_);
+  group.writeEntry("showBorder", showBorder_);
   group.writeEntry("borderColor", borderColor_);
   group.writeEntry("tooltipFontSize", tooltipFontSize_);
   config_.sync();

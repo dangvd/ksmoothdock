@@ -18,6 +18,7 @@
 
 #include "config_dialog.h"
 
+#include <cmath>
 #include <memory>
 
 #include <QTemporaryDir>
@@ -47,7 +48,9 @@ class ConfigDialogTest: public QObject {
     dialog_ = dock_->configDialog();
     dialog_->minSize_->setValue(48);
     dialog_->maxSize_->setValue(128);
+    dialog_->backgroundAlpha_->setValue(0.42);
     dialog_->backgroundColor_->setColor(QColor("white"));
+    dialog_->showBorder_->setChecked(true);
     dialog_->borderColor_->setColor(QColor("white"));
     dialog_->tooltipFontSize_->setValue(20);
     dock_->updateConfig();
@@ -63,6 +66,11 @@ class ConfigDialogTest: public QObject {
   void cancel();
 
  private:
+  bool compareDouble(double x, double y) {
+    static double kDelta = 0.01;
+    return abs(x - y) < kDelta;
+  }
+
   ConfigDialog* dialog_;
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
@@ -72,7 +80,9 @@ class ConfigDialogTest: public QObject {
 void ConfigDialogTest::ok() {
   dialog_->minSize_->setValue(40);
   dialog_->maxSize_->setValue(80);
+  dialog_->backgroundAlpha_->setValue(0.1);
   dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->showBorder_->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
   dialog_->tooltipFontSize_->setValue(24);
 
@@ -86,6 +96,8 @@ void ConfigDialogTest::ok() {
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
            QColor("green").rgb());
+  compareDouble(group.readEntry("backgroundColor", QColor()).alphaF(), 0.1);
+  QCOMPARE(group.readEntry("showBorder", true), false);
   QCOMPARE(group.readEntry("borderColor", QColor()), QColor("blue"));
   QCOMPARE(group.readEntry("tooltipFontSize", 0), 24);
 }
@@ -93,7 +105,9 @@ void ConfigDialogTest::ok() {
 void ConfigDialogTest::apply() {
   dialog_->minSize_->setValue(40);
   dialog_->maxSize_->setValue(80);
+  dialog_->backgroundAlpha_->setValue(0.1);
   dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->showBorder_->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
   dialog_->tooltipFontSize_->setValue(24);
 
@@ -107,6 +121,8 @@ void ConfigDialogTest::apply() {
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
            QColor("green").rgb());
+  compareDouble(group.readEntry("backgroundColor", QColor()).alphaF(), 0.1);
+  QCOMPARE(group.readEntry("showBorder", true), false);
   QCOMPARE(group.readEntry("borderColor", QColor()), QColor("blue"));
   QCOMPARE(group.readEntry("tooltipFontSize", 0), 24);
 }
@@ -114,7 +130,9 @@ void ConfigDialogTest::apply() {
 void ConfigDialogTest::cancel() {
   dialog_->minSize_->setValue(40);
   dialog_->maxSize_->setValue(80);
+  dialog_->backgroundAlpha_->setValue(0.1);
   dialog_->backgroundColor_->setColor(QColor("green"));
+  dialog_->showBorder_->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
   dialog_->tooltipFontSize_->setValue(24);
 
@@ -128,6 +146,8 @@ void ConfigDialogTest::cancel() {
   QCOMPARE(group.readEntry("maximumIconSize", 0), 128);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
            QColor("white").rgb());
+  compareDouble(group.readEntry("backgroundColor", QColor()).alphaF(), 0.42);
+  QCOMPARE(group.readEntry("showBorder", true), true);
   QCOMPARE(group.readEntry("borderColor", QColor()), QColor("white"));
   QCOMPARE(group.readEntry("tooltipFontSize", 0), 20);
 }
