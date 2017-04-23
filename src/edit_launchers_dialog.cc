@@ -93,7 +93,7 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
 
   launchers_ = new LauncherList(this);
-  launchers_->setGeometry(QRect(20, 20, 401, 451));
+  launchers_->setGeometry(QRect(20, 20, 351, 451));
   connect(
       launchers_,
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
@@ -113,32 +113,32 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
   add_->setIcon(QIcon::fromTheme("list-add"));
-  add_->setGeometry(QRect(460, 120, 121, 38));
+  add_->setGeometry(QRect(410, 120, 121, 38));
   connect(add_, SIGNAL(clicked()), this, SLOT(addLauncher()));
 
   remove_ = new QPushButton(this);
   remove_->setText(i18n("Remove"));
   remove_->setIcon(QIcon::fromTheme("list-remove"));
-  remove_->setGeometry(QRect(460, 190, 121, 38));
+  remove_->setGeometry(QRect(410, 190, 121, 38));
   connect(remove_, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
 
   update_ = new QPushButton(this);
   update_->setText(i18n("Update"));
   update_->setIcon(QIcon::fromTheme("arrow-left"));
-  update_->setGeometry(QRect(460, 260, 121, 38));
+  update_->setGeometry(QRect(410, 260, 121, 38));
   connect(update_, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
 
   nameLabel_ = new QLabel(this);
   nameLabel_->setText(i18n("Name"));
-  nameLabel_->setGeometry(QRect(620, 30, 72, 22));
+  nameLabel_->setGeometry(QRect(570, 30, 72, 22));
   name_ = new QLineEdit(this);
-  name_->setGeometry(QRect(730, 20, 371, 36));
+  name_->setGeometry(QRect(680, 20, 421, 36));
 
   commandLabel_ = new QLabel(this);
   commandLabel_->setText(i18n("Command"));
-  commandLabel_->setGeometry(QRect(620, 110, 101, 22));
+  commandLabel_->setGeometry(QRect(570, 110, 101, 22));
   command_ = new QLineEdit(this);
-  command_->setGeometry(QRect(730, 100, 371, 36));
+  command_->setGeometry(QRect(680, 100, 421, 36));
   connect(command_, SIGNAL(textEdited(const QString&)),
       this, SLOT(resetInternalAndDBusCommands()));
 
@@ -146,25 +146,25 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   browseCommand_->setText(i18n("Browse Command"));
   connect(browseCommand_, SIGNAL(clicked()),
       this, SLOT(browseCommand()));
-  browseCommand_->setGeometry(QRect(730, 160, 271, 38));
+  browseCommand_->setGeometry(QRect(680, 160, 271, 38));
 
   internalCommands_ = new QComboBox(this);
   populateInternalCommands();
-  internalCommands_->setGeometry(QRect(730, 220, 271, 36));
+  internalCommands_->setGeometry(QRect(680, 220, 271, 36));
   connect(internalCommands_, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateInternalCommand(int)));
 
   dbusCommands_ = new QComboBox(this);
   populateDBusCommands();
-  dbusCommands_->setGeometry(QRect(730, 280, 271, 36));
+  dbusCommands_->setGeometry(QRect(680, 280, 271, 36));
   connect(dbusCommands_, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateDBusCommand(int)));
 
   iconLabel_ = new QLabel(this);
   iconLabel_->setText(i18n("Icon"));
-  iconLabel_->setGeometry(QRect(620, 418, 72, 22));
+  iconLabel_->setGeometry(QRect(570, 418, 72, 22));
   icon_ = new KIconButton(this);
-  icon_->setGeometry(QRect(730, 390, 80, 80));
+  icon_->setGeometry(QRect(680, 390, 80, 80));
 
   buttonBox_ = new QDialogButtonBox(this);
   buttonBox_->setGeometry(QRect(360, 510, 341, 32));
