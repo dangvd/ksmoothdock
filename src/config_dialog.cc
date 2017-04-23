@@ -31,16 +31,16 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
 
   minSizeLabel_ = new QLabel(this);
   minSizeLabel_->setText(i18n("Minimum icon size"));
-  minSizeLabel_->setGeometry(QRect(40, 30, 161, 22));
+  minSizeLabel_->setGeometry(QRect(40, 30, 181, 22));
   minSize_ = new QSpinBox(this);
-  minSize_->setGeometry(QRect(220, 20, 71, 36));
+  minSize_->setGeometry(QRect(230, 20, 71, 36));
   minSize_->setMinimum(16);
   minSize_->setMaximum(64);
   minSize_->setSingleStep(8);
 
   maxSizeLabel_ = new QLabel(this);
   maxSizeLabel_->setText(i18n("Maximum icon size"));
-  maxSizeLabel_->setGeometry(QRect(370, 30, 161, 22));
+  maxSizeLabel_->setGeometry(QRect(370, 30, 181, 22));
   maxSize_ = new QSpinBox(this);
   maxSize_->setGeometry(QRect(550, 20, 71, 36));
   maxSize_->setMinimum(32);
@@ -48,10 +48,10 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
   maxSize_->setSingleStep(8);
 
   backgroundAlphaLabel_ = new QLabel(this);
-  backgroundAlphaLabel_->setText(i18n("Background alpha"));
-  backgroundAlphaLabel_->setGeometry(QRect(40, 90, 171, 23));
+  backgroundAlphaLabel_->setText(i18n("Background opacity"));
+  backgroundAlphaLabel_->setGeometry(QRect(40, 90, 181, 23));
   backgroundAlpha_ = new QDoubleSpinBox(this);
-  backgroundAlpha_->setGeometry(QRect(220, 80, 71, 37));
+  backgroundAlpha_->setGeometry(QRect(230, 80, 71, 37));
   backgroundAlpha_->setMinimum(0);
   backgroundAlpha_->setMaximum(1);
   backgroundAlpha_->setDecimals(2);
@@ -59,27 +59,27 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
 
   backgroundColorLabel_ = new QLabel(this);
   backgroundColorLabel_->setText(i18n("Background color"));
-  backgroundColorLabel_->setGeometry(QRect(370, 90, 151, 22));
+  backgroundColorLabel_->setGeometry(QRect(370, 90, 181, 22));
   backgroundColor_ = new KColorButton(this);
   backgroundColor_->setAlphaChannelEnabled(false);
   backgroundColor_->setGeometry(QRect(550, 80, 71, 38));
 
   showBorder_ = new QCheckBox(this);
   showBorder_->setText(i18n("Show border"));
-  showBorder_->setGeometry(QRect(40, 150, 171, 27));
+  showBorder_->setGeometry(QRect(40, 150, 181, 27));
 
   borderColorLabel_ = new QLabel(this);
   borderColorLabel_->setText(i18n("Border color"));
-  borderColorLabel_->setGeometry(QRect(370, 150, 141, 22));
+  borderColorLabel_->setGeometry(QRect(370, 150, 181, 22));
   borderColor_ = new KColorButton(this);
   borderColor_->setAlphaChannelEnabled(false);
   borderColor_->setGeometry(QRect(550, 140, 71, 38));
 
   tooltipFontSizeLabel_ = new QLabel(this);
   tooltipFontSizeLabel_->setText(i18n("Tooltip font size"));
-  tooltipFontSizeLabel_->setGeometry(QRect(40, 210, 141, 22));
+  tooltipFontSizeLabel_->setGeometry(QRect(40, 210, 181, 22));
   tooltipFontSize_ = new QSpinBox(this);
-  tooltipFontSize_->setGeometry(QRect(220, 200, 71, 36));
+  tooltipFontSize_->setGeometry(QRect(230, 200, 71, 36));
   tooltipFontSize_->setMinimum(8);
   tooltipFontSize_->setMaximum(28);
   tooltipFontSize_->setSingleStep(2);
