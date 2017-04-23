@@ -181,6 +181,8 @@ class KSmoothDock : public QWidget {
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);
 
+  // Shows the appropriate tooltip given the mouse position.
+  void showTooltip(int x, int y);
   // Shows tool tip for the item at the specified index.
   void showTooltip(int i);
 
@@ -255,6 +257,11 @@ class KSmoothDock : public QWidget {
   int backgroundHeight_;
   int startBackgroundHeight_;
   int endBackgroundHeight_;
+
+  // For recording the mouse position before doing entering animation
+  // so that we can show the correct tooltip at the end of it.
+  int mouseX_;
+  int mouseY_;
 
   friend class KSmoothDockTest;
 };

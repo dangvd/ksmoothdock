@@ -167,6 +167,8 @@ void KSmoothDock::updateAnimation() {
     if (isLeaving_) {
       isLeaving_ = false;
       updateLayout();
+    } else {
+      showTooltip(mouseX_, mouseY_);
     }
   }
   repaint();
@@ -301,20 +303,14 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
   }
 }
 
-void KSmoothDock::mouseMoveEvent ( QMouseEvent* e) {
+void KSmoothDock::mouseMoveEvent(QMouseEvent* e) {
   if (isAnimationActive_) {
     return;
   }
 
-  int i = findActiveItem(e->x(), e->y());
-  if (i < 0 || i >= numItems()) {
-    tooltip_.hide();
-  } else {
-    showTooltip(i);
-    // Somehow we have to set this property again when re-showing.
-    KWindowSystem::setOnAllDesktops(tooltip_.winId(), true);
+  if (!isEntering_) {
+    showTooltip(e->x(), e->y());
   }
-
   updateLayout(e->x(), e->y());
 }
 
@@ -762,11 +758,13 @@ void KSmoothDock::updateLayout(int x, int y) {
       backgroundWidth_ = startBackgroundWidth_;
       endBackgroundHeight_ = distance;
       backgroundHeight_ = startBackgroundHeight_;
+      mouseX_ = x + (maxWidth_ - minWidth_) / 2;
     } else {  // Vertical
       endBackgroundHeight_ = maxHeight_;
       backgroundHeight_ = startBackgroundHeight_;
       endBackgroundWidth_ = distance;
       backgroundWidth_ = startBackgroundWidth_;
+      mouseY_ = y + (maxHeight_ - minHeight_) / 2;
     }
 
     currentAnimationStep_ = 0;
@@ -800,6 +798,17 @@ int KSmoothDock::findActiveItem(int x, int y) {
     ++i;
   }
   return i - 1;
+}
+
+void KSmoothDock::showTooltip(int x, int y) {
+  int i = findActiveItem(x, y);
+  if (i < 0 || i >= numItems()) {
+    tooltip_.hide();
+  } else {
+    showTooltip(i);
+    // Somehow we have to set this property again when re-showing.
+    KWindowSystem::setOnAllDesktops(tooltip_.winId(), true);
+  }
 }
 
 void KSmoothDock::showTooltip(int i) {
