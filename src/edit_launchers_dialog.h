@@ -116,6 +116,7 @@ class EditLaunchersDialog : public QDialog {
   KSmoothDock* parent_;
 
   LauncherList *launchers_;
+  QLabel *launchersNote_;
 
   QPushButton *add_;
   QPushButton *remove_;

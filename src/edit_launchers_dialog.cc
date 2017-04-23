@@ -87,7 +87,7 @@ void LauncherList::dropEvent(QDropEvent* event) {
 EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
     : QDialog(parent), parent_(parent) {
   setWindowTitle(i18n("Edit Launchers"));
-  resize(1120, 570);
+  resize(1120, 580);
 
   qRegisterMetaType<LauncherInfo>();
   qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
@@ -109,6 +109,9 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   launchers_->setAcceptDrops(true);
   launchers_->setDropIndicatorShown(true);
   launchers_->setDragDropMode(QAbstractItemView::DragDrop);
+  launchersNote_ = new QLabel(this);
+  launchersNote_->setText(i18n("Note that drag and drop is supported."));
+  launchersNote_->setGeometry(QRect(20, 475, 351, 22));
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
@@ -167,7 +170,7 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   icon_->setGeometry(QRect(680, 390, 80, 80));
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(360, 510, 341, 32));
+  buttonBox_->setGeometry(QRect(360, 520, 341, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
       |QDialogButtonBox::Cancel);
