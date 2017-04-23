@@ -120,6 +120,8 @@ class KSmoothDock : public QWidget {
 
   void resetCursor();
 
+  void showOnlineDocumentation();
+
   void about();
 
   void showConfigDialog();

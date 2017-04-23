@@ -178,6 +178,11 @@ void KSmoothDock::resetCursor() {
   setCursor(QCursor(Qt::ArrowCursor));
 }
 
+void KSmoothDock::showOnlineDocumentation() {
+  Launcher::launch(
+      "xdg-open https://github.com/dangvd/ksmoothdock/wiki/Documentation");
+}
+
 void KSmoothDock::about() {
   aboutDialog_.show();
 }
@@ -393,6 +398,9 @@ void KSmoothDock::createMenu() {
   pagerAction_->setCheckable(true);
 
   menu_.addSeparator();
+  menu_.addAction(QIcon::fromTheme("help-contents"),
+                  i18n("Online &Documentation"),
+                  this, SLOT(showOnlineDocumentation()));
   menu_.addAction(QIcon::fromTheme("help-about"), i18n("&About KSmoothDock"),
       this, SLOT(about()));
   menu_.addSeparator();
