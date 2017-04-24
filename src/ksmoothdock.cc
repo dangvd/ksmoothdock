@@ -33,6 +33,7 @@
 #include <QProcess>
 #include <QStringList>
 #include <QVariant>
+#include <Qt>
 
 #include <KAboutData>
 #include <KConfigGroup>

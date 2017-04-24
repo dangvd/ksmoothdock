@@ -22,6 +22,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QVariant>
+#include <Qt>
 
 #include <KDesktopFile>
 #include <KLocalizedString>
@@ -110,8 +111,13 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   launchers_->setDropIndicatorShown(true);
   launchers_->setDragDropMode(QAbstractItemView::DragDrop);
   launchersNote_ = new QLabel(this);
-  launchersNote_->setText(i18n("Note that drag and drop is supported."));
+  launchersNote_->setTextFormat(Qt::RichText);
+  launchersNote_->setText(i18n(
+      "Note: <a href=https://github.com/dangvd/ksmoothdock/wiki/Documentation"
+      "#editLaunchers_dragAndDrop>Drag and drop</a> is supported."));
   launchersNote_->setGeometry(QRect(20, 475, 351, 22));
+  connect(launchersNote_, SIGNAL(linkActivated(const QString&)),
+          this, SLOT(openLink(const QString&)));
 
   add_ = new QPushButton(this);
   add_->setText(i18n("Add"));
@@ -230,6 +236,10 @@ void EditLaunchersDialog::updateSelectedLauncher() {
     item->setData(Qt::UserRole, QVariant::fromValue(
         LauncherInfo(icon_->icon(), command_->text())));
   }
+}
+
+void EditLaunchersDialog::openLink(const QString& link) {
+  Launcher::launch("xdg-open " + link);
 }
 
 void EditLaunchersDialog::browseCommand() {

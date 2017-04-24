@@ -94,6 +94,8 @@ class EditLaunchersDialog : public QDialog {
   void removeSelectedLauncher();
   void updateSelectedLauncher();
 
+  void openLink(const QString& link);
+
   void browseCommand();
   void updateInternalCommand(int index);
   void updateDBusCommand(int index);
