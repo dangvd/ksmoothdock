@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
       KAboutLicense::GPL_V3,
       i18n("Copyright (C) 2017 Viet Dang (dangvd@gmail.com)"),
       "",
-      "https://github.com/dangvd/ksmoothdock");
+      "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
 
   ksmoothdock::KSmoothDock dock;

@@ -74,7 +74,7 @@ void DesktopSelector::init() {
 void DesktopSelector::draw(QPainter* painter) const {
   IconBasedDockItem::draw(painter);
 
-  // Only draws the border for the current desktop if using a custom wallpaper
+  // Only draw the border for the current desktop if using a custom wallpaper
   // and dock has border.
   if (isCurrentDesktop() && isWallpaperOk() && parent_->hasBorder()) {
     painter->setPen(parent_->getBorderColor());
