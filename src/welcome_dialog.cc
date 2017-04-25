@@ -24,21 +24,21 @@ namespace ksmoothdock {
 
 WelcomeDialog::WelcomeDialog() {
   setWindowTitle(i18n("Welcome to KSmoothDock!"));
-  resize(480, 150);
+  resize(500, 150);
 
   positionLabel_ = new QLabel(this);
   positionLabel_->setText(i18n("Please select the initial panel position"));
-  positionLabel_->setGeometry(QRect(30, 30, 291, 16));
+  positionLabel_->setGeometry(QRect(30, 30, 311, 22));
   position_ = new QComboBox(this);
   position_->addItem(i18n("Top"));
   position_->addItem(i18n("Bottom"));
   position_->addItem(i18n("Left"));
   position_->addItem(i18n("Right"));
   position_->setCurrentIndex(1);
-  position_->setGeometry(QRect(340, 20, 111, 36));
+  position_->setGeometry(QRect(360, 20, 111, 36));
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(70, 90, 341, 32));
+  buttonBox_->setGeometry(QRect(80, 90, 341, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Ok);
   buttonBox_->setCenterButtons(true);
