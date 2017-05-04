@@ -38,8 +38,10 @@ class DockItem {
   virtual ~DockItem() {}
 
   // This is virtual so dynamic label can be implemented in its subclasses.
-  virtual QString getLabel() { return label_; }
+  virtual QString getLabel() const { return label_; }
   void setLabel(const QString& label) { label_ = label; }
+
+  bool isHorizontal() const { return orientation_ == Qt::Horizontal; }
 
   void setAnimationStartAsCurrent() {
     startLeft_ = left_;
@@ -91,7 +93,7 @@ class DockItem {
   
   virtual int getHeight() const = 0;
 
-protected:
+ protected:
   KSmoothDock* parent_;
   QString label_; // Label of the dock item.
   Qt::Orientation orientation_; // Orientation (horizontal/vertical).
