@@ -31,12 +31,8 @@ class IconlessDockItem : public DockItem {
       : DockItem(parent, label, orientation, minSize, maxSize),
         whRatio_(whRatio) {}
 
-  int getMaxWidth() const override;
-  int getMaxHeight() const override;
-  int getMinWidth() const override;
-  int getMinHeight() const override;
-  int getWidth() const override;
-  int getHeight() const override;
+  int getWidthForSize(int size) const override;
+  int getHeightForSize(int size) const override;
 
  private:
   // Width/height ratio.

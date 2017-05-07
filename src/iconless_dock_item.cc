@@ -20,28 +20,12 @@
 
 namespace ksmoothdock {
 
-int IconlessDockItem::getMaxWidth() const {
-  return isHorizontal() ? static_cast<int>(maxSize_ * whRatio_) : maxSize_;
+int IconlessDockItem::getWidthForSize(int size) const {
+  return isHorizontal() ? static_cast<int>(size * whRatio_) : size;
 }
 
-int IconlessDockItem::getMaxHeight() const {
-  return isHorizontal() ? maxSize_ : static_cast<int>(maxSize_ / whRatio_);
-}
-
-int IconlessDockItem::getMinWidth() const {
-  return isHorizontal() ? static_cast<int>(minSize_ * whRatio_) : minSize_;
-}
-
-int IconlessDockItem::getMinHeight() const {
-  return isHorizontal() ? minSize_ : static_cast<int>(minSize_ / whRatio_);
-}
-
-int IconlessDockItem::getWidth() const {
-  return isHorizontal() ? static_cast<int>(size_ * whRatio_) : size_;
-}
-
-int IconlessDockItem::getHeight() const {
-  return isHorizontal() ? size_ : static_cast<int>(size_ / whRatio_);
+int IconlessDockItem::getHeightForSize(int size) const {
+  return isHorizontal() ? size : static_cast<int>(size / whRatio_);
 }
 
 }  // namespace ksmoothdock

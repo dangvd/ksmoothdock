@@ -37,6 +37,18 @@ class DockItem {
         minSize_(minSize), maxSize_(maxSize), size_(minSize) {}
   virtual ~DockItem() {}
 
+  // Gets the width of the item given a size.
+  virtual int getWidthForSize(int size) const = 0;
+
+  // Gets the height of the item given a size.
+  virtual int getHeightForSize(int size) const = 0;
+
+  // Draws itself on the parent's canvas.
+  virtual void draw(QPainter* painter) const = 0;
+
+  // Mouse press event handler.
+  virtual void mousePressEvent(QMouseEvent* e) = 0;
+
   // This is virtual so dynamic label can be implemented in its subclasses.
   virtual QString getLabel() const { return label_; }
   void setLabel(const QString& label) { label_ = label; }
@@ -72,26 +84,33 @@ class DockItem {
     }
   }
 
-  // Draws itself on the parent's canvas.
-  virtual void draw(QPainter* painter) const = 0;
-
-  virtual void mousePressEvent(QMouseEvent* e) = 0;
-
   // Gets max width, i.e. the width when the item is max zoomed.
-  virtual int getMaxWidth() const = 0;
+  int getMaxWidth() const {
+    return getWidthForSize(maxSize_);
+  }
 
   // Gets max height, i.e. the width when the item is max zoomed.
-  virtual int getMaxHeight() const = 0;
+  int getMaxHeight() const {
+    return getHeightForSize(maxSize_);
+  }
 
   // Gets min width, i.e. when the item is not zoomed in.
-  virtual int getMinWidth() const = 0;
+  int getMinWidth() const {
+    return getWidthForSize(minSize_);
+  }
 
-  /// Gets min height, i.e. when the item is not zoomed in.
-  virtual int getMinHeight() const = 0;
+  // Gets min height, i.e. when the item is not zoomed in.
+  int getMinHeight() const {
+    return getHeightForSize(minSize_);
+  }
 
-  virtual int getWidth() const = 0;
+  int getWidth() const {
+    return getWidthForSize(size_);
+  }
   
-  virtual int getHeight() const = 0;
+  int getHeight() const {
+    return getHeightForSize(size_);
+  }
 
  protected:
   KSmoothDock* parent_;
@@ -118,6 +137,7 @@ class DockItem {
   int currentStep_;
   int numSteps_;
 
+ private:
   friend class KSmoothDock;
 };
 

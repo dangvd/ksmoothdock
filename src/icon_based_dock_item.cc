@@ -41,6 +41,10 @@ IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, const QString& label,
   setIcon(icon);
 }
 
+void IconBasedDockItem::draw(QPainter* painter) const {
+  painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
+}
+
 void IconBasedDockItem::setIcon(const QPixmap& icon) {
   generateIcons(icon);
 }
@@ -60,34 +64,6 @@ const QPixmap& IconBasedDockItem::getIcon(int size) const {
     size = maxSize_;
   }
   return icons_[size - minSize_];
-}
-
-void IconBasedDockItem::draw(QPainter* painter) const {
-  painter->drawPixmap(left_, top_, icons_[size_ - minSize_]);
-}
-
-int IconBasedDockItem::getMaxWidth() const {
-  return getIcon(maxSize_).width();
-}
-
-int IconBasedDockItem::getMaxHeight() const {
-  return getIcon(maxSize_).height();
-}
-
-int IconBasedDockItem::getMinWidth() const {
-  return getIcon(minSize_).width();
-}
-
-int IconBasedDockItem::getMinHeight() const {
-  return getIcon(minSize_).height();
-}
-
-int IconBasedDockItem::getWidth() const {
-  return getIcon(size_).width();
-}
-
-int IconBasedDockItem::getHeight() const {
-  return getIcon(size_).height();
 }
 
 void IconBasedDockItem::generateIcons(const QPixmap& icon) {
