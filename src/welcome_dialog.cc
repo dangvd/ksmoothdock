@@ -38,7 +38,7 @@ WelcomeDialog::WelcomeDialog() {
   position_->setGeometry(QRect(360, 20, 111, 36));
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(80, 90, 341, 32));
+  buttonBox_->setGeometry(QRect(80, 90, 340, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Ok);
   buttonBox_->setCenterButtons(true);

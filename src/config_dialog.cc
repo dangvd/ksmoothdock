@@ -85,11 +85,12 @@ ConfigDialog::ConfigDialog(KSmoothDock* parent)
   tooltipFontSize_->setSingleStep(2);
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(170, 280, 341, 32));
+  buttonBox_->setGeometry(QRect(80, 280, 505, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Ok
       | QDialogButtonBox::Apply | QDialogButtonBox::RestoreDefaults
       | QDialogButtonBox::Cancel);
+  buttonBox_->setCenterButtons(true);
 
   connect(buttonBox_, SIGNAL(accepted()), parent_, SLOT(updateConfig()));
   connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));

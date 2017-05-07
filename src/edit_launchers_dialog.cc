@@ -176,10 +176,11 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   icon_->setGeometry(QRect(680, 390, 80, 80));
 
   buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(360, 520, 341, 32));
+  buttonBox_->setGeometry(QRect(80, 520, 960, 32));
   buttonBox_->setOrientation(Qt::Horizontal);
   buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
       |QDialogButtonBox::Cancel);
+  buttonBox_->setCenterButtons(true);
   connect(buttonBox_, SIGNAL(accepted()),
       parent_, SLOT(updateLauncherConfig()));
   connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));
