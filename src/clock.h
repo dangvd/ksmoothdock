@@ -16,29 +16,39 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_ICONLESS_DOCK_ITEM_H_
-#define KSMOOTHDOCK_ICONLESS_DOCK_ITEM_H_
+#ifndef KSMOOTHDOCK_CLOCK_H_
+#define KSMOOTHDOCK_CLOCK_H_
 
-#include "dock_item.h"
+#include "iconless_dock_item.h"
+
+#include <QObject>
+
+#include <KConfig>
 
 namespace ksmoothdock {
 
-// Base class for dock items without an icon, such as clock.
-class IconlessDockItem : public DockItem {
+// A digital clock.
+class Clock : public QObject, public IconlessDockItem {
+  Q_OBJECT
+
  public:
-  IconlessDockItem(KSmoothDock* parent, const QString& label,
-      Qt::Orientation orientation, int minSize, int maxSize, float whRatio)
-      : DockItem(parent, label, orientation, minSize, maxSize),
-        whRatio_(whRatio) {}
+  Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
+        int maxSize, KConfig *config);
 
-  int getWidthForSize(int size) const override;
-  int getHeightForSize(int size) const override;
+  void draw(QPainter* painter) const override;
+  void mousePressEvent(QMouseEvent* e) override;
 
- protected:
-  // Width/height ratio.
-  float whRatio_;
+ public slots:
+  void updateTime();
+
+ private:
+  static constexpr float kWhRatio24HourClock = 2.0;
+  static constexpr float kWhRatio12HourClock = 2.5;
+
+  KConfig* config_;
+  bool use24HourClock_;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_ICONLESS_DOCK_ITEM_H_
+#endif  // KSMOOTHDOCK_CLOCK_H_

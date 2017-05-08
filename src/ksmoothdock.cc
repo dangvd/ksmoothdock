@@ -38,9 +38,9 @@
 #include <KAboutData>
 #include <KConfigGroup>
 #include <KLocalizedString>
-#include <KWindowSystem>
 #include <netwm_def.h>
 
+#include "clock.h"
 #include "desktop_selector.h"
 #include "launcher.h"
 #include "welcome_dialog.h"
@@ -60,6 +60,7 @@ KSmoothDock::KSmoothDock(const QString& configFile,
     : QWidget(),
       autoHide_(false),
       showPager_(false),
+      showClock_(false),
       showBorder_(true),
       launchersDir_(launchersDir),
       configFile_(configFile),
@@ -255,8 +256,7 @@ void KSmoothDock::showEditLaunchersDialog() {
 void KSmoothDock::applyLauncherConfig() {
   items_.clear();
   const int numLaunchers = editLaunchersDialog_.launchers_->count();
-  items_.reserve(showPager_ ? numLaunchers + KWindowSystem::numberOfDesktops()
-                            : numLaunchers);
+  reserveItems(numLaunchers);
   for (int i = 0; i < numLaunchers; ++i) {
     QListWidgetItem* listItem = editLaunchersDialog_.launchers_->item(i);
     LauncherInfo info = listItem->data(Qt::UserRole).value<LauncherInfo>();
@@ -370,6 +370,7 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 void KSmoothDock::initUi() {
   initLaunchers();
   initPager();
+  initClock();
   initLayoutVars();
   updateLayout();
   setStrut();
@@ -424,6 +425,9 @@ void KSmoothDock::createMenu() {
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
   pagerAction_->setCheckable(true);
+  clockAction_ = extraComponents->addAction(i18n("Clock"), this,
+      SLOT(toggleClock()));
+  clockAction_->setCheckable(true);
 
   menu_.addSeparator();
   menu_.addAction(QIcon::fromTheme("help-contents"),
@@ -456,6 +460,9 @@ void KSmoothDock::loadConfig() {
   showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
 
+  showClock_ = group.readEntry("showClock", false);
+  clockAction_->setChecked(showClock_);
+
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
   maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
   if (maxSize_ < minSize_) {
@@ -478,6 +485,7 @@ void KSmoothDock::saveConfig() {
   group.writeEntry("position", static_cast<int>(position_));
   group.writeEntry("autoHide", autoHide_);
   group.writeEntry("showPager", showPager_);
+  group.writeEntry("showClock", showClock_);
   group.writeEntry("minimumIconSize", minSize_);
   group.writeEntry("maximumIconSize", maxSize_);
   group.writeEntry("backgroundColor", backgroundColor_);
@@ -500,13 +508,14 @@ bool KSmoothDock::loadLaunchers() {
   if (!QDir::root().exists(launchersDir_)) {
     return false;
   }
+
   QDir launchersDir(launchersDir_);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   if (files.isEmpty()) {
     return false;
   }
-  items_.reserve(showPager_ ? files.size() + KWindowSystem::numberOfDesktops()
-                            : files.size());
+
+  reserveItems(files.size());
   for (int i = 0; i < files.size(); ++i) {
     const QString& file = launchersDir_ + "/" + files.at(i);
     items_.push_back(std::unique_ptr<DockItem>(
@@ -527,8 +536,7 @@ void KSmoothDock::createDefaultLaunchers() {
     {"Audio Player", "audio-headphones", "amarok"},
     {"System Settings", "preferences-system", "systemsettings5"}
   };
-  items_.reserve(showPager_ ? kNumItems + KWindowSystem::numberOfDesktops()
-                            : kNumItems);
+  reserveItems(kNumItems);
   for (int i = 0; i < kNumItems; ++i) {
     items_.push_back(std::unique_ptr<DockItem>(
       new Launcher(this, kItems[i][0], orientation_, kItems[i][1], minSize_,
@@ -562,6 +570,13 @@ void KSmoothDock::initPager() {
       items_.push_back(std::unique_ptr<DockItem>(item));
       item->init();
     }
+  }
+}
+
+void KSmoothDock::initClock() {
+  if (showClock_) {
+    items_.push_back(std::unique_ptr<DockItem>(new Clock(
+        this, orientation_, minSize_, maxSize_, &config_)));
   }
 }
 

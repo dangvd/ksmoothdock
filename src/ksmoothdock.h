@@ -34,6 +34,7 @@
 
 #include <KAboutApplicationDialog>
 #include <KConfig>
+#include <KWindowSystem>
 
 #include "config_dialog.h"
 #include "dock_item.h"
@@ -116,6 +117,12 @@ class KSmoothDock : public QWidget {
     }
   }
 
+  void toggleClock() {
+    showClock_ = !showClock_;
+    reload();
+    saveConfig();
+  }
+
   // Sets the dock on a specific screen given screen index.
   // Thus 0 is screen 1 and so on.
   void setScreen(int screen);
@@ -184,6 +191,13 @@ class KSmoothDock : public QWidget {
 
   int numItems() { return static_cast<int>(items_.size()); }
 
+  void reserveItems(int numLaunchers) {
+    const int numPagerIcons = showPager_ ? KWindowSystem::numberOfDesktops()
+                                         : 0;
+    const int numClockIcons = showClock_ ? 1 : 0;
+    items_.reserve(numLaunchers + numPagerIcons + numClockIcons);
+  }
+
   void initUi();
 
   void createMenu();
@@ -197,6 +211,7 @@ class KSmoothDock : public QWidget {
   void saveLaunchers();
 
   void initPager();
+  void initClock();
 
   void initLayoutVars();
 
@@ -227,6 +242,7 @@ class KSmoothDock : public QWidget {
   PanelPosition position_;
   bool autoHide_;
   bool showPager_;
+  bool showClock_;
   int minSize_;
   int maxSize_;
   QColor backgroundColor_;  // including alpha.
@@ -268,6 +284,7 @@ class KSmoothDock : public QWidget {
   QAction* positionRight_;
   QAction* autoHideAction_;
   QAction* pagerAction_;
+  QAction* clockAction_;
   // Actions to set the dock on a specific screen.
   std::vector<QAction*> screenActions_;
 

@@ -54,6 +54,9 @@ class KSmoothDockTest: public QObject {
   // Tests toggling the pager.
   void togglePager();
 
+  // Tests toggling the clock.
+  void toggleClock();
+
  private:
   static const int kNumDefaultLaunchers = 7;
 
@@ -96,6 +99,16 @@ class KSmoothDockTest: public QObject {
     }
   }
 
+  void verifyClock(bool enabled) {
+    QCOMPARE(dock_->showClock_, enabled);
+    QCOMPARE(dock_->clockAction_->isChecked(), enabled);
+    if (enabled) {
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+    } else {
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
+    }
+  }
+
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
   std::unique_ptr<QTemporaryDir> launchersDir_;
@@ -132,6 +145,14 @@ void KSmoothDockTest::autoHide() {
 void KSmoothDockTest::togglePager() {
   verifyPager(false);
   // TODO: Test when the pager is enabled.
+}
+
+void KSmoothDockTest::toggleClock() {
+  verifyClock(false);
+  dock_->clockAction_->trigger();
+  verifyClock(true);
+  dock_->clockAction_->trigger();
+  verifyClock(false);
 }
 
 }  // namespace ksmoothdock

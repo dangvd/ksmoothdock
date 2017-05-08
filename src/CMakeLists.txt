@@ -13,9 +13,9 @@ find_package(Qt5 REQUIRED COMPONENTS DBus Gui Test Widgets)
 find_package(KF5 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
-set(SRCS icon_based_dock_item.cc ksmoothdock.cc
-  launcher.cc tooltip.cc config_dialog.cc welcome_dialog.cc
-  desktop_selector.cc edit_launchers_dialog.cc iconless_dock_item.cc)
+set(SRCS icon_based_dock_item.cc ksmoothdock.cc launcher.cc tooltip.cc
+    config_dialog.cc welcome_dialog.cc desktop_selector.cc
+    edit_launchers_dialog.cc iconless_dock_item.cc clock.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
