@@ -27,6 +27,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPoint>
+#include <QRect>
 #include <QString>
 #include <QTimer>
 #include <QWidget>
@@ -242,17 +243,12 @@ class KSmoothDock : public QWidget {
   int minHeight_;
   int maxHeight_;
   int parabolicMaxX_;
-  // The x-coordinate of the screen that the dock is on.
-  int screenX_;
-  // The y-coordinate of the screen that the dock is on.
-  int screenY_;
+  QRect screenGeometry_;  // the geometry of the screen that the dock is on.
 
   int numAnimationSteps_;
   int animationSpeed_;
 
   Qt::Orientation orientation_;
-  int desktopWidth_;
-  int desktopHeight_;
 
   // The path to the directory to store quick launchers as desktop files.
   QString launchersDir_;

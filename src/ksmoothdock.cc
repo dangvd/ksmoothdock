@@ -82,8 +82,6 @@ void KSmoothDock::init() {
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
   setMouseTracking(true);
-  desktopWidth_ = QApplication::desktop()->screenGeometry().width();
-  desktopHeight_ = QApplication::desktop()->screenGeometry().height();
   animationTimer_.reset(new QTimer(this));
   connect(animationTimer_.get(), SIGNAL(timeout()), this,
       SLOT(updateAnimation()));
@@ -104,19 +102,19 @@ void KSmoothDock::resize(int w, int h) {
   QWidget::resize(w, h);
   int x, y;
   if (position_ == PanelPosition::Top) {
-    x = (desktopWidth_ - w) / 2;
+    x = (screenGeometry_.width() - w) / 2;
     y = 0;
   } else if (position_ == PanelPosition::Bottom) {
-    x = (desktopWidth_ - w) / 2;
-    y = desktopHeight_ - h;
+    x = (screenGeometry_.width() - w) / 2;
+    y = screenGeometry_.height() - h;
   } else if (position_ == PanelPosition::Left) {
     x = 0;
-    y = (desktopHeight_ - h) / 2;
+    y = (screenGeometry_.height() - h) / 2;
   } else {  // Right
-    x = desktopWidth_ - w;
-    y = (desktopHeight_ - h) / 2;
+    x = screenGeometry_.width() - w;
+    y = (screenGeometry_.height() - h) / 2;
   }
-  move(x + screenX_, y + screenY_);
+  move(x + screenGeometry_.x(), y + screenGeometry_.y());
   // This is to fix the bug that if launched from Plasma Quicklaunch,
   // KSmoothDock still doesn't show on all desktops even though
   // we've already called this in the constructor.
@@ -156,8 +154,7 @@ void KSmoothDock::setScreen(int screen) {
   for (int i = 0; i < static_cast<int>(screenActions_.size()); ++i) {
     screenActions_[i]->setChecked(i == screen);
   }
-  screenX_ = QApplication::desktop()->screenGeometry(screen).x();
-  screenY_ = QApplication::desktop()->screenGeometry(screen).y();
+  screenGeometry_ = QApplication::desktop()->screenGeometry(screen);
 }
 
 void KSmoothDock::updateAnimation() {
@@ -404,11 +401,16 @@ void KSmoothDock::createMenu() {
     // TODO(dangvd): Make it work with any number of screens.
     constexpr int kMaxScreens = 4;
     for (int i = 0; i < numScreens && i < kMaxScreens; ++i) {
-      QAction* action = screen->addAction(
-          i18n("Screen ") + QString::number(i + 1),
-          this, SLOT(i == 0 ? setScreen1()
-                            : i == 1 ? setScreen2()
-                                     : i == 2 ? setScreen3() : setScreen4()));
+      QAction* action;
+      if (i == 0) {
+        action = screen->addAction(i18n("Screen 1"), this, SLOT(setScreen1()));
+      } else if (i == 1) {
+        action = screen->addAction(i18n("Screen 2"), this, SLOT(setScreen2()));
+      } else if (i == 2) {
+        action = screen->addAction(i18n("Screen 3"), this, SLOT(setScreen3()));
+      } else {
+        action = screen->addAction(i18n("Screen 4"), this, SLOT(setScreen4()));
+      }
       action->setCheckable(true);
       screenActions_.push_back(action);
     }
@@ -815,14 +817,58 @@ void KSmoothDock::updateLayout(int x, int y) {
 }
 
 void KSmoothDock::setStrut() {
+  // Somehow if we use setExtendedStrut() as below when screen_ is 0,
+  // the strut extends the whole combined desktop instead of just the first
+  // screen.
+  if (screen_ == 0) {
+    if (position_ == PanelPosition::Top) {
+      KWindowSystem::setStrut(winId(), 0, 0, height(), 0);
+    } else if (position_ == PanelPosition::Bottom) {
+      KWindowSystem::setStrut(winId(), 0, 0, 0, height());
+    } else if (position_ == PanelPosition::Left) {
+      KWindowSystem::setStrut(winId(), width(), 0, 0, 0);
+    } else {  // Right
+      KWindowSystem::setStrut(winId(), 0, width(), 0, 0);
+    }
+    return;
+  }
+
   if (position_ == PanelPosition::Top) {
-    KWindowSystem::setStrut(winId(), 0, 0, height(), 0);
+    KWindowSystem::setExtendedStrut(
+        winId(),
+        0, 0, 0,
+        0, 0, 0,
+        height(),
+        screenGeometry_.x(),
+        screenGeometry_.x() + screenGeometry_.width(),
+        0, 0, 0);
   } else if (position_ == PanelPosition::Bottom) {
-    KWindowSystem::setStrut(winId(), 0, 0, 0, height());
+    KWindowSystem::setExtendedStrut(
+        winId(),
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0,
+        height(),
+        screenGeometry_.x(),
+        screenGeometry_.x() + screenGeometry_.width());
   } else if (position_ == PanelPosition::Left) {
-    KWindowSystem::setStrut(winId(), width(), 0, 0, 0);
+    KWindowSystem::setExtendedStrut(
+        winId(),
+        width(),
+        screenGeometry_.y(),
+        screenGeometry_.y() + screenGeometry_.height(),
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0);
   } else {  // Right
-    KWindowSystem::setStrut(winId(), 0, width(), 0, 0);
+    KWindowSystem::setExtendedStrut(
+        winId(),
+        0, 0, 0,
+        width(),
+        screenGeometry_.y(),
+        screenGeometry_.y() + screenGeometry_.height(),
+        0, 0, 0,
+        0, 0, 0);
   }
 }
 
@@ -851,24 +897,25 @@ void KSmoothDock::showTooltip(int i) {
   tooltip_.setText(items_[i]->label_);
   int x, y;
   if (position_ == PanelPosition::Top) {
-    x = (desktopWidth_ - width()) / 2 + items_[i]->left_
+    x = (screenGeometry_.width() - width()) / 2 + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
     y = maxHeight_ + kTooltipSpacing;
   } else if (position_ == PanelPosition::Bottom) {
-    x = (desktopWidth_ - width()) / 2 + items_[i]->left_
+    x = (screenGeometry_.width() - width()) / 2 + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
     // No need for additional tooltip spacing in this position.
-    y = desktopHeight_ - maxHeight_ - tooltip_.height();
+    y = screenGeometry_.height() - maxHeight_ - tooltip_.height();
   } else if (position_ == PanelPosition::Left) {
     x = maxWidth_ + kTooltipSpacing;
-    y = (desktopHeight_ - height()) / 2 + items_[i]->top_
+    y = (screenGeometry_.height() - height()) / 2 + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   } else {  // Right
-    x = desktopWidth_ - maxWidth_ - tooltip_.width() - kTooltipSpacing;
-    y = (desktopHeight_ - height()) / 2 + items_[i]->top_
+    x = screenGeometry_.width() - maxWidth_ - tooltip_.width()
+        - kTooltipSpacing;
+    y = (screenGeometry_.height() - height()) / 2 + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   }
-  tooltip_.move(x, y);
+  tooltip_.move(x + screenGeometry_.x(), y + screenGeometry_.y());
   tooltip_.show();
 }
 
