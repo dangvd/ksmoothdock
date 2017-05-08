@@ -25,8 +25,8 @@
 #include <QApplication>
 #include <QColor>
 #include <QCursor>
-#include <QDir>
 #include <QDesktopWidget>
+#include <QDir>
 #include <QIcon>
 #include <QListWidgetItem>
 #include <QPainter>
@@ -116,7 +116,7 @@ void KSmoothDock::resize(int w, int h) {
     x = desktopWidth_ - w;
     y = (desktopHeight_ - h) / 2;
   }
-  move(x, y);
+  move(x + screenX_, y + screenY_);
   // This is to fix the bug that if launched from Plasma Quicklaunch,
   // KSmoothDock still doesn't show on all desktops even though
   // we've already called this in the constructor.
@@ -149,6 +149,15 @@ void KSmoothDock::setPosition(PanelPosition position) {
   positionBottom_->setChecked(position == PanelPosition::Bottom);
   positionLeft_->setChecked(position == PanelPosition::Left);
   positionRight_->setChecked(position == PanelPosition::Right);
+}
+
+void KSmoothDock::setScreen(int screen) {
+  screen_ = screen;
+  for (int i = 0; i < static_cast<int>(screenActions_.size()); ++i) {
+    screenActions_[i]->setChecked(i == screen);
+  }
+  screenX_ = QApplication::desktop()->screenGeometry(screen).x();
+  screenY_ = QApplication::desktop()->screenGeometry(screen).y();
 }
 
 void KSmoothDock::updateAnimation() {
@@ -389,6 +398,22 @@ void KSmoothDock::createMenu() {
       SLOT(setPositionRight()));
   positionRight_->setCheckable(true);
 
+  const int numScreens = QApplication::desktop()->screenCount();
+  if (numScreens > 1) {
+    QMenu* screen = menu_.addMenu(i18n("Screen"));
+    // TODO(dangvd): Make it work with any number of screens.
+    constexpr int kMaxScreens = 4;
+    for (int i = 0; i < numScreens && i < kMaxScreens; ++i) {
+      QAction* action = screen->addAction(
+          i18n("Screen ") + QString::number(i + 1),
+          this, SLOT(i == 0 ? setScreen1()
+                            : i == 1 ? setScreen2()
+                                     : i == 2 ? setScreen3() : setScreen4()));
+      action->setCheckable(true);
+      screenActions_.push_back(action);
+    }
+  }
+
   autoHideAction_ = menu_.addAction(i18n("Auto &Hide"), this,
       SLOT(toggleAutoHide()));
   autoHideAction_->setCheckable(true);
@@ -443,6 +468,7 @@ void KSmoothDock::loadConfig() {
                                  QColor(kDefaultBorderColor));
   tooltipFontSize_ = group.readEntry("tooltipFontSize",
                                      kDefaultTooltipFontSize);
+  setScreen(group.readEntry("screen", 0));
 }
 
 void KSmoothDock::saveConfig() {
@@ -456,6 +482,7 @@ void KSmoothDock::saveConfig() {
   group.writeEntry("showBorder", showBorder_);
   group.writeEntry("borderColor", borderColor_);
   group.writeEntry("tooltipFontSize", tooltipFontSize_);
+  group.writeEntry("screen", screen_);
   config_.sync();
 }
 
@@ -861,4 +888,3 @@ int KSmoothDock::parabolic(int x) {
 }
 
 }  // namespace ksmoothdock
-

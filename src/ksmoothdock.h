@@ -75,7 +75,7 @@ class KSmoothDock : public QWidget {
 
   void setPositionTop() {
     setPosition(PanelPosition::Top);
-    reload(); 
+    reload();
     saveConfig();
   }
 
@@ -113,6 +113,34 @@ class KSmoothDock : public QWidget {
     if (showPager_) {
       reload();
     }
+  }
+
+  // Sets the dock on a specific screen given screen index.
+  // Thus 0 is screen 1 and so on.
+  void setScreen(int screen);
+
+  void setScreen1() {
+    setScreen(0);
+    reload();
+    saveConfig();
+  }
+
+  void setScreen2() {
+    setScreen(1);
+    reload();
+    saveConfig();
+  }
+
+  void setScreen3() {
+    setScreen(2);
+    reload();
+    saveConfig();
+  }
+
+  void setScreen4() {
+    setScreen(3);
+    reload();
+    saveConfig();
   }
 
   // Slot to update zoom animation.
@@ -204,6 +232,7 @@ class KSmoothDock : public QWidget {
   bool showBorder_;
   QColor borderColor_;  // no alpha.
   int tooltipFontSize_;
+  int screen_;  // the screen (as screen index) that the dock is on.
 
   // Non-config variables.
 
@@ -213,6 +242,11 @@ class KSmoothDock : public QWidget {
   int minHeight_;
   int maxHeight_;
   int parabolicMaxX_;
+  // The x-coordinate of the screen that the dock is on.
+  int screenX_;
+  // The y-coordinate of the screen that the dock is on.
+  int screenY_;
+
   int numAnimationSteps_;
   int animationSpeed_;
 
@@ -238,6 +272,8 @@ class KSmoothDock : public QWidget {
   QAction* positionRight_;
   QAction* autoHideAction_;
   QAction* pagerAction_;
+  // Actions to set the dock on a specific screen.
+  std::vector<QAction*> screenActions_;
 
   KAboutApplicationDialog aboutDialog_;
   ConfigDialog configDialog_;
