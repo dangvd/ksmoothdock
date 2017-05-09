@@ -51,7 +51,8 @@ void Clock::draw(QPainter *painter) const {
   QFontMetrics metrics(font);
   // Scale the font size according to the size of the dock.
   font.setPointSize(font.pointSize() * getHeight()
-                    / metrics.boundingRect(time).height());
+                    / metrics.tightBoundingRect(time).height());
+  font.setPointSize(static_cast<int>(font.pointSize() * 0.8));
   painter->setFont(font);
 
   painter->setPen(QColor("white"));

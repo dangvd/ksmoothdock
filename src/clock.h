@@ -42,8 +42,8 @@ class Clock : public QObject, public IconlessDockItem {
   void updateTime();
 
  private:
-  static constexpr float kWhRatio24HourClock = 2.0;
-  static constexpr float kWhRatio12HourClock = 2.5;
+  static constexpr float kWhRatio24HourClock = 2.8;
+  static constexpr float kWhRatio12HourClock = 4.0;
 
   KConfig* config_;
   bool use24HourClock_;
