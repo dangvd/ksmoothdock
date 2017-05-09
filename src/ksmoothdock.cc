@@ -267,6 +267,7 @@ void KSmoothDock::applyLauncherConfig() {
   saveLaunchers();
 
   initPager();
+  initClock();
   initLayoutVars();
   updateLayout();
   update();
