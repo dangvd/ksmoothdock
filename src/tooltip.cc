@@ -74,6 +74,7 @@ void Tooltip::updateLayout() {
 
 void Tooltip::paintEvent(QPaintEvent* e) {
   QPainter painter(this);
+  painter.setRenderHint(QPainter::TextAntialiasing);
   QFontMetrics metrics(font_);
   const int kDeltaY = metrics.height() / 2;
 

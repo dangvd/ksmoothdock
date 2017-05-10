@@ -54,8 +54,19 @@ void Clock::draw(QPainter *painter) const {
                     / metrics.tightBoundingRect(time).height());
   font.setPointSize(static_cast<int>(font.pointSize() * 0.8));
   painter->setFont(font);
+  painter->setRenderHint(QPainter::TextAntialiasing);
 
-  painter->setPen(QColor("white"));
+  if (size_ > minSize_) {
+    painter->setPen(Qt::black);
+    for (int i = -2; i <= 2; ++i) {
+      for (int j = -2; j <= 2; ++j) {
+        painter->drawText(left_ + i, top_ + j, getWidth(), getHeight(),
+                          Qt::AlignCenter, time);
+      }
+    }
+  }
+
+  painter->setPen(Qt::white);
   painter->drawText(left_, top_, getWidth(), getHeight(), Qt::AlignCenter,
                     time);
 }
