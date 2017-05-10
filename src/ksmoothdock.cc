@@ -589,7 +589,6 @@ void KSmoothDock::initLayoutVars() {
 
   tooltip_.setFontSize(tooltipFontSize_);
   tooltip_.setFontBold(true);
-  tooltip_.setFontItalic(true);
   tooltip_.setFontColor(Qt::white);
   tooltip_.setBackgroundColor(Qt::black);
 
