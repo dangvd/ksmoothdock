@@ -37,6 +37,7 @@ class Clock : public QObject, public IconlessDockItem {
 
   void draw(QPainter* painter) const override;
   void mousePressEvent(QMouseEvent* e) override;
+  QString getLabel() const override;
 
  public slots:
   void updateTime();

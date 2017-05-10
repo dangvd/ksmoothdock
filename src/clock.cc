@@ -19,6 +19,7 @@
 #include "clock.h"
 
 #include <QColor>
+#include <QDate>
 #include <QFont>
 #include <QFontMetrics>
 #include <QTime>
@@ -72,6 +73,10 @@ void Clock::draw(QPainter *painter) const {
 }
 
 void Clock::mousePressEvent(QMouseEvent *e) {}
+
+QString Clock::getLabel() const {
+  return QDate::currentDate().toString(Qt::SystemLocaleLongDate);
+}
 
 void Clock::updateTime() {
   parent_->update();

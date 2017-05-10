@@ -910,7 +910,7 @@ void KSmoothDock::showTooltip(int x, int y) {
 }
 
 void KSmoothDock::showTooltip(int i) {
-  tooltip_.setText(items_[i]->label_);
+  tooltip_.setText(items_[i]->getLabel());
   int x, y;
   if (position_ == PanelPosition::Top) {
     x = (screenGeometry_.width() - width()) / 2 + items_[i]->left_
