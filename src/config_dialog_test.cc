@@ -67,8 +67,8 @@ class ConfigDialogTest: public QObject {
 
  private:
   bool compareDouble(double x, double y) {
-    static double kDelta = 0.01;
-    return abs(x - y) < kDelta;
+    static constexpr double kDelta = 0.01;
+    return std::fabs(x - y) < kDelta;
   }
 
   ConfigDialog* dialog_;
