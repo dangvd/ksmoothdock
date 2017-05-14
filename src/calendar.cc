@@ -16,44 +16,26 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_CLOCK_H_
-#define KSMOOTHDOCK_CLOCK_H_
-
-#include "iconless_dock_item.h"
-
-#include <QObject>
-
-#include <KConfig>
-
 #include "calendar.h"
+
+#include <QDate>
+
+#include <KLocalizedString>
+
+#include "ksmoothdock.h"
 
 namespace ksmoothdock {
 
-// A digital clock.
-class Clock : public QObject, public IconlessDockItem {
-  Q_OBJECT
+Calendar::Calendar(KSmoothDock* parent)
+    : QDialog(parent),
+      calendar_(this) {
+  setWindowTitle(i18n("Calendar"));
+  resize(calendar_.sizeHint());
+}
 
- public:
-  Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-        int maxSize, KConfig *config);
-
-  void draw(QPainter* painter) const override;
-  void mousePressEvent(QMouseEvent* e) override;
-  QString getLabel() const override;
-
- public slots:
-  void updateTime();
-
- private:
-  static constexpr float kWhRatio24HourClock = 2.8;
-  static constexpr float kWhRatio12HourClock = 4.0;
-
-  KConfig* config_;
-  bool use24HourClock_;
-
-  Calendar calendar_;
-};
+void Calendar::toggleCalendar() {
+  calendar_.setSelectedDate(QDate::currentDate());
+  setVisible(!isVisible());
+}
 
 }  // namespace ksmoothdock
-
-#endif  // KSMOOTHDOCK_CLOCK_H_

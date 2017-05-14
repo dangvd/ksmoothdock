@@ -35,7 +35,8 @@ Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
              int maxSize, KConfig* config)
     : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
                        0.0 /* whRatio */),
-      config_(config) {
+      config_(config),
+      calendar_(parent) {
   KConfigGroup group(config_, "Clock");
   use24HourClock_ = group.readEntry("use24HourClock", true);
   whRatio_ = use24HourClock_ ? kWhRatio24HourClock : kWhRatio12HourClock;
@@ -72,7 +73,11 @@ void Clock::draw(QPainter *painter) const {
                     time);
 }
 
-void Clock::mousePressEvent(QMouseEvent *e) {}
+void Clock::mousePressEvent(QMouseEvent *e) {
+  if (e->button() == Qt::LeftButton) {
+    calendar_.toggleCalendar();
+  } else if (e->button() == Qt::RightButton) {}
+}
 
 QString Clock::getLabel() const {
   return QDate::currentDate().toString(Qt::SystemLocaleLongDate);
