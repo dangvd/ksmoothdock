@@ -30,6 +30,7 @@ Calendar::Calendar(KSmoothDock* parent)
     : QDialog(parent),
       calendar_(this) {
   setWindowTitle(i18n("Calendar"));
+  calendar_.setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
   resize(calendar_.sizeHint());
 }
 
