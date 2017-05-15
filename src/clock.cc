@@ -26,8 +26,10 @@
 #include <QTimer>
 
 #include <KConfigGroup>
+#include <KLocalizedString>
 
 #include "ksmoothdock.h"
+#include "launcher.h"
 
 namespace ksmoothdock {
 
@@ -40,6 +42,7 @@ Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
   KConfigGroup group(config_, "Clock");
   use24HourClock_ = group.readEntry("use24HourClock", true);
   whRatio_ = use24HourClock_ ? kWhRatio24HourClock : kWhRatio12HourClock;
+  createMenu();
 
   QTimer* timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
@@ -76,7 +79,9 @@ void Clock::draw(QPainter *painter) const {
 void Clock::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
     calendar_.toggleCalendar();
-  } else if (e->button() == Qt::RightButton) {}
+  } else if (e->button() == Qt::RightButton) {
+    menu_.popup(e->globalPos());
+  }
 }
 
 QString Clock::getLabel() const {
@@ -85,6 +90,17 @@ QString Clock::getLabel() const {
 
 void Clock::updateTime() {
   parent_->update();
+}
+
+void Clock::setDateAndTime() {
+  Launcher::launch("kcmshell5 clock");
+}
+
+void Clock::createMenu() {
+  menu_.addAction(QIcon::fromTheme("preferences-system-time"),
+                  i18n("Date and Time &Settings"),
+                  this,
+                  SLOT(setDateAndTime()));
 }
 
 }  // namespace ksmoothdock
