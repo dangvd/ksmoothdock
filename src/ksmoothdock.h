@@ -175,7 +175,7 @@ class KSmoothDock : public QWidget {
  private:
   static const int kDefaultMinSize = 48;
   static const int kDefaultMaxSize = 128;
-  static const int kDefaultTooltipFontSize = 20;
+  static const int kDefaultTooltipFontSize = 18;
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
 
