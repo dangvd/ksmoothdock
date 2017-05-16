@@ -21,8 +21,10 @@
 
 #include "iconless_dock_item.h"
 
+#include <QAction>
 #include <QMenu>
 #include <QObject>
+#include <QString>
 
 #include <KConfig>
 
@@ -47,20 +49,29 @@ class Clock : public QObject, public IconlessDockItem {
 
   void setDateAndTime();
 
+  void set24HourClock(bool enabled);
+  void toggle24HourClock();
+
  private:
-  static constexpr float kWhRatio24HourClock = 2.8;
-  static constexpr float kWhRatio12HourClock = 4.0;
+  static constexpr float kWhRatio = 2.8;
 
   // Creates the context menu.
   void createMenu();
 
+  void loadConfig();
+  void saveConfig();
+
   KConfig* config_;
   bool use24HourClock_;
+
+  QString timeFormat_;
 
   Calendar calendar_;
 
   // Context menu.
   QMenu menu_;
+
+  QAction* use24HourClockAction_;
 };
 
 }  // namespace ksmoothdock

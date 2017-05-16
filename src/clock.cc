@@ -36,13 +36,11 @@ namespace ksmoothdock {
 Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
              int maxSize, KConfig* config)
     : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
-                       0.0 /* whRatio */),
+                       kWhRatio),
       config_(config),
       calendar_(parent) {
-  KConfigGroup group(config_, "Clock");
-  use24HourClock_ = group.readEntry("use24HourClock", true);
-  whRatio_ = use24HourClock_ ? kWhRatio24HourClock : kWhRatio12HourClock;
   createMenu();
+  loadConfig();
 
   QTimer* timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
@@ -50,14 +48,13 @@ Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
 }
 
 void Clock::draw(QPainter *painter) const {
-  const QString time = QTime::currentTime().toString("hh:mm");
+  const QString time = QTime::currentTime().toString(timeFormat_);
 
   QFont font;
   QFontMetrics metrics(font);
   // Scale the font size according to the size of the dock.
-  font.setPointSize(font.pointSize() * getHeight()
-                    / metrics.tightBoundingRect(time).height());
-  font.setPointSize(static_cast<int>(font.pointSize() * 0.8));
+  font.setPointSize(font.pointSize() * getWidth()
+                    / metrics.tightBoundingRect(time).width());
   painter->setFont(font);
   painter->setRenderHint(QPainter::TextAntialiasing);
 
@@ -96,11 +93,37 @@ void Clock::setDateAndTime() {
   Launcher::launch("kcmshell5 clock");
 }
 
+void Clock::set24HourClock(bool enabled) {
+  use24HourClock_ = enabled;
+  timeFormat_ = enabled ? "hh:mm" : "hh:mm AP";
+  use24HourClockAction_->setChecked(enabled);
+}
+
+void Clock::toggle24HourClock() {
+  set24HourClock(!use24HourClock_);
+  parent_->update();
+  saveConfig();
+}
+
 void Clock::createMenu() {
   menu_.addAction(QIcon::fromTheme("preferences-system-time"),
                   i18n("Date and Time &Settings"),
                   this,
                   SLOT(setDateAndTime()));
+  use24HourClockAction_ = menu_.addAction(i18n("Use 24-hour Clock"),
+                                          this,
+                                          SLOT(toggle24HourClock()));
+  use24HourClockAction_->setCheckable(true);
+}
+
+void Clock::loadConfig() {
+  KConfigGroup group(config_, "Clock");
+  set24HourClock(group.readEntry("use24HourClock", true));
+}
+
+void Clock::saveConfig() {
+  KConfigGroup group(config_, "Clock");
+  group.writeEntry("use24HourClock", use24HourClock_);
 }
 
 }  // namespace ksmoothdock
