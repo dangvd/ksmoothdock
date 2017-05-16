@@ -174,7 +174,7 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
 
 void DesktopSelector::createMenu() {
   menu_.addAction(
-      i18n("Set Wallpaper For Desktop ") + QString::number(desktop_),
+      i18n("Set Wallpaper for Desktop ") + QString::number(desktop_),
       this, 
       SLOT(changeWallpaper()));
 }
