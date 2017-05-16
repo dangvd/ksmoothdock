@@ -105,11 +105,7 @@ class KSmoothDock : public QWidget {
     saveConfig();
   }
 
-  void togglePager() {
-    showPager_ = !showPager_;
-    reload();
-    saveConfig();
-  }
+  void togglePager();
 
   void updatePager() {
     if (showPager_) {

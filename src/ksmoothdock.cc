@@ -38,6 +38,7 @@
 #include <KAboutData>
 #include <KConfigGroup>
 #include <KLocalizedString>
+#include <KMessageBox>
 #include <netwm_def.h>
 
 #include "clock.h"
@@ -148,6 +149,23 @@ void KSmoothDock::setPosition(PanelPosition position) {
   positionBottom_->setChecked(position == PanelPosition::Bottom);
   positionLeft_->setChecked(position == PanelPosition::Left);
   positionRight_->setChecked(position == PanelPosition::Right);
+}
+
+void KSmoothDock::togglePager() {
+  showPager_ = !showPager_;
+  reload();
+  saveConfig();
+
+  if (showPager_) {
+    KMessageBox::information(
+        nullptr,
+        i18n("The pager supports setting different wallpapers for different "
+             "desktops. Simply right-click on a desktop icon to set "
+             "the wallpaper for that desktop.\nNote: This requires Plasma "
+             "desktop widgets to stay unlocked."),
+        i18n("Information"),
+        "showPagerInfo");
+  }
 }
 
 void KSmoothDock::setScreen(int screen) {

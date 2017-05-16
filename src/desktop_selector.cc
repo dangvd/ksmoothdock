@@ -52,15 +52,6 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
 void DesktopSelector::init() {
   KConfigGroup group(config_, "Pager");
   wallpaper_ = group.readEntry(getConfigKey(), "");
-  if (wallpaper_.isEmpty() && desktop_ == 1) {
-    KMessageBox::information(
-        Q_NULLPTR,
-        i18n("It's recommended to use the pager's wallpaper setting "
-            "functionality to better distinguish between different virtual "
-            "desktops."),
-        i18n("Information"),
-        "showPagerInfo");
-  }
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpaper_));
   } else {
@@ -105,12 +96,6 @@ void DesktopSelector::setIconScaled(const QPixmap& icon) {
 }
 
 void DesktopSelector::changeWallpaper() {
-  KMessageBox::information(
-      Q_NULLPTR,
-      i18n("Setting wallpaper requires Plasma desktop widgets to stay "
-          "unlocked."),
-      i18n("Information"),
-      "showWallpaperSettingInfo");
   const QString& wallpaper = QFileDialog::getOpenFileName(
       parent_,
       i18n("Select Wallpaper Image"),
@@ -151,7 +136,7 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
 
   if (!QFile::exists(wallpaper)) {
     KMessageBox::error(
-        Q_NULLPTR,
+        nullptr,
         i18n("Failed to load wallpaper from: ") + wallpaper);
     return;
   }
@@ -167,9 +152,9 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
       + wallpaper + "')}");
   if (response.type() == QDBusMessage::ErrorMessage) {
     KMessageBox::error(
-        Q_NULLPTR,
+        nullptr,
         i18n("Failed to update wallpaper. Please make sure Plasma desktop "
-            "widgets are unlocked in order to set wallpaper."));
+             "widgets are unlocked in order to set wallpaper."));
   }
 }
 
