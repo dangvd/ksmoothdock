@@ -23,6 +23,7 @@
 #include <QDesktopWidget>
 #include <QDir>
 #include <QFileDialog>
+#include <QIcon>
 #include <QPainter>
 #include <QPixmap>
 
@@ -174,8 +175,9 @@ void DesktopSelector::setWallpaper(const QString& wallpaper) {
 
 void DesktopSelector::createMenu() {
   menu_.addAction(
+      QIcon::fromTheme("preferences-desktop-wallpaper"),
       i18n("Set Wallpaper for Desktop ") + QString::number(desktop_),
-      this, 
+      this,
       SLOT(changeWallpaper()));
 }
 

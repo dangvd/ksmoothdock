@@ -22,6 +22,7 @@
 #include <QDate>
 #include <QFont>
 #include <QFontMetrics>
+#include <QIcon>
 #include <QTime>
 #include <QTimer>
 
