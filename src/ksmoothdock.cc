@@ -41,6 +41,7 @@
 #include <KMessageBox>
 #include <netwm_def.h>
 
+#include "application_menu.h"
 #include "clock.h"
 #include "desktop_selector.h"
 #include "launcher.h"
@@ -273,6 +274,8 @@ void KSmoothDock::showEditLaunchersDialog() {
 
 void KSmoothDock::applyLauncherConfig() {
   items_.clear();
+  initApplicationMenu();
+
   const int numLaunchers = editLaunchersDialog_.launchers_->count();
   reserveItems(numLaunchers);
   for (int i = 0; i < numLaunchers; ++i) {
@@ -387,6 +390,7 @@ void KSmoothDock::leaveEvent(QEvent* e) {
 }
 
 void KSmoothDock::initUi() {
+  initApplicationMenu();
   initLaunchers();
   initPager();
   initClock();
@@ -441,6 +445,9 @@ void KSmoothDock::createMenu() {
   autoHideAction_->setCheckable(true);
 
   QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
+  appMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
+      SLOT(toggleApplicationMenu()));
+  appMenuAction_->setCheckable(true);
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
   pagerAction_->setCheckable(true);
@@ -476,6 +483,9 @@ void KSmoothDock::loadConfig() {
   autoHide_ = group.readEntry("autoHide", false);
   autoHideAction_->setChecked(autoHide_);
 
+  showAppMenu_ = group.readEntry("showApplicationMenu", false);
+  appMenuAction_->setChecked(showAppMenu_);
+
   showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
 
@@ -503,6 +513,7 @@ void KSmoothDock::saveConfig() {
   KConfigGroup group(&config_, "General");
   group.writeEntry("position", static_cast<int>(position_));
   group.writeEntry("autoHide", autoHide_);
+  group.writeEntry("showApplicationMenu", showAppMenu_);
   group.writeEntry("showPager", showPager_);
   group.writeEntry("showClock", showClock_);
   group.writeEntry("minimumIconSize", minSize_);
@@ -578,6 +589,13 @@ void KSmoothDock::saveLaunchers() {
           .arg(i + 1, 2, 10, QChar('0'))
           .arg(items_[i]->label_));
     }
+  }
+}
+
+void KSmoothDock::initApplicationMenu() {
+  if (showAppMenu_) {
+    items_.push_back(std::unique_ptr<DockItem>(new ApplicationMenu(
+        this, orientation_, minSize_, maxSize_, &config_)));
   }
 }
 

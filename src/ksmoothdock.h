@@ -105,6 +105,12 @@ class KSmoothDock : public QWidget {
     saveConfig();
   }
 
+  void toggleApplicationMenu() {
+    showAppMenu_ = !showAppMenu_;
+    reload();
+    saveConfig();
+  }
+
   void togglePager();
 
   void updatePager() {
@@ -206,6 +212,7 @@ class KSmoothDock : public QWidget {
   void createDefaultLaunchers();
   void saveLaunchers();
 
+  void initApplicationMenu();
   void initPager();
   void initClock();
 
@@ -237,6 +244,7 @@ class KSmoothDock : public QWidget {
 
   PanelPosition position_;
   bool autoHide_;
+  bool showAppMenu_;
   bool showPager_;
   bool showClock_;
   int minSize_;
@@ -279,6 +287,7 @@ class KSmoothDock : public QWidget {
   QAction* positionLeft_;
   QAction* positionRight_;
   QAction* autoHideAction_;
+  QAction* appMenuAction_;
   QAction* pagerAction_;
   QAction* clockAction_;
   // Actions to set the dock on a specific screen.

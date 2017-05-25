@@ -50,6 +50,14 @@ void ApplicationMenu::loadConfig() {
 
 void ApplicationMenu::loadMenu() {
   // TODO
+  appMenu_.addMenu(QIcon::fromTheme("applications-development"),
+                   i18n("Development"));
+  appMenu_.addMenu(QIcon::fromTheme("applications-graphics"),
+                   i18n("Graphics"));
+  appMenu_.addMenu(QIcon::fromTheme("applications-internet"),
+                   i18n("Internet"));
+  appMenu_.addMenu(QIcon::fromTheme("applications-multimedia"),
+                   i18n("Multimedia"));
 }
 
 }  // namespace ksmoothdock
