@@ -19,8 +19,11 @@
 #ifndef KSMOOTHDOCK_APPLICATION_MENU_H_
 #define KSMOOTHDOCK_APPLICATION_MENU_H_
 
+#include "icon_based_dock_item.h"
+
 #include <QMenu>
-#include <QPoint>
+
+#include <KConfig>
 
 namespace ksmoothdock {
 
@@ -28,29 +31,27 @@ namespace ksmoothdock {
 // for all applications organized by categories.
 //
 // It uses a custom style e.g. bigger icon size and spacing.
-//
-// This class is a singleton class.
-class ApplicationMenu {
+class ApplicationMenu : public IconBasedDockItem {
  public:
-  static ApplicationMenu* instance();
+  ApplicationMenu(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
+                  int maxSize, KConfig* config,
+                  const QString& appDir = "/usr/share/applications");
 
-  // Shows/hides the menu.
-  void toggleMenu(const QPoint& pos);
-
-  ApplicationMenu(const ApplicationMenu&) = delete;
-  ApplicationMenu& operator=(const ApplicationMenu&) = delete;
+  void mousePressEvent(QMouseEvent* e) override;
 
  private:
-  ApplicationMenu();
+  void loadConfig();
 
   // Loads categories and applications.
-  void load();
+  void loadMenu();
+
+  KConfig* config_;
 
   // The directory that contains the list of all applications,
   // e.g. /usr/share/applications
   QString appDir_;
 
-  QMenu menu_;
+  QMenu appMenu_;
 };
 
 }  // namespace ksmoothdock

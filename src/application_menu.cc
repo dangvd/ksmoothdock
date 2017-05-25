@@ -18,23 +18,37 @@
 
 #include "application_menu.h"
 
+#include <KConfigGroup>
+#include <KLocalizedString>
+
 namespace ksmoothdock {
 
-ApplicationMenu* ApplicationMenu::instance() {
-  static ApplicationMenu menu;
-  return &menu;
+ApplicationMenu::ApplicationMenu(
+    KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
+    KConfig *config, const QString &appDir)
+    : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
+                        minSize, maxSize),
+      config_(config),
+      appDir_(appDir) {
+  loadConfig();
+  loadMenu();
 }
 
-void ApplicationMenu::toggleMenu(const QPoint& pos) {
-  menu_.popup(pos);
+void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
+  if (e->button() == Qt::LeftButton) {
+    appMenu_.popup(e->globalPos());
+  } else if (e->button() == Qt::RightButton) {
+    //menu_.popup(e->globalPos());
+  }
 }
 
-ApplicationMenu::ApplicationMenu()
-    : appDir_("/usr/share/applications") {
-  load();
+void ApplicationMenu::loadConfig() {
+  KConfigGroup group(config_, "Application Menu");
+  setLabel(group.readEntry("label", i18n("Applications")));
+  setIconName(group.readEntry("icon", "start-here-kde"));
 }
 
-void ApplicationMenu::load() {
+void ApplicationMenu::loadMenu() {
   // TODO
 }
 
