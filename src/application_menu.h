@@ -21,11 +21,48 @@
 
 #include "icon_based_dock_item.h"
 
+#include <vector>
+
 #include <QMenu>
 
 #include <KConfig>
 
 namespace ksmoothdock {
+
+// An application entry in the application menu.
+struct ApplicationEntry {
+  // Name e.g. 'Chrome'.
+  QString name;
+
+  // Generic name e.g. 'Web Brower'.
+  QString genericName;
+
+  // Icon name e.g. 'chrome'.
+  QString icon;
+
+  // Command to execute e.g. 'chrome'.
+  QString command;
+};
+
+// A category in the application menu.
+struct Category {
+  // Name for the category e.g. 'Development' or 'Utility'. See:
+  // https://specifications.freedesktop.org/menu-spec/latest/apa.html
+  QString name;
+
+  // Display name for the category e.g. 'Utilities'.
+  QString displayName;
+
+  // Icon name for the category e.g. 'applications-internet'.
+  QString icon;
+
+  // Application entries for this category.
+  std::vector<ApplicationEntry> entries;
+
+  Category(const QString& name2, const QString& displayName2,
+           const QString& icon2)
+      : name(name2), displayName(displayName2), icon(icon2) {}
+};
 
 // The application menu, i.e. a cascading popup menu that contains entries
 // for all applications organized by categories.
@@ -42,8 +79,14 @@ class ApplicationMenu : public IconBasedDockItem {
  private:
   void loadConfig();
 
-  // Loads categories and applications.
-  void loadMenu();
+  // Initializes application categories.
+  void initCategories();
+
+  // Loads application entries.
+  void loadEntries();
+
+  // Builds the menu from the application entries;
+  void buildMenu();
 
   KConfig* config_;
 
@@ -51,8 +94,11 @@ class ApplicationMenu : public IconBasedDockItem {
   // files, e.g. /usr/share/applications
   QString entryDir_;
 
+  // Application entries, organized on categories.
+  std::vector<Category> categories_;
+
   // The cascading popup menu that contains all application entries.
-  QMenu applications_;
+  QMenu menu_;
 };
 
 }  // namespace ksmoothdock

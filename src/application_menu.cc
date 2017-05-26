@@ -31,12 +31,14 @@ ApplicationMenu::ApplicationMenu(
       config_(config),
       entryDir_(entryDir) {
   loadConfig();
-  loadMenu();
+  initCategories();
+  loadEntries();
+  buildMenu();
 }
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    applications_.popup(e->globalPos());
+    menu_.popup(e->globalPos());
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }
@@ -48,16 +50,41 @@ void ApplicationMenu::loadConfig() {
   setIconName(group.readEntry("icon", "start-here-kde"));
 }
 
-void ApplicationMenu::loadMenu() {
+void ApplicationMenu::initCategories() {
+  // We use the main categories as defined in:
+  // https://specifications.freedesktop.org/menu-spec/latest/apa.html
+  static constexpr int kNumCategories = 11;
+  static const char* const kCategories[kNumCategories][3] = {
+    // Name, display name, icon.
+    // Sorted by display name.
+    {"Development", "Development", "applications-development"},
+    {"Education", "Education", "applications-education"},
+    {"Game", "Games", "applications-games"},
+    {"Graphics", "Graphics", "applications-graphics"},
+    {"Network", "Internet", "applications-internet"},
+    {"AudioVideo", "Multimedia", "applications-multimedia"},
+    {"Office", "Office", "applications-office"},
+    {"Science", "Science", "applications-science"},
+    {"Settings", "Settings", "preferences-other"},
+    {"System", "System", "applications-system"},
+    {"Utility", "Utilities", "applications-utilities"},
+  };
+  categories_.reserve(kNumCategories);
+  for (int i = 0; i < kNumCategories; ++i) {
+    categories_.push_back(
+        Category(kCategories[i][0], kCategories[i][1], kCategories[i][2]));
+  }
+}
+
+void ApplicationMenu::loadEntries() {
+
+}
+
+void ApplicationMenu::buildMenu() {
+  for (const auto& category : categories_) {
+    menu_.addMenu(QIcon::fromTheme(category.icon), category.displayName);
+  }
   // TODO
-  applications_.addMenu(QIcon::fromTheme("applications-development"),
-                   i18n("Development"));
-  applications_.addMenu(QIcon::fromTheme("applications-graphics"),
-                   i18n("Graphics"));
-  applications_.addMenu(QIcon::fromTheme("applications-internet"),
-                   i18n("Internet"));
-  applications_.addMenu(QIcon::fromTheme("applications-multimedia"),
-                   i18n("Multimedia"));
 }
 
 }  // namespace ksmoothdock
