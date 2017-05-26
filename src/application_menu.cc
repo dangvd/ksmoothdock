@@ -25,18 +25,18 @@ namespace ksmoothdock {
 
 ApplicationMenu::ApplicationMenu(
     KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
-    KConfig *config, const QString &appDir)
+    KConfig *config, const QString &entryDir)
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       config_(config),
-      appDir_(appDir) {
+      entryDir_(entryDir) {
   loadConfig();
   loadMenu();
 }
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    appMenu_.popup(e->globalPos());
+    applications_.popup(e->globalPos());
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }
@@ -50,13 +50,13 @@ void ApplicationMenu::loadConfig() {
 
 void ApplicationMenu::loadMenu() {
   // TODO
-  appMenu_.addMenu(QIcon::fromTheme("applications-development"),
+  applications_.addMenu(QIcon::fromTheme("applications-development"),
                    i18n("Development"));
-  appMenu_.addMenu(QIcon::fromTheme("applications-graphics"),
+  applications_.addMenu(QIcon::fromTheme("applications-graphics"),
                    i18n("Graphics"));
-  appMenu_.addMenu(QIcon::fromTheme("applications-internet"),
+  applications_.addMenu(QIcon::fromTheme("applications-internet"),
                    i18n("Internet"));
-  appMenu_.addMenu(QIcon::fromTheme("applications-multimedia"),
+  applications_.addMenu(QIcon::fromTheme("applications-multimedia"),
                    i18n("Multimedia"));
 }
 

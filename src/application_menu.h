@@ -35,7 +35,7 @@ class ApplicationMenu : public IconBasedDockItem {
  public:
   ApplicationMenu(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
                   int maxSize, KConfig* config,
-                  const QString& appDir = "/usr/share/applications");
+                  const QString& entryDir = "/usr/share/applications");
 
   void mousePressEvent(QMouseEvent* e) override;
 
@@ -47,11 +47,12 @@ class ApplicationMenu : public IconBasedDockItem {
 
   KConfig* config_;
 
-  // The directory that contains the list of all applications,
-  // e.g. /usr/share/applications
-  QString appDir_;
+  // The directory that contains the list of all application entries as desktop
+  // files, e.g. /usr/share/applications
+  QString entryDir_;
 
-  QMenu appMenu_;
+  // The cascading popup menu that contains all application entries.
+  QMenu applications_;
 };
 
 }  // namespace ksmoothdock

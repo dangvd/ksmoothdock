@@ -445,9 +445,9 @@ void KSmoothDock::createMenu() {
   autoHideAction_->setCheckable(true);
 
   QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
-  appMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
+  applicationMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
       SLOT(toggleApplicationMenu()));
-  appMenuAction_->setCheckable(true);
+  applicationMenuAction_->setCheckable(true);
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
   pagerAction_->setCheckable(true);
@@ -483,8 +483,8 @@ void KSmoothDock::loadConfig() {
   autoHide_ = group.readEntry("autoHide", false);
   autoHideAction_->setChecked(autoHide_);
 
-  showAppMenu_ = group.readEntry("showApplicationMenu", false);
-  appMenuAction_->setChecked(showAppMenu_);
+  showApplicationMenu_ = group.readEntry("showApplicationMenu", false);
+  applicationMenuAction_->setChecked(showApplicationMenu_);
 
   showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
@@ -513,7 +513,7 @@ void KSmoothDock::saveConfig() {
   KConfigGroup group(&config_, "General");
   group.writeEntry("position", static_cast<int>(position_));
   group.writeEntry("autoHide", autoHide_);
-  group.writeEntry("showApplicationMenu", showAppMenu_);
+  group.writeEntry("showApplicationMenu", showApplicationMenu_);
   group.writeEntry("showPager", showPager_);
   group.writeEntry("showClock", showClock_);
   group.writeEntry("minimumIconSize", minSize_);
@@ -593,7 +593,7 @@ void KSmoothDock::saveLaunchers() {
 }
 
 void KSmoothDock::initApplicationMenu() {
-  if (showAppMenu_) {
+  if (showApplicationMenu_) {
     items_.push_back(std::unique_ptr<DockItem>(new ApplicationMenu(
         this, orientation_, minSize_, maxSize_, &config_)));
   }
