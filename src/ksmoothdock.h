@@ -61,6 +61,7 @@ class KSmoothDock : public QWidget {
 
   bool hasBorder() { return showBorder_; }
   QColor getBorderColor() { return borderColor_; }
+  QColor getBackgroundColor() { return backgroundColor_; }
 
   // For testing only.
   ConfigDialog* configDialog() { return &configDialog_; }

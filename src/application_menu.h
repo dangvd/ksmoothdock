@@ -37,13 +37,8 @@ static constexpr int kApplicationMenuIconSize = 32;
 
 class ApplicationMenuStyle : public QProxyStyle {
  public:
-  ApplicationMenuStyle(KSmoothDock* dock) : dock_(dock) {}
-
   int pixelMetric(PixelMetric metric, const QStyleOption *option = Q_NULLPTR,
                   const QWidget *widget = Q_NULLPTR) const override;
-
- private:
-  KSmoothDock* dock_;
 };
 
 // An application entry in the application menu.
@@ -103,6 +98,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   void mousePressEvent(QMouseEvent* e) override;
 
  private:
+  QString getStyleSheet();
+
   void loadConfig();
 
   // Initializes application categories.

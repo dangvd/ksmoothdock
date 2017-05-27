@@ -21,12 +21,15 @@
 #include <algorithm>
 
 #include <QDir>
+#include <QStringBuilder>
 
-#include <KDesktopFile>
 #include <KConfigGroup>
+#include <KDesktopFile>
 #include <KIconLoader>
 #include <KLocalizedString>
+#include <KWindowSystem>
 
+#include "ksmoothdock.h"
 #include "launcher.h"
 
 namespace ksmoothdock {
@@ -34,8 +37,6 @@ namespace ksmoothdock {
 int ApplicationMenuStyle::pixelMetric(
     PixelMetric metric, const QStyleOption *option, const QWidget *widget)
     const {
-  // TODO(dangvd): Find out why the icon size is still small (the code does have
-  // some effect on the spacing though).
   if (metric == QStyle::PM_SmallIconSize) {
     return kApplicationMenuIconSize;
   }
@@ -52,9 +53,9 @@ ApplicationMenu::ApplicationMenu(
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       config_(config),
-      entryDir_(entryDir),
-      style_(parent) {
+      entryDir_(entryDir) {
   menu_.setStyle(&style_);
+  menu_.setStyleSheet(getStyleSheet());
   loadConfig();
   initCategories();
   loadEntries();
@@ -63,10 +64,28 @@ ApplicationMenu::ApplicationMenu(
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
+    KWindowSystem::setShowingDesktop(true);
     menu_.popup(e->globalPos());
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }
+}
+
+QString ApplicationMenu::getStyleSheet() {
+  QColor bgColor = parent_->getBackgroundColor();
+  return " \
+QMenu { \
+  background-color: " % bgColor.name(QColor::HexArgb) %
+"} \
+\
+QMenu::item { \
+  color: white; \
+  background-color: transparent; \
+} \
+\
+QMenu::item:selected { \
+  background-color: " % bgColor.name() %
+"}";
 }
 
 void ApplicationMenu::loadConfig() {
