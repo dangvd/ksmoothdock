@@ -18,6 +18,8 @@
 
 #include "application_menu.h"
 
+#include <algorithm>
+
 #include <QDir>
 
 #include <KDesktopFile>
@@ -27,6 +29,10 @@
 #include "launcher.h"
 
 namespace ksmoothdock {
+
+bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
+  return e1.name < e2.name;
+}
 
 ApplicationMenu::ApplicationMenu(
     KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
@@ -98,6 +104,7 @@ bool ApplicationMenu::loadEntries() {
     const QString& file = entryDir_ + "/" + files.at(i);
     loadEntry(file);
   }
+
   return true;
 }
 
@@ -119,12 +126,13 @@ bool ApplicationMenu::loadEntry(const QString &file) {
     if (categoryMap_.count(category) > 0) {
       const QString command = Launcher::filterFieldCodes(
           desktopFile.entryMap("Desktop Entry")["Exec"]);
-      categories_[categoryMap_[category]].entries.push_back(
-          std::unique_ptr<ApplicationEntry>(new ApplicationEntry(
-              desktopFile.readName(),
-              desktopFile.readGenericName(),
-              desktopFile.readIcon(),
-              command)));
+      ApplicationEntry newEntry(desktopFile.readName(),
+                                desktopFile.readGenericName(),
+                                desktopFile.readIcon(),
+                                command);
+      auto& entries = categories_[categoryMap_[category]].entries;
+      auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
+      entries.insert(next, newEntry);
     }
   }
   return true;
@@ -132,12 +140,16 @@ bool ApplicationMenu::loadEntry(const QString &file) {
 
 void ApplicationMenu::buildMenu() {
   for (const auto& category : categories_) {
+    if (category.entries.empty()) {
+      continue;
+    }
+
     QMenu* menu = menu_.addMenu(QIcon::fromTheme(category.icon),
                                 category.displayName);
     for (const auto& entry : category.entries) {
-      menu->addAction(QIcon::fromTheme(entry->icon), entry->name, this,
+      menu->addAction(QIcon::fromTheme(entry.icon), entry.name, this,
                       [this, &entry]() {
-                        Launcher::launch(entry->command);
+                        Launcher::launch(entry.command);
                       });
     }
   }

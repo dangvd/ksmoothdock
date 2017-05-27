@@ -21,7 +21,7 @@
 
 #include "icon_based_dock_item.h"
 
-#include <memory>
+#include <list>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -52,6 +52,8 @@ struct ApplicationEntry {
   }
 };
 
+bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2);
+
 // A category in the application menu.
 struct Category {
   // Name for the category e.g. 'Development' or 'Utility'. See:
@@ -65,7 +67,7 @@ struct Category {
   QString icon;
 
   // Application entries for this category.
-  std::vector<std::unique_ptr<ApplicationEntry>> entries;
+  std::list<ApplicationEntry> entries;
 
   Category(const QString& name2, const QString& displayName2,
            const QString& icon2)
