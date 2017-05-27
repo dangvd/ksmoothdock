@@ -27,10 +27,24 @@
 #include <vector>
 
 #include <QMenu>
+#include <QProxyStyle>
 
 #include <KConfig>
 
 namespace ksmoothdock {
+
+static constexpr int kApplicationMenuIconSize = 32;
+
+class ApplicationMenuStyle : public QProxyStyle {
+ public:
+  ApplicationMenuStyle(KSmoothDock* dock) : dock_(dock) {}
+
+  int pixelMetric(PixelMetric metric, const QStyleOption *option = Q_NULLPTR,
+                  const QWidget *widget = Q_NULLPTR) const override;
+
+ private:
+  KSmoothDock* dock_;
+};
 
 // An application entry in the application menu.
 struct ApplicationEntry {
@@ -103,6 +117,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   // Builds the menu from the application entries;
   void buildMenu();
 
+  QIcon loadIcon(const QString& icon);
+
   KConfig* config_;
 
   // The directory that contains the list of all application entries as desktop
@@ -117,6 +133,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
   // The cascading popup menu that contains all application entries.
   QMenu menu_;
+
+  ApplicationMenuStyle style_;
 };
 
 }  // namespace ksmoothdock

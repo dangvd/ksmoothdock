@@ -24,11 +24,23 @@
 
 #include <KDesktopFile>
 #include <KConfigGroup>
+#include <KIconLoader>
 #include <KLocalizedString>
 
 #include "launcher.h"
 
 namespace ksmoothdock {
+
+int ApplicationMenuStyle::pixelMetric(
+    PixelMetric metric, const QStyleOption *option, const QWidget *widget)
+    const {
+  // TODO(dangvd): Find out why the icon size is still small (the code does have
+  // some effect on the spacing though).
+  if (metric == QStyle::PM_SmallIconSize) {
+    return kApplicationMenuIconSize;
+  }
+  return QProxyStyle::pixelMetric(metric, option, widget);
+}
 
 bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
   return e1.name < e2.name;
@@ -40,7 +52,9 @@ ApplicationMenu::ApplicationMenu(
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       config_(config),
-      entryDir_(entryDir) {
+      entryDir_(entryDir),
+      style_(parent) {
+  menu_.setStyle(&style_);
   loadConfig();
   initCategories();
   loadEntries();
@@ -144,15 +158,20 @@ void ApplicationMenu::buildMenu() {
       continue;
     }
 
-    QMenu* menu = menu_.addMenu(QIcon::fromTheme(category.icon),
-                                category.displayName);
+    QMenu* menu = menu_.addMenu(loadIcon(category.icon), category.displayName);
+    menu->setStyle(&style_);
     for (const auto& entry : category.entries) {
-      menu->addAction(QIcon::fromTheme(entry.icon), entry.name, this,
+      menu->addAction(loadIcon(entry.icon), entry.name, this,
                       [this, &entry]() {
                         Launcher::launch(entry.command);
                       });
     }
   }
+}
+
+QIcon ApplicationMenu::loadIcon(const QString &icon) {
+  return QIcon(KIconLoader::global()->loadIcon(
+      icon, KIconLoader::NoGroup, kApplicationMenuIconSize));
 }
 
 }  // namespace ksmoothdock
