@@ -73,19 +73,27 @@ void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
 
 QString ApplicationMenu::getStyleSheet() {
   QColor bgColor = parent_->getBackgroundColor();
+  QColor borderColor = parent_->getBorderColor();
   return " \
 QMenu { \
-  background-color: " % bgColor.name(QColor::HexArgb) %
-"} \
+  background-color: " % bgColor.name(QColor::HexArgb) % ";"
+" margin: 1px; \
+  padding: 2px; \
+  border: 1px transparent; \
+  border-radius: 3px; \
+} \
 \
 QMenu::item { \
   color: white; \
   background-color: transparent; \
+  padding: 4px 45px 4px 45px; \
 } \
 \
 QMenu::item:selected { \
-  background-color: " % bgColor.name() %
-"}";
+  background-color: " % bgColor.name(QColor::HexArgb) % ";"
+" border: 1px solid " % borderColor.name() % ";"
+" border-radius: 3px; \
+}";
 }
 
 void ApplicationMenu::loadConfig() {
