@@ -18,8 +18,13 @@
 
 #include "application_menu.h"
 
+#include <QDir>
+
+#include <KDesktopFile>
 #include <KConfigGroup>
 #include <KLocalizedString>
+
+#include "launcher.h"
 
 namespace ksmoothdock {
 
@@ -71,20 +76,71 @@ void ApplicationMenu::initCategories() {
   };
   categories_.reserve(kNumCategories);
   for (int i = 0; i < kNumCategories; ++i) {
-    categories_.push_back(
-        Category(kCategories[i][0], kCategories[i][1], kCategories[i][2]));
+    categories_.push_back(Category(
+        kCategories[i][0], kCategories[i][1], kCategories[i][2]));
+    categoryMap_[kCategories[i][0]] = i;
   }
 }
 
-void ApplicationMenu::loadEntries() {
+bool ApplicationMenu::loadEntries() {
+  if (!QDir::root().exists(entryDir_)) {
+    return false;
+  }
 
+  QDir entryDir(entryDir_);
+  QStringList files = entryDir.entryList({"*.desktop"}, QDir::Files,
+                                         QDir::Name);
+  if (files.isEmpty()) {
+    return false;
+  }
+
+  for (int i = 0; i < files.size(); ++i) {
+    const QString& file = entryDir_ + "/" + files.at(i);
+    loadEntry(file);
+  }
+  return true;
+}
+
+bool ApplicationMenu::loadEntry(const QString &file) {
+  KDesktopFile desktopFile(file);
+  if (desktopFile.noDisplay()) {
+    return false;
+  }
+
+  const QStringList categories =
+      desktopFile.entryMap("Desktop Entry")["Categories"]
+          .split(';', QString::SkipEmptyParts);
+  if (categories.isEmpty()) {
+    return false;
+  }
+
+  for (int i = 0; i < categories.size(); ++i) {
+    const std::string category = categories[i].toStdString();
+    if (categoryMap_.count(category) > 0) {
+      const QString command = Launcher::filterFieldCodes(
+          desktopFile.entryMap("Desktop Entry")["Exec"]);
+      categories_[categoryMap_[category]].entries.push_back(
+          std::unique_ptr<ApplicationEntry>(new ApplicationEntry(
+              desktopFile.readName(),
+              desktopFile.readGenericName(),
+              desktopFile.readIcon(),
+              command)));
+    }
+  }
+  return true;
 }
 
 void ApplicationMenu::buildMenu() {
   for (const auto& category : categories_) {
-    menu_.addMenu(QIcon::fromTheme(category.icon), category.displayName);
+    QMenu* menu = menu_.addMenu(QIcon::fromTheme(category.icon),
+                                category.displayName);
+    for (const auto& entry : category.entries) {
+      menu->addAction(QIcon::fromTheme(entry->icon), entry->name, this,
+                      [this, &entry]() {
+                        Launcher::launch(entry->command);
+                      });
+    }
   }
-  // TODO
 }
 
 }  // namespace ksmoothdock

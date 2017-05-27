@@ -21,6 +21,9 @@
 
 #include "icon_based_dock_item.h"
 
+#include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <QMenu>
@@ -42,6 +45,11 @@ struct ApplicationEntry {
 
   // Command to execute e.g. 'chrome'.
   QString command;
+
+  ApplicationEntry(const QString& name2, const QString& genericName2,
+                   const QString& icon2, const QString& command2)
+      : name(name2), genericName(genericName2), icon(icon2), command(command2) {
+  }
 };
 
 // A category in the application menu.
@@ -57,7 +65,7 @@ struct Category {
   QString icon;
 
   // Application entries for this category.
-  std::vector<ApplicationEntry> entries;
+  std::vector<std::unique_ptr<ApplicationEntry>> entries;
 
   Category(const QString& name2, const QString& displayName2,
            const QString& icon2)
@@ -68,7 +76,9 @@ struct Category {
 // for all applications organized by categories.
 //
 // It uses a custom style e.g. bigger icon size and spacing.
-class ApplicationMenu : public IconBasedDockItem {
+class ApplicationMenu : public QObject, public IconBasedDockItem {
+  Q_OBJECT
+
  public:
   ApplicationMenu(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
                   int maxSize, KConfig* config,
@@ -82,8 +92,11 @@ class ApplicationMenu : public IconBasedDockItem {
   // Initializes application categories.
   void initCategories();
 
-  // Loads application entries.
-  void loadEntries();
+  // Loads application entries from entryDir.
+  bool loadEntries();
+
+  // Loads an application entry from the .desktop file.
+  bool loadEntry(const QString& file);
 
   // Builds the menu from the application entries;
   void buildMenu();
@@ -94,8 +107,11 @@ class ApplicationMenu : public IconBasedDockItem {
   // files, e.g. /usr/share/applications
   QString entryDir_;
 
-  // Application entries, organized on categories.
+  // Application entries, organized by categories.
   std::vector<Category> categories_;
+  // Map from category names to category indices in the above vector,
+  // to make loading entries faster.
+  std::unordered_map<std::string, int> categoryMap_;
 
   // The cascading popup menu that contains all application entries.
   QMenu menu_;

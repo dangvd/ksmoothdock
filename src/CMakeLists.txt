@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt5 REQUIRED COMPONENTS DBus Gui Test Widgets)
+find_package(Qt5 5.6 REQUIRED COMPONENTS DBus Gui Test Widgets)
 find_package(KF5 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
