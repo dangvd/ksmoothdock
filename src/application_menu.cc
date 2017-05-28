@@ -56,6 +56,9 @@ ApplicationMenu::ApplicationMenu(
       entryDir_(entryDir) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
+  connect(&menu_, SIGNAL(aboutToShow()), parent_,
+          SLOT(setStrutForApplicationMenu()));
+  connect(&menu_, SIGNAL(aboutToHide()), parent_, SLOT(setStrut()));
   loadConfig();
   initCategories();
   loadEntries();
@@ -64,7 +67,6 @@ ApplicationMenu::ApplicationMenu(
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    KWindowSystem::setShowingDesktop(true);
     menu_.popup(e->globalPos());
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());

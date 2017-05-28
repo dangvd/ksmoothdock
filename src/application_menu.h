@@ -28,6 +28,7 @@
 
 #include <QMenu>
 #include <QProxyStyle>
+#include <QSize>
 
 #include <KConfig>
 
@@ -96,6 +97,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
                   const QString& entryDir = "/usr/share/applications");
 
   void mousePressEvent(QMouseEvent* e) override;
+
+  QSize getMenuSize() { return menu_.sizeHint(); }
 
  private:
   QString getStyleSheet();

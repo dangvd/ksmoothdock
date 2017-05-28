@@ -74,6 +74,9 @@ class KSmoothDock : public QWidget {
   void reload();
   void refresh();
 
+  void setStrut();
+  void setStrutForApplicationMenu();
+
   void setPosition(PanelPosition position);
 
   void setPositionTop() {
@@ -226,7 +229,7 @@ class KSmoothDock : public QWidget {
   // Updates width, height, items's size and position given the mouse position.
   void updateLayout(int x, int y);
 
-  void setStrut();
+  void setStrut(int width);
 
   // Finds the active item given the mouse position.
   int findActiveItem(int x, int y);

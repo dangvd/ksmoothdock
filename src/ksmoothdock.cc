@@ -31,6 +31,7 @@
 #include <QListWidgetItem>
 #include <QPainter>
 #include <QProcess>
+#include <QSize>
 #include <QStringList>
 #include <QVariant>
 #include <Qt>
@@ -139,6 +140,24 @@ void KSmoothDock::refresh() {
   initLayoutVars();
   updateLayout();
   update();
+}
+
+void KSmoothDock::setStrut() {
+  setStrut(isHorizontal() ? minHeight_ : minWidth_);
+}
+
+void KSmoothDock::setStrutForApplicationMenu() {
+  if (!showApplicationMenu_) {
+    return;
+  }
+
+  ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
+      items_[0].get());
+  if (applications != nullptr) {
+    QSize menuSize = applications->getMenuSize();
+    setStrut(isHorizontal() ? minHeight_ + menuSize.height()
+                            : minWidth_ + menuSize.width());
+  }
 }
 
 void KSmoothDock::setPosition(PanelPosition position) {
@@ -867,19 +886,19 @@ void KSmoothDock::updateLayout(int x, int y) {
   update();
 }
 
-void KSmoothDock::setStrut() {
+void KSmoothDock::setStrut(int width) {
   // Somehow if we use setExtendedStrut() as below when screen_ is 0,
   // the strut extends the whole combined desktop instead of just the first
   // screen.
   if (screen_ == 0) {
     if (position_ == PanelPosition::Top) {
-      KWindowSystem::setStrut(winId(), 0, 0, height(), 0);
+      KWindowSystem::setStrut(winId(), 0, 0, width, 0);
     } else if (position_ == PanelPosition::Bottom) {
-      KWindowSystem::setStrut(winId(), 0, 0, 0, height());
+      KWindowSystem::setStrut(winId(), 0, 0, 0, width);
     } else if (position_ == PanelPosition::Left) {
-      KWindowSystem::setStrut(winId(), width(), 0, 0, 0);
+      KWindowSystem::setStrut(winId(), width, 0, 0, 0);
     } else {  // Right
-      KWindowSystem::setStrut(winId(), 0, width(), 0, 0);
+      KWindowSystem::setStrut(winId(), 0, width, 0, 0);
     }
     return;
   }
@@ -889,7 +908,7 @@ void KSmoothDock::setStrut() {
         winId(),
         0, 0, 0,
         0, 0, 0,
-        height(),
+        width,
         screenGeometry_.x(),
         screenGeometry_.x() + screenGeometry_.width(),
         0, 0, 0);
@@ -899,13 +918,13 @@ void KSmoothDock::setStrut() {
         0, 0, 0,
         0, 0, 0,
         0, 0, 0,
-        height(),
+        width,
         screenGeometry_.x(),
         screenGeometry_.x() + screenGeometry_.width());
   } else if (position_ == PanelPosition::Left) {
     KWindowSystem::setExtendedStrut(
         winId(),
-        width(),
+        width,
         screenGeometry_.y(),
         screenGeometry_.y() + screenGeometry_.height(),
         0, 0, 0,
@@ -915,7 +934,7 @@ void KSmoothDock::setStrut() {
     KWindowSystem::setExtendedStrut(
         winId(),
         0, 0, 0,
-        width(),
+        width,
         screenGeometry_.y(),
         screenGeometry_.y() + screenGeometry_.height(),
         0, 0, 0,
