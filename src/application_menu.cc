@@ -67,7 +67,7 @@ ApplicationMenu::ApplicationMenu(
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    menu_.popup(e->globalPos());
+    menu_.popup(parent_->getApplicationMenuPosition());
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }

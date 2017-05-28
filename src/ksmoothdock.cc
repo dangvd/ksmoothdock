@@ -119,11 +119,37 @@ void KSmoothDock::resize(int w, int h) {
     y = (screenGeometry_.height() - h) / 2;
   }
   move(x + screenGeometry_.x(), y + screenGeometry_.y());
+  if (w == minWidth_ && h == minHeight_) {
+    minX_ = x + screenGeometry_.x();
+    minY_ = y + screenGeometry_.y();
+  }
   // This is to fix the bug that if launched from Plasma Quicklaunch,
   // KSmoothDock still doesn't show on all desktops even though
   // we've already called this in the constructor.
   KWindowSystem::setOnAllDesktops(winId(), true);
   isResizing_ = false;
+}
+
+QPoint KSmoothDock::getApplicationMenuPosition() {
+  if (!showApplicationMenu_) {
+    return QPoint();
+  }
+
+  if (position_ == PanelPosition::Top) {
+    return QPoint(minX_, minY_ + minHeight_);
+  } else if (position_ == PanelPosition::Bottom) {
+    ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
+        items_[0].get());
+    const QSize menuSize = applications->getMenuSize();
+    return QPoint(minX_, minY_ - menuSize.height());
+  } else if (position_ == PanelPosition::Left) {
+    return QPoint(minX_ + minWidth_, minY_);
+  } else {  // Right
+    ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
+        items_[0].get());
+    const QSize menuSize = applications->getMenuSize();
+    return QPoint(minX_ - menuSize.width(), minY_);
+  }
 }
 
 void KSmoothDock::openLaunchersDir() {

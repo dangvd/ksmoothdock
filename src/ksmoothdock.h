@@ -63,6 +63,9 @@ class KSmoothDock : public QWidget {
   QColor getBorderColor() { return borderColor_; }
   QColor getBackgroundColor() { return backgroundColor_; }
 
+  // Gets the position to show the application menu.
+  QPoint getApplicationMenuPosition();
+
   // For testing only.
   ConfigDialog* configDialog() { return &configDialog_; }
   EditLaunchersDialog* editLaunchersDialog() { return &editLaunchersDialog_; }
@@ -262,6 +265,8 @@ class KSmoothDock : public QWidget {
   // Non-config variables.
 
   int itemSpacing_;
+  int minX_;  // X-coordinate when minimized.
+  int minY_;  // Y-coordinate when minimized.
   int minWidth_;
   int maxWidth_;
   int minHeight_;
