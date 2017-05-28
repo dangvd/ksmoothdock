@@ -152,10 +152,6 @@ QPoint KSmoothDock::getApplicationMenuPosition() {
   }
 }
 
-void KSmoothDock::openLaunchersDir() {
-  Launcher::launch("dolphin " + launchersDir_);
-}
-
 void KSmoothDock::reload() {
   items_.clear();
   initUi();

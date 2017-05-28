@@ -71,10 +71,9 @@ class KSmoothDock : public QWidget {
   EditLaunchersDialog* editLaunchersDialog() { return &editLaunchersDialog_; }
 
  public slots:
-  // Opens launchers directory in the file manager.
-  void openLaunchersDir();
-
+  // Reloads the items and updates the dock.
   void reload();
+  // Updates the dock without reloading the items.
   void refresh();
 
   void setStrut();
