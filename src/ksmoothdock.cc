@@ -177,8 +177,9 @@ void KSmoothDock::setStrutForApplicationMenu() {
       items_[0].get());
   if (applications != nullptr) {
     QSize menuSize = applications->getMenuSize();
+    // For vertical positions, we reserve some space for the sub-menu as well.
     setStrut(isHorizontal() ? minHeight_ + menuSize.height()
-                            : minWidth_ + menuSize.width());
+                            : minWidth_ + 2 * menuSize.width());
   }
 }
 
