@@ -86,6 +86,7 @@ QMenu { \
 } \
 \
 QMenu::item { \
+  font: bold; \
   color: white; \
   background-color: transparent; \
   padding: 4px 45px 4px 45px; \
