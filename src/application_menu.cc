@@ -49,11 +49,11 @@ bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
 
 ApplicationMenu::ApplicationMenu(
     KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
-    KConfig *config, const QString &entryDir)
+    KConfig *config, const std::vector<QString>& entryDirs)
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       config_(config),
-      entryDir_(entryDir) {
+      entryDirs_(entryDirs) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
   connect(&menu_, SIGNAL(aboutToShow()), parent_,
@@ -132,20 +132,21 @@ void ApplicationMenu::initCategories() {
 }
 
 bool ApplicationMenu::loadEntries() {
-  if (!QDir::root().exists(entryDir_)) {
-    return false;
-  }
+  for (const QString& entryDir : entryDirs_) {
+    if (!QDir::root().exists(entryDir)) {
+      continue;
+    }
 
-  QDir entryDir(entryDir_);
-  QStringList files = entryDir.entryList({"*.desktop"}, QDir::Files,
-                                         QDir::Name);
-  if (files.isEmpty()) {
-    return false;
-  }
+    QDir dir(entryDir);
+    QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
+    if (files.isEmpty()) {
+      continue;
+    }
 
-  for (int i = 0; i < files.size(); ++i) {
-    const QString& file = entryDir_ + "/" + files.at(i);
-    loadEntry(file);
+    for (int i = 0; i < files.size(); ++i) {
+      const QString& file = entryDir + "/" + files.at(i);
+      loadEntry(file);
+    }
   }
 
   return true;

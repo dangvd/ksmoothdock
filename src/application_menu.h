@@ -92,9 +92,11 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   Q_OBJECT
 
  public:
-  ApplicationMenu(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-                  int maxSize, KConfig* config,
-                  const QString& entryDir = "/usr/share/applications");
+  ApplicationMenu(
+      KSmoothDock* parent, Qt::Orientation orientation, int minSize,
+      int maxSize, KConfig* config,
+      const std::vector<QString>& entryDirs = {
+          "/usr/share/applications", "/usr/share/applications/kde4"});
 
   void mousePressEvent(QMouseEvent* e) override;
 
@@ -121,9 +123,9 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
   KConfig* config_;
 
-  // The directory that contains the list of all application entries as desktop
-  // files, e.g. /usr/share/applications
-  QString entryDir_;
+  // The directories that contains the list of all application entries as
+  // desktop files, e.g. /usr/share/applications
+  const std::vector<QString> entryDirs_;
 
   // Application entries, organized by categories.
   std::vector<Category> categories_;
