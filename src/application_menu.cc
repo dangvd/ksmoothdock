@@ -34,6 +34,45 @@
 
 namespace ksmoothdock {
 
+const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
+  {"Session", "Session", "system-switch-user", {
+    {"Lock Screen",
+      "",
+      "system-lock-screen",
+      "qdbus org.kde.screensaver /ScreenSaver Lock"},
+    {"Log Out",
+      "",
+      "system-log-out",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 0 3"},
+    {"Switch User",
+      "",
+      "system-switch-user",
+      "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog"}
+    }
+  },
+  {"System", "System", "system-shutdown", {
+    {"Suspend",
+      "",
+      "system-suspend",
+      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
+      "Suspend"},
+    {"Hibernate",
+      "",
+      "system-suspend-hibernate",
+      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
+      "Hibernate"},
+    {"Reboot",
+      "",
+      "system-reboot",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 1 3"},
+    {"Shut Down",
+      "",
+      "system-shutdown",
+      "qdbus org.kde.ksmserver /KSMServer logout 1 2 3"}
+    }
+  }
+};
+
 int ApplicationMenuStyle::pixelMetric(
     PixelMetric metric, const QStyleOption *option, const QWidget *widget)
     const {
@@ -96,7 +135,13 @@ QMenu::item:selected { \
   background-color: " % bgColor.name(QColor::HexArgb) % ";"
 " border: 1px solid " % borderColor.name() % ";"
 " border-radius: 3px; \
-}";
+} \
+\
+QMenu::separator { \
+  margin: 5px; \
+  height: 1px; \
+  background: " % borderColor.name() % ";"
+"}";
 }
 
 void ApplicationMenu::loadConfig() {
@@ -184,7 +229,13 @@ bool ApplicationMenu::loadEntry(const QString &file) {
 }
 
 void ApplicationMenu::buildMenu() {
-  for (const auto& category : categories_) {
+  addToMenu(categories_);
+  menu_.addSeparator();
+  addToMenu(kSessionSystemCategories);
+}
+
+void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
+  for (const auto& category : categories) {
     if (category.entries.empty()) {
       continue;
     }

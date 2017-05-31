@@ -82,6 +82,11 @@ struct Category {
   Category(const QString& name2, const QString& displayName2,
            const QString& icon2)
       : name(name2), displayName(displayName2), icon(icon2) {}
+
+  Category(const QString& name2, const QString& displayName2,
+           const QString& icon2, std::list<ApplicationEntry> entries2)
+      : name(name2), displayName(displayName2), icon(icon2), entries(entries2) {
+  }
 };
 
 // The application menu, i.e. a cascading popup menu that contains entries
@@ -119,7 +124,11 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   // Builds the menu from the application entries;
   void buildMenu();
 
+  void addToMenu(const std::vector<Category>& categories);
+
   QIcon loadIcon(const QString& icon);
+
+  static const std::vector<Category> kSessionSystemCategories;
 
   KConfig* config_;
 
