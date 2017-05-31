@@ -50,7 +50,7 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
       "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog"}
     }
   },
-  {"System", "System", "system-shutdown", {
+  {"Power", "Power", "system-shutdown", {
     {"Suspend",
       "",
       "system-suspend",
