@@ -28,6 +28,7 @@
 #include <QPaintEvent>
 #include <QPoint>
 #include <QRect>
+#include <QSize>
 #include <QString>
 #include <QTimer>
 #include <QWidget>
@@ -64,7 +65,10 @@ class KSmoothDock : public QWidget {
   QColor getBackgroundColor() { return backgroundColor_; }
 
   // Gets the position to show the application menu.
-  QPoint getApplicationMenuPosition();
+  QPoint getApplicationMenuPosition(const QSize& menuSize);
+  // Gets the position to show the application menu's sub-menus.
+  QPoint getApplicationSubMenuPosition(const QSize& menuSize,
+                                       const QRect& subMenuGeometry);
 
   // For testing only.
   ConfigDialog* configDialog() { return &configDialog_; }

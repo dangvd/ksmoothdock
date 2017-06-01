@@ -106,10 +106,20 @@ ApplicationMenu::ApplicationMenu(
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    menu_.popup(parent_->getApplicationMenuPosition());
+    menu_.popup(parent_->getApplicationMenuPosition(getMenuSize()));
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }
+}
+
+bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
+  QMenu* menu = dynamic_cast<QMenu*>(object);
+  if (menu != nullptr && event->type() == QEvent::Show) {
+    menu->popup(parent_->getApplicationSubMenuPosition(getMenuSize(),
+                                                       menu->geometry()));
+    return true;
+  }
+  return QObject::eventFilter(object, event);
 }
 
 QString ApplicationMenu::getStyleSheet() {
@@ -248,6 +258,7 @@ void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
                         Launcher::launch(entry.command);
                       });
     }
+    menu->installEventFilter(this);
   }
 }
 

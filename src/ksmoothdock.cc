@@ -130,26 +130,32 @@ void KSmoothDock::resize(int w, int h) {
   isResizing_ = false;
 }
 
-QPoint KSmoothDock::getApplicationMenuPosition() {
-  if (!showApplicationMenu_) {
-    return QPoint();
-  }
-
+QPoint KSmoothDock::getApplicationMenuPosition(const QSize& menuSize) {
   if (position_ == PanelPosition::Top) {
     return QPoint(minX_, minY_ + minHeight_);
   } else if (position_ == PanelPosition::Bottom) {
-    ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
-        items_[0].get());
-    const QSize menuSize = applications->getMenuSize();
     return QPoint(minX_, minY_ - menuSize.height());
   } else if (position_ == PanelPosition::Left) {
     return QPoint(minX_ + minWidth_, minY_);
   } else {  // Right
-    ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
-        items_[0].get());
-    const QSize menuSize = applications->getMenuSize();
     return QPoint(minX_ - menuSize.width(), minY_);
   }
+}
+
+QPoint KSmoothDock::getApplicationSubMenuPosition(
+    const QSize& menuSize, const QRect& subMenuGeometry) {
+  if (position_ == PanelPosition::Top) {
+    return QPoint(subMenuGeometry.x(),
+                  std::min(subMenuGeometry.y(),
+                           std::max(minY_ + minHeight_, minY_ + minHeight_ +
+                               menuSize.height() - subMenuGeometry.height())));
+  } else if (position_ == PanelPosition::Bottom) {
+    return QPoint(subMenuGeometry.x(),
+                  std::min(subMenuGeometry.y(),
+                           minY_ - subMenuGeometry.height()));
+  }
+  // Left, Right.
+  return QPoint(subMenuGeometry.x(), subMenuGeometry.y());  // no change.
 }
 
 void KSmoothDock::reload() {

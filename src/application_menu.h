@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <QEvent>
 #include <QMenu>
 #include <QProxyStyle>
 #include <QSize>
@@ -106,6 +107,11 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   void mousePressEvent(QMouseEvent* e) override;
 
   QSize getMenuSize() { return menu_.sizeHint(); }
+
+ protected:
+  // Intercepts sub-menus's show events to adjust their position to improve
+  // visibility.
+  bool eventFilter(QObject* object, QEvent* event) override;
 
  private:
   QString getStyleSheet();
