@@ -72,6 +72,9 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
     }
   }
 };
+const ApplicationEntry ApplicationMenu::kSearchEntry = {
+  "Search", "", "system-search", "krunner"
+};
 
 int ApplicationMenuStyle::pixelMetric(
     PixelMetric metric, const QStyleOption *option, const QWidget *widget)
@@ -242,6 +245,7 @@ void ApplicationMenu::buildMenu() {
   addToMenu(categories_);
   menu_.addSeparator();
   addToMenu(kSessionSystemCategories);
+  addEntry(kSearchEntry, &menu_);
 }
 
 void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
@@ -253,13 +257,17 @@ void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
     QMenu* menu = menu_.addMenu(loadIcon(category.icon), category.displayName);
     menu->setStyle(&style_);
     for (const auto& entry : category.entries) {
-      menu->addAction(loadIcon(entry.icon), entry.name, this,
-                      [this, &entry]() {
-                        Launcher::launch(entry.command);
-                      });
+      addEntry(entry, menu);
     }
     menu->installEventFilter(this);
   }
+}
+
+void ApplicationMenu::addEntry(const ApplicationEntry &entry, QMenu *menu) {
+  menu->addAction(loadIcon(entry.icon), entry.name, this,
+                  [this, &entry]() {
+                    Launcher::launch(entry.command);
+                  });
 }
 
 QIcon ApplicationMenu::loadIcon(const QString &icon) {

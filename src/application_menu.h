@@ -135,9 +135,12 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
   void addToMenu(const std::vector<Category>& categories);
 
+  void addEntry(const ApplicationEntry& entry, QMenu* menu);
+
   QIcon loadIcon(const QString& icon);
 
   static const std::vector<Category> kSessionSystemCategories;
+  static const ApplicationEntry kSearchEntry;
 
   KConfig* config_;
 
