@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <QDir>
 #include <QEvent>
 #include <QMenu>
 #include <QProxyStyle>
@@ -102,7 +103,9 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
       KSmoothDock* parent, Qt::Orientation orientation, int minSize,
       int maxSize, KConfig* config,
       const std::vector<QString>& entryDirs = {
-          "/usr/share/applications", "/usr/share/applications/kde4"});
+          "/usr/share/applications",
+          "/usr/share/applications/kde4",
+          QDir::homePath() + "/.local/share/applications"});
 
   void mousePressEvent(QMouseEvent* e) override;
 
