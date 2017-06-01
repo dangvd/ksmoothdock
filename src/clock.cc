@@ -18,11 +18,14 @@
 
 #include "clock.h"
 
+#include <algorithm>
+
 #include <QColor>
 #include <QDate>
 #include <QFont>
 #include <QFontMetrics>
 #include <QIcon>
+#include <QRect>
 #include <QTime>
 #include <QTimer>
 
@@ -50,12 +53,16 @@ Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
 
 void Clock::draw(QPainter *painter) const {
   const QString time = QTime::currentTime().toString(timeFormat_);
+  // The reference time used to calculate the font size.
+  const QString referenceTime = QTime(8, 8).toString(timeFormat_);
 
   QFont font;
   QFontMetrics metrics(font);
+  const QRect& rect = metrics.tightBoundingRect(referenceTime);
   // Scale the font size according to the size of the dock.
-  font.setPointSize(font.pointSize() * getWidth()
-                    / metrics.tightBoundingRect(time).width());
+  font.setPointSize(std::min(
+      font.pointSize() * getWidth() / rect.width(),
+      font.pointSize() * getHeight() / rect.height()));
   painter->setFont(font);
   painter->setRenderHint(QPainter::TextAntialiasing);
 

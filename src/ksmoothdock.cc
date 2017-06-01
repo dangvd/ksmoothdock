@@ -18,7 +18,7 @@
 
 #include "ksmoothdock.h"
 
-#include <cstdlib>
+#include <algorithm>
 #include <iostream>
 #include <utility>
 
