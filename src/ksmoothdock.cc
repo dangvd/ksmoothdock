@@ -470,19 +470,14 @@ void KSmoothDock::createMenu() {
   const int numScreens = QApplication::desktop()->screenCount();
   if (numScreens > 1) {
     QMenu* screen = menu_.addMenu(i18n("Screen"));
-    // TODO(dangvd): Make it work with any number of screens.
-    constexpr int kMaxScreens = 4;
-    for (int i = 0; i < numScreens && i < kMaxScreens; ++i) {
-      QAction* action;
-      if (i == 0) {
-        action = screen->addAction(i18n("Screen 1"), this, SLOT(setScreen1()));
-      } else if (i == 1) {
-        action = screen->addAction(i18n("Screen 2"), this, SLOT(setScreen2()));
-      } else if (i == 2) {
-        action = screen->addAction(i18n("Screen 3"), this, SLOT(setScreen3()));
-      } else {
-        action = screen->addAction(i18n("Screen 4"), this, SLOT(setScreen4()));
-      }
+    for (int i = 0; i < numScreens; ++i) {
+      QAction* action = screen->addAction(
+          "Screen " + QString::number(i + 1), this,
+          [this, i]() {
+            setScreen(i);
+            reload();
+            saveConfig();
+          });
       action->setCheckable(true);
       screenActions_.push_back(action);
     }

@@ -137,31 +137,8 @@ class KSmoothDock : public QWidget {
 
   // Sets the dock on a specific screen given screen index.
   // Thus 0 is screen 1 and so on.
+  // This doesn't refresh the dock.
   void setScreen(int screen);
-
-  void setScreen1() {
-    setScreen(0);
-    reload();
-    saveConfig();
-  }
-
-  void setScreen2() {
-    setScreen(1);
-    reload();
-    saveConfig();
-  }
-
-  void setScreen3() {
-    setScreen(2);
-    reload();
-    saveConfig();
-  }
-
-  void setScreen4() {
-    setScreen(3);
-    reload();
-    saveConfig();
-  }
 
   // Slot to update zoom animation.
   void updateAnimation();
