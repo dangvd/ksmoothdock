@@ -91,20 +91,27 @@ bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
 
 ApplicationMenu::ApplicationMenu(
     KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
-    KConfig *config, const std::vector<QString>& entryDirs)
+    KConfig *config, const QStringList& entryDirs)
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       config_(config),
-      entryDirs_(entryDirs) {
+      entryDirs_(entryDirs),
+      fileWatcher_(entryDirs) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
-  connect(&menu_, SIGNAL(aboutToShow()), parent_,
-          SLOT(setStrutForApplicationMenu()));
-  connect(&menu_, SIGNAL(aboutToHide()), parent_, SLOT(setStrut()));
+
   loadConfig();
   initCategories();
   loadEntries();
   buildMenu();
+
+  connect(&menu_, SIGNAL(aboutToShow()), parent_,
+          SLOT(setStrutForApplicationMenu()));
+  connect(&menu_, SIGNAL(aboutToHide()), parent_, SLOT(setStrut()));
+  connect(&fileWatcher_, SIGNAL(directoryChanged(const QString&)),
+          this, SLOT(reloadMenu()));
+  connect(&fileWatcher_, SIGNAL(fileChanged(const QString&)),
+          this, SLOT(reloadMenu()));
 }
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
@@ -113,6 +120,15 @@ void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   } else if (e->button() == Qt::RightButton) {
     //menu_.popup(e->globalPos());
   }
+}
+
+void ApplicationMenu::reloadMenu() {
+  for (auto& category : categories_) {
+    category.entries.clear();
+  }
+  loadEntries();
+  menu_.clear();
+  buildMenu();
 }
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {

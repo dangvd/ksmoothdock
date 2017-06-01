@@ -28,9 +28,11 @@
 
 #include <QDir>
 #include <QEvent>
+#include <QFileSystemWatcher>
 #include <QMenu>
 #include <QProxyStyle>
 #include <QSize>
+#include <QStringList>
 
 #include <KConfig>
 
@@ -102,7 +104,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   ApplicationMenu(
       KSmoothDock* parent, Qt::Orientation orientation, int minSize,
       int maxSize, KConfig* config,
-      const std::vector<QString>& entryDirs = {
+      const QStringList& entryDirs = {
           "/usr/share/applications",
           "/usr/share/applications/kde4",
           QDir::homePath() + "/.local/share/applications"});
@@ -110,6 +112,9 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   void mousePressEvent(QMouseEvent* e) override;
 
   QSize getMenuSize() { return menu_.sizeHint(); }
+
+ public slots:
+  void reloadMenu();
 
  protected:
   // Intercepts sub-menus's show events to adjust their position to improve
@@ -146,7 +151,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
   // The directories that contains the list of all application entries as
   // desktop files, e.g. /usr/share/applications
-  const std::vector<QString> entryDirs_;
+  const QStringList entryDirs_;
 
   // Application entries, organized by categories.
   std::vector<Category> categories_;
@@ -158,6 +163,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   QMenu menu_;
 
   ApplicationMenuStyle style_;
+
+  QFileSystemWatcher fileWatcher_;
 };
 
 }  // namespace ksmoothdock
