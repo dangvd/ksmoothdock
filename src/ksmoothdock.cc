@@ -526,13 +526,13 @@ void KSmoothDock::loadConfig() {
   autoHide_ = group.readEntry("autoHide", false);
   autoHideAction_->setChecked(autoHide_);
 
-  showApplicationMenu_ = group.readEntry("showApplicationMenu", false);
+  showApplicationMenu_ = group.readEntry("showApplicationMenu", true);
   applicationMenuAction_->setChecked(showApplicationMenu_);
 
-  showPager_ = group.readEntry("showPager", false);
+  showPager_ = group.readEntry("showPager", true);
   pagerAction_->setChecked(showPager_);
 
-  showClock_ = group.readEntry("showClock", false);
+  showClock_ = group.readEntry("showClock", true);
   clockAction_->setChecked(showClock_);
 
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
