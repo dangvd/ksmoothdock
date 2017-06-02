@@ -93,9 +93,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->pagerAction_->isChecked(), enabled);
     if (enabled) {
       QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops());
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
     }
   }
 
@@ -103,9 +103,11 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showClock_, enabled);
     QCOMPARE(dock_->clockAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+      QCOMPARE(dock_->numItems(),
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
+      QCOMPARE(dock_->numItems(),
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
     }
   }
 
@@ -143,16 +145,16 @@ void KSmoothDockTest::autoHide() {
 }
 
 void KSmoothDockTest::togglePager() {
-  verifyPager(false);
+  verifyPager(true);
   // TODO: Test when the pager is enabled.
 }
 
 void KSmoothDockTest::toggleClock() {
-  verifyClock(false);
-  dock_->clockAction_->trigger();
   verifyClock(true);
   dock_->clockAction_->trigger();
   verifyClock(false);
+  dock_->clockAction_->trigger();
+  verifyClock(true);
 }
 
 }  // namespace ksmoothdock
