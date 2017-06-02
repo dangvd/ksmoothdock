@@ -529,7 +529,8 @@ void KSmoothDock::loadConfig() {
   showApplicationMenu_ = group.readEntry("showApplicationMenu", true);
   applicationMenuAction_->setChecked(showApplicationMenu_);
 
-  showPager_ = group.readEntry("showPager", true);
+  const bool showPagerByDefault = KWindowSystem::numberOfDesktops() > 1;
+  showPager_ = group.readEntry("showPager", showPagerByDefault);
   pagerAction_->setChecked(showPager_);
 
   showClock_ = group.readEntry("showClock", true);
