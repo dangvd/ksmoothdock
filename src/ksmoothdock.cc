@@ -347,6 +347,10 @@ void KSmoothDock::updateLauncherConfig() {
   editLaunchersDialog_.close();
 }
 
+void KSmoothDock::showApplicationMenuConfigDialog() {
+  // TODO
+}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   if (isResizing_) {
     return;  // to avoid potential flicker.
@@ -407,6 +411,8 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   }
 
   Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
+  ApplicationMenu* applications =
+      dynamic_cast<ApplicationMenu*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
     if (launcher != nullptr && !launcher->isCommandInternal()
         && !launcher->isCommandDBus()) {
@@ -415,7 +421,7 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
-    if (launcher != nullptr) {
+    if (launcher != nullptr || applications != nullptr) {
       menu_.popup(e->globalPos());
     } else {
       items_[i]->mousePressEvent(e);
@@ -448,9 +454,12 @@ void KSmoothDock::initUi() {
 }
 
 void KSmoothDock::createMenu() {
+  applicationMenuSettings_ = menu_.addAction(
+      QIcon::fromTheme("configure"), i18n("Application &Menu Settings"), this,
+      SLOT(showApplicationMenuConfigDialog()));
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
       SLOT(showEditLaunchersDialog()));
-  menu_.addAction(QIcon::fromTheme("configure"), i18n("&Settings"), this,
+  menu_.addAction(QIcon::fromTheme("configure"), i18n("Panel &Settings"), this,
       SLOT(showConfigDialog()));
 
   QMenu* position = menu_.addMenu(i18n("&Position"));
@@ -528,6 +537,7 @@ void KSmoothDock::loadConfig() {
 
   showApplicationMenu_ = group.readEntry("showApplicationMenu", true);
   applicationMenuAction_->setChecked(showApplicationMenu_);
+  applicationMenuSettings_->setVisible(showApplicationMenu_);
 
   const bool showPagerByDefault = KWindowSystem::numberOfDesktops() > 1;
   showPager_ = group.readEntry("showPager", showPagerByDefault);

@@ -117,6 +117,7 @@ class KSmoothDock : public QWidget {
 
   void toggleApplicationMenu() {
     showApplicationMenu_ = !showApplicationMenu_;
+    applicationMenuSettings_->setVisible(showApplicationMenu_);
     reload();
     saveConfig();
   }
@@ -157,6 +158,8 @@ class KSmoothDock : public QWidget {
   void showEditLaunchersDialog();
   void applyLauncherConfig();
   void updateLauncherConfig();
+
+  void showApplicationMenuConfigDialog();
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
@@ -277,6 +280,7 @@ class KSmoothDock : public QWidget {
   QAction* positionRight_;
   QAction* autoHideAction_;
   QAction* applicationMenuAction_;
+  QAction* applicationMenuSettings_;
   QAction* pagerAction_;
   QAction* clockAction_;
   // Actions to set the dock on a specific screen.
