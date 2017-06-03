@@ -641,13 +641,15 @@ void KSmoothDock::saveLaunchers() {
     launchersDir.remove(files.at(i));
   }
 
-  for (int i = 0; i < numItems(); ++i) {
-    Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
+  int id = 1;
+  for (const auto& item : items_) {
+    Launcher* launcher = dynamic_cast<Launcher*>(item.get());
     if (launcher != nullptr) {
       launcher->saveToFile(QString("%1/%2 - %3.desktop")
           .arg(launchersDir_)
-          .arg(i + 1, 2, 10, QChar('0'))
-          .arg(items_[i]->label_));
+          .arg(id, 2, 10, QChar('0'))
+          .arg(item->label_));
+      ++id;
     }
   }
 }
