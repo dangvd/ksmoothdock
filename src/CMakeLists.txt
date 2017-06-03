@@ -10,7 +10,7 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(Qt5 5.6 REQUIRED COMPONENTS DBus Gui Test Widgets)
-find_package(KF5 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
+find_package(KF5 5.7 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
 set(SRCS icon_based_dock_item.cc ksmoothdock.cc launcher.cc tooltip.cc
