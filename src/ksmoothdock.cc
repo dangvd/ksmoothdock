@@ -599,7 +599,8 @@ bool KSmoothDock::loadLaunchers() {
   }
 
   QDir launchersDir(launchersDir_);
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
+                                             QDir::Name);
   if (files.isEmpty()) {
     return false;
   }
