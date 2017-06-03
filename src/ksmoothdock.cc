@@ -344,11 +344,16 @@ void KSmoothDock::applyLauncherConfig() {
 
 void KSmoothDock::updateLauncherConfig() {
   applyLauncherConfig();
-  editLaunchersDialog_.close();
+  editLaunchersDialog_.hide();
 }
 
 void KSmoothDock::showApplicationMenuConfigDialog() {
-  // TODO
+  if (!showApplicationMenu_) {
+    return;
+  }
+  ApplicationMenu* applications =
+      dynamic_cast<ApplicationMenu*>(items_[0].get());
+  applications->showConfigDialog();
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {

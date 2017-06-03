@@ -51,6 +51,7 @@ void IconBasedDockItem::setIcon(const QPixmap& icon) {
 
 void IconBasedDockItem::setIconName(const QString& iconName) {
   if (!iconName.isEmpty()) {
+    iconName_ = iconName;
     QPixmap icon = KIconLoader::global()->loadIcon(iconName,
         KIconLoader::NoGroup, kIconLoadSize);
     setIcon(icon);

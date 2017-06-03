@@ -55,9 +55,12 @@ class IconBasedDockItem : public DockItem {
   void setIcon(const QPixmap& icon);
   void setIconName(const QString& iconName);
   const QPixmap& getIcon(int size) const;
+  QString getIconName() const { return iconName_; }
 
  protected:
   std::vector<QPixmap> icons_;
+
+  QString iconName_;
 
  private:
   static const int kIconLoadSize = 128;

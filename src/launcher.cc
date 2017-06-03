@@ -36,7 +36,7 @@ Launcher::Launcher(KSmoothDock* parent, const QString& label,
     int maxSize, const QString& command)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize,
           maxSize), 
-      iconName_(iconName), command_(command) {}
+      command_(command) {}
 
 Launcher::Launcher(KSmoothDock* parent, const QString& file,
     Qt::Orientation orientation, int minSize, int maxSize)
@@ -44,8 +44,7 @@ Launcher::Launcher(KSmoothDock* parent, const QString& file,
   KDesktopFile desktopFile(file);
   label_ = desktopFile.readName();
   command_ = filterFieldCodes(desktopFile.entryMap("Desktop Entry")["Exec"]);
-  iconName_ = desktopFile.readIcon();
-  setIconName(iconName_);
+  setIconName(desktopFile.readIcon());
 }
 
 void Launcher::mousePressEvent(QMouseEvent* e) {

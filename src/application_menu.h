@@ -36,6 +36,8 @@
 
 #include <KConfig>
 
+#include "application_menu_config_dialog.h"
+
 namespace ksmoothdock {
 
 static constexpr int kApplicationMenuIconSize = 32;
@@ -116,6 +118,10 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
  public slots:
   void reloadMenu();
 
+  void showConfigDialog();
+  void applyConfig();
+  void updateConfig();
+
  protected:
   // Intercepts sub-menus's show events to adjust their position to improve
   // visibility.
@@ -125,6 +131,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   QString getStyleSheet();
 
   void loadConfig();
+  void saveConfig();
 
   // Initializes application categories.
   void initCategories();
@@ -165,6 +172,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   ApplicationMenuStyle style_;
 
   QFileSystemWatcher fileWatcher_;
+
+  ApplicationMenuConfigDialog configDialog_;
 };
 
 }  // namespace ksmoothdock

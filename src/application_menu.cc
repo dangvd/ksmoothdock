@@ -96,7 +96,8 @@ ApplicationMenu::ApplicationMenu(
                         minSize, maxSize),
       config_(config),
       entryDirs_(entryDirs),
-      fileWatcher_(entryDirs) {
+      fileWatcher_(entryDirs),
+      configDialog_(parent, this) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
 
@@ -129,6 +130,24 @@ void ApplicationMenu::reloadMenu() {
   loadEntries();
   menu_.clear();
   buildMenu();
+}
+
+void ApplicationMenu::showConfigDialog() {
+  configDialog_.name_->setText(label_);
+  configDialog_.icon_->setIcon(iconName_);
+  configDialog_.show();
+}
+
+void ApplicationMenu::applyConfig() {
+  setLabel(configDialog_.name_->text());
+  setIconName(configDialog_.icon_->icon());
+  saveConfig();
+  parent_->refresh();
+}
+
+void ApplicationMenu::updateConfig() {
+  applyConfig();
+  configDialog_.hide();
 }
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
@@ -177,6 +196,12 @@ void ApplicationMenu::loadConfig() {
   KConfigGroup group(config_, "Application Menu");
   setLabel(group.readEntry("label", i18n("Applications")));
   setIconName(group.readEntry("icon", "start-here-kde"));
+}
+
+void ApplicationMenu::saveConfig() {
+  KConfigGroup group(config_, "Application Menu");
+  group.writeEntry("label", label_);
+  group.writeEntry("icon", iconName_);
 }
 
 void ApplicationMenu::initCategories() {

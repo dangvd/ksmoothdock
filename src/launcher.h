@@ -53,7 +53,6 @@ class Launcher : public IconBasedDockItem {
   static QString filterFieldCodes(const QString& command);
 
  private:
-  QString iconName_;
   QString command_;
 
   friend class KSmoothDock;
