@@ -43,7 +43,7 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
     {"Log Out",
       "",
       "system-log-out",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 0 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 0 3"},
     {"Switch User",
       "",
       "system-switch-user",
@@ -64,11 +64,11 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
     {"Reboot",
       "",
       "system-reboot",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 1 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 1 3"},
     {"Shut Down",
       "",
       "system-shutdown",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 2 3"}
+      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"}
     }
   }
 };

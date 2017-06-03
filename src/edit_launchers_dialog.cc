@@ -292,7 +292,7 @@ void EditLaunchersDialog::populateDBusCommands() {
     // Name, icon, D-Bus command.
     {"System - Log Out",
       "system-log-out",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 0 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 0 3"},
     {"System - Switch User",
       "system-switch-user",
       "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog"},
@@ -306,10 +306,10 @@ void EditLaunchersDialog::populateDBusCommands() {
       "Hibernate"},
     {"System - Reboot",
       "system-reboot",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 1 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 1 3"},
     {"System - Shut Down",
       "system-shutdown",
-      "qdbus org.kde.ksmserver /KSMServer logout 1 2 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"},
     {"Activate K Menu",
       "start-here-kde",
       "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
