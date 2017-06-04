@@ -29,6 +29,9 @@ namespace ksmoothdock {
 class KSmoothDock;
 
 // Base class for all dock items, e.g. launchers and pager icons.
+//
+// It's a design decision that DockItem is not a sub-class of QWidget, to make
+// the dock's parabolic zooming effect smoother.
 class DockItem {
  public:
   DockItem(KSmoothDock* parent, const QString& label,
