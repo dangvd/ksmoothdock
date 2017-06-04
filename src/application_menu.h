@@ -30,8 +30,11 @@
 #include <QEvent>
 #include <QFileSystemWatcher>
 #include <QMenu>
+#include <QMouseEvent>
+#include <QPoint>
 #include <QProxyStyle>
 #include <QSize>
+#include <QString>
 #include <QStringList>
 
 #include <KConfig>
@@ -62,10 +65,14 @@ struct ApplicationEntry {
   // Command to execute e.g. 'chrome'.
   QString command;
 
+  // The path to the desktop file e.g. '/usr/share/applications/chrome.desktop'
+  QString desktopFile;
+
   ApplicationEntry(const QString& name2, const QString& genericName2,
-                   const QString& icon2, const QString& command2)
-      : name(name2), genericName(genericName2), icon(icon2), command(command2) {
-  }
+                   const QString& icon2, const QString& command2,
+                   const QString& desktopFile2)
+      : name(name2), genericName(genericName2), icon(icon2), command(command2),
+        desktopFile(desktopFile2) {}
 };
 
 bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2);
@@ -95,10 +102,16 @@ struct Category {
   }
 };
 
-// The application menu, i.e. a cascading popup menu that contains entries
-// for all applications organized by categories.
+// The application menu item on the dock.
 //
-// It uses a custom style e.g. bigger icon size and spacing.
+// Left-clicking the item shows a cascading popup menu that contains entries
+// for all applications organized by categories. The menu uses a custom style
+// e.g. bigger icon size and the same translucent effect as the dock's.
+//
+// Supports drag-and-drop as a drag source.
+// What it means is that you can drag an application entry from the menu
+// to other widgets/applications. It doesn't support drag-and-drop within the
+// menu itself.
 class ApplicationMenu : public QObject, public IconBasedDockItem {
   Q_OBJECT
 
@@ -174,6 +187,13 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   QFileSystemWatcher fileWatcher_;
 
   ApplicationMenuConfigDialog configDialog_;
+
+  // Drag support.
+
+  // Starting mouse position, used for minimum drag distance check.
+  QPoint startMousePos_;
+  // The desktop file associated with the application entry being dragged.
+  QString draggedEntry_;
 };
 
 }  // namespace ksmoothdock

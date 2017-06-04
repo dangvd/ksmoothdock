@@ -20,8 +20,12 @@
 
 #include <algorithm>
 
+#include <QApplication>
 #include <QDir>
+#include <QDrag>
+#include <QMimeData>
 #include <QStringBuilder>
+#include <QUrl>
 
 #include <KConfigGroup>
 #include <KDesktopFile>
@@ -39,15 +43,18 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
     {"Lock Screen",
       "",
       "system-lock-screen",
-      "qdbus org.kde.screensaver /ScreenSaver Lock"},
+      "qdbus org.kde.screensaver /ScreenSaver Lock",
+      ""},
     {"Log Out",
       "",
       "system-log-out",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 0 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 0 3",
+      ""},
     {"Switch User",
       "",
       "system-switch-user",
-      "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog"}
+      "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog",
+      ""}
     }
   },
   {"Power", "Power", "system-shutdown", {
@@ -55,25 +62,29 @@ const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
       "",
       "system-suspend",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
-      "Suspend"},
+      "Suspend",
+      ""},
     {"Hibernate",
       "",
       "system-suspend-hibernate",
       "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
-      "Hibernate"},
+      "Hibernate",
+      ""},
     {"Reboot",
       "",
       "system-reboot",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 1 3"},
+      "qdbus org.kde.ksmserver /KSMServer logout -1 1 3",
+      ""},
     {"Shut Down",
       "",
       "system-shutdown",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"}
+      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3",
+      ""}
     }
   }
 };
 const ApplicationEntry ApplicationMenu::kSearchEntry = {
-  "Search", "", "system-search", "krunner"
+  "Search", "", "system-search", "krunner", ""
 };
 
 int ApplicationMenuStyle::pixelMetric(
@@ -152,11 +163,38 @@ void ApplicationMenu::updateConfig() {
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
   QMenu* menu = dynamic_cast<QMenu*>(object);
-  if (menu != nullptr && event->type() == QEvent::Show) {
-    menu->popup(parent_->getApplicationSubMenuPosition(getMenuSize(),
-                                                       menu->geometry()));
-    return true;
+  if (menu) {
+    if (event->type() == QEvent::Show) {
+      menu->popup(parent_->getApplicationSubMenuPosition(getMenuSize(),
+                                                         menu->geometry()));
+      // Filter this event.
+      return true;
+    } else if (event->type() == QEvent::MouseButtonPress) {
+      QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(event);
+      if (mouseEvent && mouseEvent->button() == Qt::LeftButton) {
+        startMousePos_ = mouseEvent->pos();
+        draggedEntry_ = menu->activeAction()->data().toString();
+      }
+    } else if (event->type() == QEvent::MouseMove) {
+      QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(event);
+      if (mouseEvent && mouseEvent->buttons() & Qt::LeftButton) {
+        const int distance
+            = (mouseEvent->pos() - startMousePos_).manhattanLength();
+        if (distance >= QApplication::startDragDistance()
+            && !draggedEntry_.isEmpty()) {
+          // Start drag.
+          QMimeData* mimeData = new QMimeData;
+          mimeData->setData("text/uri-list",
+                            QUrl::fromLocalFile(draggedEntry_).toEncoded());
+
+          QDrag* drag = new QDrag(this);
+          drag->setMimeData(mimeData);
+          drag->exec(Qt::CopyAction);
+        }
+      }
+    }
   }
+
   return QObject::eventFilter(object, event);
 }
 
@@ -273,7 +311,8 @@ bool ApplicationMenu::loadEntry(const QString &file) {
       ApplicationEntry newEntry(desktopFile.readName(),
                                 desktopFile.readGenericName(),
                                 desktopFile.readIcon(),
-                                command);
+                                command,
+                                file);
       auto& entries = categories_[categoryMap_[category]].entries;
       auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
       entries.insert(next, newEntry);
@@ -305,10 +344,11 @@ void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
 }
 
 void ApplicationMenu::addEntry(const ApplicationEntry &entry, QMenu *menu) {
-  menu->addAction(loadIcon(entry.icon), entry.name, this,
+  QAction* action = menu->addAction(loadIcon(entry.icon), entry.name, this,
                   [this, &entry]() {
                     Launcher::launch(entry.command);
                   });
+  action->setData(entry.desktopFile);
 }
 
 QIcon ApplicationMenu::loadIcon(const QString &icon) {

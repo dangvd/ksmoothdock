@@ -175,14 +175,10 @@ void KSmoothDock::setStrut() {
 }
 
 void KSmoothDock::setStrutForApplicationMenu() {
-  if (!showApplicationMenu_) {
-    return;
-  }
-
-  ApplicationMenu* applications = dynamic_cast<ApplicationMenu*>(
+  ApplicationMenu* applicationMenu = dynamic_cast<ApplicationMenu*>(
       items_[0].get());
-  if (applications != nullptr) {
-    QSize menuSize = applications->getMenuSize();
+  if (applicationMenu) {
+    QSize menuSize = applicationMenu->getMenuSize();
     // For vertical positions, we reserve some space for the sub-menu as well.
     setStrut(isHorizontal() ? minHeight_ + menuSize.height()
                             : minWidth_ + 2 * menuSize.width());
@@ -308,7 +304,7 @@ void KSmoothDock::showEditLaunchersDialog() {
   editLaunchersDialog_.launchers_->clear();
   for (const auto& item : items_) {
     Launcher* launcher = dynamic_cast<Launcher*>(item.get());
-    if (launcher != nullptr) {
+    if (launcher) {
       QListWidgetItem* listItem = new QListWidgetItem(
           QIcon(launcher->getIcon(kListIconSize)), launcher->label_);
           listItem->setData(Qt::UserRole, QVariant::fromValue(
@@ -348,12 +344,11 @@ void KSmoothDock::updateLauncherConfig() {
 }
 
 void KSmoothDock::showApplicationMenuConfigDialog() {
-  if (!showApplicationMenu_) {
-    return;
-  }
-  ApplicationMenu* applications =
+  ApplicationMenu* applicationMenu =
       dynamic_cast<ApplicationMenu*>(items_[0].get());
-  applications->showConfigDialog();
+  if (applicationMenu) {
+    applicationMenu->showConfigDialog();
+  }
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
@@ -416,17 +411,17 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   }
 
   Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
-  ApplicationMenu* applications =
+  ApplicationMenu* applicationMenu =
       dynamic_cast<ApplicationMenu*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
-    if (launcher != nullptr && !launcher->isCommandInternal()
+    if (launcher && !launcher->isCommandInternal()
         && !launcher->isCommandDBus()) {
       // Acknowledge launching the program.
       showWaitCursor();
     }
     items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
-    if (launcher != nullptr || applications != nullptr) {
+    if (launcher || applicationMenu) {
       menu_.popup(e->globalPos());
     } else {
       items_[i]->mousePressEvent(e);
@@ -644,7 +639,7 @@ void KSmoothDock::saveLaunchers() {
   int id = 1;
   for (const auto& item : items_) {
     Launcher* launcher = dynamic_cast<Launcher*>(item.get());
-    if (launcher != nullptr) {
+    if (launcher) {
       launcher->saveToFile(QString("%1/%2 - %3.desktop")
           .arg(launchersDir_)
           .arg(id, 2, 10, QChar('0'))
