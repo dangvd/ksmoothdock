@@ -287,7 +287,7 @@ void EditLaunchersDialog::populateInternalCommands() {
 }
 
 void EditLaunchersDialog::populateDBusCommands() {
-  static const int kNumItems = 7;
+  static const int kNumItems = 6;
   static const char* const kItems[kNumItems][3] = {
     // Name, icon, D-Bus command.
     {"System - Log Out",
@@ -309,10 +309,7 @@ void EditLaunchersDialog::populateDBusCommands() {
       "qdbus org.kde.ksmserver /KSMServer logout -1 1 3"},
     {"System - Shut Down",
       "system-shutdown",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"},
-    {"Activate K Menu",
-      "start-here-kde",
-      "qdbus org.kde.plasmashell /PlasmaShell activateLauncherMenu"}
+      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"}
   };
   dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
   for (int i = 0; i < kNumItems; ++i) {
