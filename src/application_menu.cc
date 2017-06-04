@@ -129,8 +129,6 @@ ApplicationMenu::ApplicationMenu(
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
     menu_.popup(parent_->getApplicationMenuPosition(getMenuSize()));
-  } else if (e->button() == Qt::RightButton) {
-    //menu_.popup(e->globalPos());
   }
 }
 
@@ -171,7 +169,8 @@ bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
       return true;
     } else if (event->type() == QEvent::MouseButtonPress) {
       QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(event);
-      if (mouseEvent && mouseEvent->button() == Qt::LeftButton) {
+      if (mouseEvent && mouseEvent->button() == Qt::LeftButton
+          && menu->activeAction()) {
         startMousePos_ = mouseEvent->pos();
         draggedEntry_ = menu->activeAction()->data().toString();
       }
