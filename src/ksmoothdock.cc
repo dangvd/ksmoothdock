@@ -87,14 +87,16 @@ void KSmoothDock::init() {
   KWindowSystem::setOnAllDesktops(winId(), true);
   setMouseTracking(true);
   animationTimer_.reset(new QTimer(this));
+  createMenu();
+  loadConfig();
+  initUi();
+
   connect(animationTimer_.get(), SIGNAL(timeout()), this,
       SLOT(updateAnimation()));
   connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
       this, SLOT(updatePager()));
-  createMenu();
-  loadConfig();
 
-  initUi();
+  showPagerInfoDialog();
 }
 
 KSmoothDock::~KSmoothDock() {
@@ -200,17 +202,7 @@ void KSmoothDock::togglePager() {
   showPager_ = !showPager_;
   reload();
   saveConfig();
-
-  if (showPager_) {
-    KMessageBox::information(
-        nullptr,
-        i18n("The pager supports setting different wallpapers for different "
-             "desktops. Simply right-click on a desktop icon to set "
-             "the wallpaper for that desktop.\nNote: This requires Plasma "
-             "desktop widgets to stay unlocked."),
-        i18n("Information"),
-        "showPagerInfo");
-  }
+  showPagerInfoDialog();
 }
 
 void KSmoothDock::setScreen(int screen) {
@@ -1030,6 +1022,19 @@ void KSmoothDock::showTooltip(int i) {
 void KSmoothDock::showWaitCursor() {
   setCursor(QCursor(Qt::WaitCursor));
   QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
+}
+
+void KSmoothDock::showPagerInfoDialog() {
+  if (showPager_) {
+    KMessageBox::information(
+        nullptr,
+        i18n("The pager supports setting different wallpapers for different "
+             "desktops. Simply right-click on a desktop icon to set "
+             "the wallpaper for that desktop.\nNote: This requires Plasma "
+             "desktop widgets to stay unlocked."),
+        i18n("Information"),
+        "showPagerInfo");
+  }
 }
 
 int KSmoothDock::parabolic(int x) {
