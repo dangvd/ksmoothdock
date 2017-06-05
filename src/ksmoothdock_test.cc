@@ -51,6 +51,9 @@ class KSmoothDockTest: public QObject {
   // Tests setting Auto Hide on/off.
   void autoHide();
 
+  // Tests toggling the application menu.
+  void toggleApplicationMenu();
+
   // Tests toggling the pager.
   void togglePager();
 
@@ -85,6 +88,18 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->autoHideAction_->isChecked(), enabled);
     if (enabled) {
       QVERIFY(dock_->width() == 1 || dock_->height() == 1);
+    }
+  }
+
+  void verifyApplicationMenu(bool enabled) {
+    QCOMPARE(dock_->showApplicationMenu_, enabled);
+    QCOMPARE(dock_->applicationMenuAction_->isChecked(), enabled);
+    if (enabled) {
+      QCOMPARE(dock_->numItems(),
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
+    } else {
+      QCOMPARE(dock_->numItems(),
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
     }
   }
 
@@ -143,6 +158,14 @@ void KSmoothDockTest::autoHide() {
   verifyAutoHide(true);
   dock_->autoHideAction_->trigger();
   verifyAutoHide(false);
+}
+
+void KSmoothDockTest::toggleApplicationMenu() {
+  verifyApplicationMenu(true);
+  dock_->applicationMenuAction_->trigger();
+  verifyApplicationMenu(false);
+  dock_->applicationMenuAction_->trigger();
+  verifyApplicationMenu(true);
 }
 
 void KSmoothDockTest::togglePager() {

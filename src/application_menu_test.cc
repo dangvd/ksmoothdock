@@ -50,6 +50,7 @@ class ApplicationMenuTest: public QObject {
 const int ApplicationMenuTest::kNumCategories;
 
 void ApplicationMenuTest::loadEntries_singleDir() {
+  // TODO(dangvd): Add some entries here.
   QTemporaryDir entryDir;
   QVERIFY(entryDir.isValid());
 
@@ -67,6 +68,7 @@ void ApplicationMenuTest::loadEntries_singleDir() {
 }
 
 void ApplicationMenuTest::loadEntries_multipleDirs() {
+  // TODO(dangvd): Add some entries here.
   QTemporaryDir entryDir1;
   QVERIFY(entryDir1.isValid());
   QTemporaryDir entryDir2;
