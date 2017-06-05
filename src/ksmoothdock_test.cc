@@ -95,11 +95,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showApplicationMenu_, enabled);
     QCOMPARE(dock_->applicationMenuAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
     } else {
-      QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
     }
   }
 
@@ -118,11 +116,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showClock_, enabled);
     QCOMPARE(dock_->clockAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
     } else {
-      QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
     }
   }
 
@@ -169,7 +165,7 @@ void KSmoothDockTest::toggleApplicationMenu() {
 }
 
 void KSmoothDockTest::togglePager() {
-  verifyPager(true);
+  verifyPager(false);
   // TODO: Test when the pager is enabled.
 }
 

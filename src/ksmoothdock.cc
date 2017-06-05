@@ -95,8 +95,6 @@ void KSmoothDock::init() {
       SLOT(updateAnimation()));
   connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
       this, SLOT(updatePager()));
-
-  showPagerInfoDialog();
 }
 
 KSmoothDock::~KSmoothDock() {
@@ -531,7 +529,7 @@ void KSmoothDock::loadConfig() {
   applicationMenuAction_->setChecked(showApplicationMenu_);
   applicationMenuSettings_->setVisible(showApplicationMenu_);
 
-  showPager_ = group.readEntry("showPager", true);
+  showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
 
   showClock_ = group.readEntry("showClock", true);
