@@ -58,7 +58,7 @@ class KSmoothDockTest: public QObject {
   void toggleClock();
 
  private:
-  static const int kNumDefaultLaunchers = 7;
+  static const int kNumDefaultLaunchers = 6;
 
   void verifyPosition(PanelPosition position) {
     QCOMPARE(dock_->position_, position);
