@@ -61,7 +61,7 @@ class KSmoothDockTest: public QObject {
   void toggleClock();
 
  private:
-  static const int kNumDefaultLaunchers = 6;
+  static const int kNumDefaultLaunchers = 7;
 
   void verifyPosition(PanelPosition position) {
     QCOMPARE(dock_->position_, position);
@@ -95,9 +95,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showApplicationMenu_, enabled);
     QCOMPARE(dock_->applicationMenuAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
-    } else {
       QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+    } else {
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
     }
   }
 
@@ -106,9 +106,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->pagerAction_->isChecked(), enabled);
     if (enabled) {
       QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 2);
+               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
+      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
     }
   }
 
@@ -170,11 +170,11 @@ void KSmoothDockTest::togglePager() {
 }
 
 void KSmoothDockTest::toggleClock() {
-  verifyClock(true);
-  dock_->clockAction_->trigger();
   verifyClock(false);
   dock_->clockAction_->trigger();
   verifyClock(true);
+  dock_->clockAction_->trigger();
+  verifyClock(false);
 }
 
 }  // namespace ksmoothdock

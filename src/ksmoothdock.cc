@@ -532,7 +532,7 @@ void KSmoothDock::loadConfig() {
   showPager_ = group.readEntry("showPager", false);
   pagerAction_->setChecked(showPager_);
 
-  showClock_ = group.readEntry("showClock", true);
+  showClock_ = group.readEntry("showClock", false);
   clockAction_->setChecked(showClock_);
 
   minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
@@ -599,9 +599,10 @@ bool KSmoothDock::loadLaunchers() {
 }
 
 void KSmoothDock::createDefaultLaunchers() {
-  static const int kNumItems = 6;
+  static const int kNumItems = 7;
   static const char* const kItems[kNumItems][3] = {
     // Name, icon name, command.
+    {"Show Desktop", "user-desktop", kShowDesktopCommand},
     {"Terminal", "utilities-terminal", "konsole"},
     {"File Manager", "system-file-manager", "dolphin"},
     {"Text Editor", "kate", "kate"},
