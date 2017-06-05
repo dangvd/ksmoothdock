@@ -298,9 +298,11 @@ bool ApplicationMenu::loadEntry(const QString &file) {
     return false;
   }
 
-  const QString hidden = desktopFile.entryMap("Desktop Entry")["Hidden"];
-  if (!hidden.isEmpty() && hidden.trimmed().toLower() == "true") {
-    return false;
+  if (desktopFile.entryMap("Desktop Entry").contains("Hidden")) {
+    const QString hidden = desktopFile.entryMap("Desktop Entry")["Hidden"];
+    if (hidden.trimmed().toLower() == "true") {
+      return false;
+    }
   }
 
   const QStringList categories =
