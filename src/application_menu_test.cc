@@ -19,10 +19,15 @@
 #include "application_menu.h"
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QTest>
+
+#include <KConfig>
+#include <KConfigGroup>
 
 namespace ksmoothdock {
 
@@ -44,15 +49,35 @@ class ApplicationMenuTest: public QObject {
   static constexpr int kMaxSize = 64;
   static const int kNumCategories = 11;
 
+  void writeEntry(const QString& filename, const ApplicationEntry& entry,
+                  const QString& categories,
+                  const std::unordered_map<std::string, std::string>& extraKVs
+                      = {}) {
+    KConfig config(filename, KConfig::SimpleConfig);
+    KConfigGroup group(&config, "Desktop Entry");
+    group.writeEntry("Name", entry.name);
+    group.writeEntry("GenericName", entry.genericName);
+    group.writeEntry("Icon", entry.icon);
+    group.writeEntry("Exec", entry.command);
+    group.writeEntry("Categories", categories);
+    for (const auto& kv : extraKVs) {
+      group.writeEntry(QString::fromStdString(kv.first),
+                       QString::fromStdString(kv.second));
+    }
+    config.sync();
+  }
+
   std::unique_ptr<QTemporaryFile> configFile_;
   std::unique_ptr<KConfig> config_;
 };
 const int ApplicationMenuTest::kNumCategories;
 
 void ApplicationMenuTest::loadEntries_singleDir() {
-  // TODO(dangvd): Add some entries here.
   QTemporaryDir entryDir;
   QVERIFY(entryDir.isValid());
+  writeEntry(entryDir.path() + "/1.desktop",
+             {"Chrome", "Web Browser", "chrome", "chrome", ""},
+             "Network");
 
   ApplicationMenu applicationMenu(
       nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
@@ -63,27 +88,69 @@ void ApplicationMenuTest::loadEntries_singleDir() {
   QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
            kNumCategories);
   for (const auto& category : applicationMenu.categories_) {
-    QVERIFY(category.entries.empty());
+    if (category.name == "Network") {
+      QCOMPARE(static_cast<int>(category.entries.size()), 1);
+    } else {
+      QCOMPARE(static_cast<int>(category.entries.size()), 0);
+    }
   }
 }
 
 void ApplicationMenuTest::loadEntries_multipleDirs() {
-  // TODO(dangvd): Add some entries here.
   QTemporaryDir entryDir1;
   QVERIFY(entryDir1.isValid());
+  writeEntry(entryDir1.path() + "/1.desktop",
+             {"Chrome", "Web Browser", "chrome", "chrome", ""},
+             "Network");
+  writeEntry(entryDir1.path() + "/2.desktop",
+             {"KMail", "Email Client", "kmail", "kmail", ""},
+             "Qt;KDE;Network");
+  writeEntry(entryDir1.path() + "/3.desktop",
+             {"Xfce Settings", "", "xfce-settings", "xfce-settings", ""},
+             "Settings",
+             {{"OnlyShowIn", "Xfce"}});
+
+  // Empty dir
   QTemporaryDir entryDir2;
   QVERIFY(entryDir2.isValid());
 
+  QTemporaryDir entryDir3;
+  QVERIFY(entryDir3.isValid());
+  writeEntry(entryDir3.path() + "/1.desktop",
+             {"KDE Settings", "", "systemsettings5", "systemsettings5", ""},
+             "Settings",
+             {{"OnlyShowIn", "KDE"}});
+  writeEntry(entryDir3.path() + "/2.desktop",
+             {"Gnome Settings", "", "gnome-settings", "gnome-settings", ""},
+             "Settings",
+             {{"NotShowIn", "KDE"}});
+  writeEntry(entryDir3.path() + "/3.desktop",
+             {"Chrome - HTML", "Web Browser", "chrome", "chrome", ""},
+             "Network",
+             {{"NoDisplay", "true"}});
+  writeEntry(entryDir3.path() + "/4.desktop",
+             {"Chrome - Old", "Web Browser", "chrome", "chrome", ""},
+             "Network",
+             {{"Hidden", "true"}});
+
+
   ApplicationMenu applicationMenu(
       nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
-      { entryDir1.path(), entryDir2.path() });
+      { entryDir1.path(), entryDir1.path() + "/dir-not-exist", entryDir2.path(),
+        entryDir3.path() });
   applicationMenu.initCategories();
   applicationMenu.loadEntries();
 
   QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
            kNumCategories);
   for (const auto& category : applicationMenu.categories_) {
-    QVERIFY(category.entries.empty());
+    if (category.name == "Network") {
+      QCOMPARE(static_cast<int>(category.entries.size()), 2);
+    } else if (category.name == "Settings") {
+      QCOMPARE(static_cast<int>(category.entries.size()), 1);
+    } else {
+      QCOMPARE(static_cast<int>(category.entries.size()), 0);
+    }
   }
 }
 

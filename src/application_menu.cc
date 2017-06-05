@@ -241,6 +241,7 @@ void ApplicationMenu::saveConfig() {
   KConfigGroup group(config_, "Application Menu");
   group.writeEntry("label", label_);
   group.writeEntry("icon", iconName_);
+  config_->sync();
 }
 
 void ApplicationMenu::initCategories() {
@@ -294,6 +295,11 @@ bool ApplicationMenu::loadEntries() {
 bool ApplicationMenu::loadEntry(const QString &file) {
   KDesktopFile desktopFile(file);
   if (desktopFile.noDisplay()) {
+    return false;
+  }
+
+  const QString hidden = desktopFile.entryMap("Desktop Entry")["Hidden"];
+  if (!hidden.isEmpty() && hidden.trimmed().toLower() == "true") {
     return false;
   }
 

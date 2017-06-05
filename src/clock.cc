@@ -132,6 +132,7 @@ void Clock::loadConfig() {
 void Clock::saveConfig() {
   KConfigGroup group(config_, "Clock");
   group.writeEntry("use24HourClock", use24HourClock_);
+  config_->sync();
 }
 
 }  // namespace ksmoothdock
