@@ -120,7 +120,8 @@ const int KSmoothDockTest::kNumDefaultLaunchers;
 void KSmoothDockTest::createDefaultLaunchers() {
   // Tests that default launchers have been created.
   QDir launchersDir(launchersDir_->path());
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
+  QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
+                                             QDir::Name);
   QCOMPARE(files.size(), kNumDefaultLaunchers);
 }
 
