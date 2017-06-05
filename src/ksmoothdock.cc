@@ -539,8 +539,7 @@ void KSmoothDock::loadConfig() {
   applicationMenuAction_->setChecked(showApplicationMenu_);
   applicationMenuSettings_->setVisible(showApplicationMenu_);
 
-  const bool showPagerByDefault = KWindowSystem::numberOfDesktops() > 1;
-  showPager_ = group.readEntry("showPager", showPagerByDefault);
+  showPager_ = group.readEntry("showPager", true);
   pagerAction_->setChecked(showPager_);
 
   showClock_ = group.readEntry("showClock", true);
@@ -610,12 +609,11 @@ bool KSmoothDock::loadLaunchers() {
 }
 
 void KSmoothDock::createDefaultLaunchers() {
-  static const int kNumItems = 7;
+  static const int kNumItems = 6;
   static const char* const kItems[kNumItems][3] = {
     // Name, icon name, command.
-    {"File Manager", "system-file-manager", "dolphin"},
-    {"Show Desktop", "user-desktop", kShowDesktopCommand},
     {"Terminal", "utilities-terminal", "konsole"},
+    {"File Manager", "system-file-manager", "dolphin"},
     {"Text Editor", "kate", "kate"},
     {"Web Browser", "applications-internet", "firefox"},
     {"Audio Player", "audio-headphones", "amarok"},
