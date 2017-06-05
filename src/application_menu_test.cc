@@ -37,6 +37,7 @@ class ApplicationMenuTest: public QObject {
   }
 
   void loadEntries_singleDir();
+  void loadEntries_multipleDirs();
 
  private:
   static constexpr int kMinSize = 64;
@@ -52,8 +53,28 @@ void ApplicationMenuTest::loadEntries_singleDir() {
   QTemporaryDir entryDir;
   QVERIFY(entryDir.isValid());
 
-  ApplicationMenu applicationMenu(nullptr, Qt::Horizontal, kMinSize, kMaxSize,
-                                  config_.get(), { entryDir.path() });
+  ApplicationMenu applicationMenu(
+      nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
+      { entryDir.path() });
+  applicationMenu.initCategories();
+  applicationMenu.loadEntries();
+
+  QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
+           kNumCategories);
+  for (const auto& category : applicationMenu.categories_) {
+    QVERIFY(category.entries.empty());
+  }
+}
+
+void ApplicationMenuTest::loadEntries_multipleDirs() {
+  QTemporaryDir entryDir1;
+  QVERIFY(entryDir1.isValid());
+  QTemporaryDir entryDir2;
+  QVERIFY(entryDir2.isValid());
+
+  ApplicationMenu applicationMenu(
+      nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
+      { entryDir1.path(), entryDir2.path() });
   applicationMenu.initCategories();
   applicationMenu.loadEntries();
 
