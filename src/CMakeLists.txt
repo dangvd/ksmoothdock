@@ -66,3 +66,7 @@ add_test(ksmoothdock_test ksmoothdock_test)
 add_executable(launcher_test launcher_test.cc)
 target_link_libraries(launcher_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(launcher_test launcher_test)
+
+add_executable(application_menu_test application_menu_test.cc)
+target_link_libraries(application_menu_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(application_menu_test application_menu_test)

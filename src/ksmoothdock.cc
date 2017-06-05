@@ -649,8 +649,10 @@ void KSmoothDock::saveLaunchers() {
 
 void KSmoothDock::initApplicationMenu() {
   if (showApplicationMenu_) {
-    items_.push_back(std::unique_ptr<DockItem>(new ApplicationMenu(
-        this, orientation_, minSize_, maxSize_, &config_)));
+    auto* item = new ApplicationMenu(
+        this, orientation_, minSize_, maxSize_, &config_);
+    item->init();
+    items_.push_back(std::unique_ptr<DockItem>(item));
   }
 }
 
@@ -659,8 +661,8 @@ void KSmoothDock::initPager() {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
       auto* item = new DesktopSelector(
           this, orientation_, minSize_, maxSize_, (i + 1), &config_);
-      items_.push_back(std::unique_ptr<DockItem>(item));
       item->init();
+      items_.push_back(std::unique_ptr<DockItem>(item));
     }
   }
 }

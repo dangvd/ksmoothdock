@@ -108,7 +108,9 @@ ApplicationMenu::ApplicationMenu(
       config_(config),
       entryDirs_(entryDirs),
       fileWatcher_(entryDirs),
-      configDialog_(parent, this) {
+      configDialog_(parent, this) {}
+
+void ApplicationMenu::init() {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
 

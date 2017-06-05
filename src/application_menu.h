@@ -124,6 +124,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
           "/usr/share/applications/kde4",
           QDir::homePath() + "/.local/share/applications"});
 
+  void init();
+
   void mousePressEvent(QMouseEvent* e) override;
 
   QSize getMenuSize() { return menu_.sizeHint(); }
@@ -194,6 +196,8 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   QPoint startMousePos_;
   // The desktop file associated with the application entry being dragged.
   QString draggedEntry_;
+
+  friend class ApplicationMenuTest;
 };
 
 }  // namespace ksmoothdock
