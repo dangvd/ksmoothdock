@@ -1,10 +1,10 @@
 KSmoothDock is a cool desktop panel with parabolic zooming effect for KDE 
-Plasma 
-5. While visually it is inspired by Mac OS X's Dock, it aims to follow the 
-traditional Linux model of desktop panel with the application menu, launchers, 
-the pager, the taskbar and the system tray. Currently KSmoothDock only supports 
-the application menu, launchers and the pager, and is meant to use in 
-conjunction with a Plasma 5 panel that provides the taskbar and the system tray.
+Plasma 5. While visually it is inspired by Mac OS X's Dock, it aims to follow 
+the traditional Linux model of desktop panel with the application menu, 
+launchers, the pager, the taskbar and the system tray. Currently KSmoothDock 
+only supports the application menu, launchers and the pager, and is meant to 
+use in conjunction with a Plasma 5 panel that provides the taskbar and the 
+system tray.
 
 KSmoothDock is written in C++ and depends on Qt 5 and KDE Frameworks 5.
 
