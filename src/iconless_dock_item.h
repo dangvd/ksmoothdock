@@ -30,6 +30,7 @@ class IconlessDockItem : public DockItem {
       Qt::Orientation orientation, int minSize, int maxSize, float whRatio)
       : DockItem(parent, label, orientation, minSize, maxSize),
         whRatio_(whRatio) {}
+  virtual ~IconlessDockItem() {}
 
   int getWidthForSize(int size) const override;
   int getHeightForSize(int size) const override;

@@ -39,6 +39,7 @@ class Clock : public QObject, public IconlessDockItem {
  public:
   Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
         int maxSize, KConfig *config);
+  virtual ~Clock() {}
 
   void draw(QPainter* painter) const override;
   void mousePressEvent(QMouseEvent* e) override;
