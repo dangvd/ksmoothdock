@@ -341,6 +341,10 @@ void KSmoothDock::showApplicationMenuConfigDialog() {
   }
 }
 
+void KSmoothDock::addDock() {}
+void KSmoothDock::cloneDock() {}
+void KSmoothDock::deleteDock() {}
+
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   if (isResizing_) {
     return;  // to avoid potential flicker.
@@ -444,6 +448,14 @@ void KSmoothDock::initUi() {
 }
 
 void KSmoothDock::createMenu() {
+  menu_.addAction(QIcon::fromTheme("list-add"), i18n("&Add Panel"),
+      this, SLOT(addDock()));
+  menu_.addAction(QIcon::fromTheme("edit-copy"), i18n("&Clone Panel"),
+      this, SLOT(cloneDock()));
+  menu_.addAction(QIcon::fromTheme("edit-delete"), i18n("&Delete Panel"),
+      this, SLOT(deleteDock()));
+  menu_.addSeparator();
+
   applicationMenuSettings_ = menu_.addAction(
       QIcon::fromTheme("configure"), i18n("Application &Menu Settings"), this,
       SLOT(showApplicationMenuConfigDialog()));
@@ -501,7 +513,7 @@ void KSmoothDock::createMenu() {
   menu_.addAction(QIcon::fromTheme("help-contents"),
                   i18n("Online &Documentation"),
                   this, SLOT(showOnlineDocumentation()));
-  menu_.addAction(QIcon::fromTheme("help-about"), i18n("&About KSmoothDock"),
+  menu_.addAction(QIcon::fromTheme("help-about"), i18n("A&bout KSmoothDock"),
       this, SLOT(about()));
   menu_.addSeparator();
   menu_.addAction(i18n("E&xit"), this, SLOT(close()));

@@ -161,6 +161,10 @@ class KSmoothDock : public QWidget {
 
   void showApplicationMenuConfigDialog();
 
+  void addDock();
+  void cloneDock();
+  void deleteDock();
+
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
   virtual void mouseMoveEvent(QMouseEvent* e) override;
