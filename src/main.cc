@@ -22,7 +22,7 @@
 #include <KDBusService>
 #include <KLocalizedString>
 
-#include "ksmoothdock.h"
+#include "dock_manager.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
       "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
 
-  ksmoothdock::KSmoothDock dock;
-  dock.init();
-  dock.show();
+  ksmoothdock::DockManager dock_manager;
+  dock_manager.init();
+  dock_manager.show();
   return app.exec();
 }
