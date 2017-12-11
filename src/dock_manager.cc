@@ -46,6 +46,27 @@ void DockManager::show() {
   }
 }
 
+void DockManager::addDock(PanelPosition position) {
+  QDir configDir(configDir_);
+  for (int dockIndex = 0; ; ++dockIndex) {
+    // Find an unused dock index and use it for the new dock.
+    QString configFile = (dockIndex == 0)
+        ? "ksmoothdockrc"
+        : "ksmoothdockrc" + QString::number(dockIndex);
+    if (!configDir.exists(configFile)) {
+      QString launcherDir = configFile;
+      launcherDir.replace("ksmoothdockrc", "launchers");
+      std::unique_ptr<KSmoothDock> dock(new KSmoothDock(
+          configDir_ + "/" + configFile,
+          configDir_ + "/" + launcherDir));
+      dock->setPosition(position);
+      dock->show();
+      docks_.push_back(std::move(dock));
+      return;
+    }
+  }
+}
+
 bool DockManager::loadDocks() {
   docks_.clear();
   if (!QDir::root().exists(configDir_)) {

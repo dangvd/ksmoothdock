@@ -40,6 +40,9 @@ class DockManager {
   // Shows all the dock instances.
   void show();
 
+  // Adds a new dock in the specified position.
+  void addDock(PanelPosition position);
+
  private:
   // Loads all the dock instances.
   bool loadDocks();
