@@ -45,6 +45,7 @@
 #include "application_menu.h"
 #include "clock.h"
 #include "desktop_selector.h"
+#include "dock_manager.h"
 #include "launcher.h"
 #include "welcome_dialog.h"
 
@@ -58,13 +59,16 @@ const float KSmoothDock::kDefaultBackgroundAlpha = 0.42;
 const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
 const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
-KSmoothDock::KSmoothDock(const QString& configFile,
+KSmoothDock::KSmoothDock(DockManager* parent,
+                         const QString& configFile,
                          const QString& launchersDir)
     : QWidget(),
+      position_(PanelPosition::Undefined),
       autoHide_(false),
       showPager_(false),
       showClock_(false),
       showBorder_(true),
+      parent_(parent),
       launchersDir_(launchersDir),
       configFile_(configFile),
       config_(configFile, KConfig::SimpleConfig),
@@ -77,9 +81,20 @@ KSmoothDock::KSmoothDock(const QString& configFile,
       isLeaving_(false),
       isAnimationActive_(false) {}
 
-KSmoothDock::KSmoothDock()
-    : KSmoothDock(QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
+KSmoothDock::KSmoothDock(DockManager* parent, const QString& configFile,
+                         const QString& launchersDir, PanelPosition position)
+    : KSmoothDock(parent, configFile, launchersDir) {
+  position_ = position;
+}
+
+KSmoothDock::KSmoothDock(DockManager* parent)
+    : KSmoothDock(parent,
+                  QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
                   QDir::homePath() + "/.ksmoothdock/launchers") {}
+
+KSmoothDock::KSmoothDock(const QString& configFile,
+                         const QString& launchersDir)
+    : KSmoothDock(nullptr, configFile, launchersDir) {}
 
 void KSmoothDock::init() {
   setAttribute(Qt::WA_TranslucentBackground);
@@ -341,7 +356,14 @@ void KSmoothDock::showApplicationMenuConfigDialog() {
   }
 }
 
-void KSmoothDock::addDock() {}
+void KSmoothDock::addDock() {
+  WelcomeDialog welcome;
+  welcome.setWindowTitle(i18n("Add a new dock"));
+  welcome.exec();
+  auto position = static_cast<PanelPosition>(welcome.position_->currentIndex());
+  parent_->addDock(position);
+}
+
 void KSmoothDock::cloneDock() {}
 void KSmoothDock::deleteDock() {}
 
@@ -522,17 +544,21 @@ void KSmoothDock::createMenu() {
 void KSmoothDock::loadConfig() {
   KConfigGroup group(&config_, "General");
 
-  PanelPosition position;
-  const bool firstRun = !QFile(configFile_).exists();
-  if (firstRun) {
-    WelcomeDialog welcome;
-    welcome.exec();
-    position = static_cast<PanelPosition>(welcome.position_->currentIndex());
+  if (position_ == PanelPosition::Undefined) {
+    PanelPosition position;
+    const bool firstRun = !QFile(configFile_).exists();
+    if (firstRun) {
+      WelcomeDialog welcome;
+      welcome.exec();
+      position = static_cast<PanelPosition>(welcome.position_->currentIndex());
+    } else {
+      position = static_cast<PanelPosition>(
+          group.readEntry("position", static_cast<int>(PanelPosition::Bottom)));
+    }
+    setPosition(position);
   } else {
-    position = static_cast<PanelPosition>(group.readEntry(
-        "position", static_cast<int>(PanelPosition::Bottom)));
+    setPosition(position_);
   }
-  setPosition(position);
 
   autoHide_ = group.readEntry("autoHide", false);
   autoHideAction_->setChecked(autoHide_);

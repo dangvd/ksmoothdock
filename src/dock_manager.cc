@@ -56,12 +56,13 @@ void DockManager::addDock(PanelPosition position) {
     if (!configDir.exists(configFile)) {
       QString launcherDir = configFile;
       launcherDir.replace("ksmoothdockrc", "launchers");
-      std::unique_ptr<KSmoothDock> dock(new KSmoothDock(
+      docks_.push_back(std::unique_ptr<KSmoothDock>(new KSmoothDock(
+          this,
           configDir_ + "/" + configFile,
-          configDir_ + "/" + launcherDir));
-      dock->setPosition(position);
-      dock->show();
-      docks_.push_back(std::move(dock));
+          configDir_ + "/" + launcherDir,
+          position)));
+      docks_.back()->init();
+      docks_.back()->show();
       return;
     }
   }
@@ -88,14 +89,15 @@ bool DockManager::loadDocks() {
     QString launcherDir = configFile;
     launcherDir.replace("ksmoothdockrc", "launchers");
     docks_.push_back(std::unique_ptr<KSmoothDock>(
-                         new KSmoothDock(configDir_ + "/" + configFile,
+                         new KSmoothDock(this,
+                                         configDir_ + "/" + configFile,
                                          configDir_ + "/" + launcherDir)));
   }
   return true;
 }
 
 void DockManager::createDefaultDock() {
-  docks_.push_back(std::unique_ptr<KSmoothDock>(new KSmoothDock));
+  docks_.push_back(std::unique_ptr<KSmoothDock>(new KSmoothDock(this)));
 }
 
 }  // namespace ksmoothdock

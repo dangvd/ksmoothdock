@@ -44,15 +44,24 @@
 
 namespace ksmoothdock {
 
-enum class PanelPosition {Top, Bottom, Left, Right};
+class DockManager;
+
+enum class PanelPosition {Top, Bottom, Left, Right, Undefined};
 
 // KSmoothDock's main class that represents the dock itself.
 class KSmoothDock : public QWidget {
   Q_OBJECT
 
  public:
-  KSmoothDock(const QString& configFile, const QString& launchersDir);
-  KSmoothDock();
+  KSmoothDock(DockManager* parent, const QString& configFile,
+              const QString& launchersDir, PanelPosition position);
+  KSmoothDock(DockManager* parent, const QString& configFile,
+              const QString& launchersDir);
+  explicit KSmoothDock(DockManager* parent);
+
+  // For test only.
+  KSmoothDock(const QString& configFile,
+              const QString& launchersDir);
 
   void init();
 
@@ -252,6 +261,8 @@ class KSmoothDock : public QWidget {
   int screen_;  // the screen (as screen index) that the dock is on.
 
   // Non-config variables.
+
+  DockManager* parent_;
 
   int itemSpacing_;
   int minX_;  // X-coordinate when minimized.
