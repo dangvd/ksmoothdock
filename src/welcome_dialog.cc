@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of KSmoothDock.
  * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
  *

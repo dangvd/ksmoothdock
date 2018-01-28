@@ -42,6 +42,7 @@
 #include <KMessageBox>
 #include <netwm_def.h>
 
+#include "add_panel_dialog.h"
 #include "application_menu.h"
 #include "clock.h"
 #include "desktop_selector.h"
@@ -356,12 +357,14 @@ void KSmoothDock::showApplicationMenuConfigDialog() {
   }
 }
 
+// TODO(dangvd): Handle multi-screens.
 void KSmoothDock::addDock() {
-  WelcomeDialog welcome;
-  welcome.setWindowTitle(i18n("Add a new dock"));
-  welcome.exec();
-  auto position = static_cast<PanelPosition>(welcome.position_->currentIndex());
-  parent_->addDock(position);
+  AddPanelDialog dialog;
+  if (dialog.exec()) {
+    auto position = static_cast<PanelPosition>(
+        dialog.position_->currentIndex());
+    parent_->addDock(position);
+  }
 }
 
 void KSmoothDock::cloneDock() {}
