@@ -19,6 +19,7 @@
 #include "dock_manager.h"
 
 #include <iostream>
+#include <memory>
 
 #include <QDir>
 #include <QStringList>
@@ -56,11 +57,11 @@ void DockManager::addDock(PanelPosition position) {
     if (!configDir.exists(configFile)) {
       QString launcherDir = configFile;
       launcherDir.replace("ksmoothdockrc", "launchers");
-      docks_.push_back(std::unique_ptr<KSmoothDock>(new KSmoothDock(
+      docks_.push_back(std::make_unique<KSmoothDock>(
           this,
           configDir_ + "/" + configFile,
           configDir_ + "/" + launcherDir,
-          position)));
+          position));
       docks_.back()->init();
       docks_.back()->show();
       return;
