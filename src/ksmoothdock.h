@@ -53,15 +53,20 @@ class KSmoothDock : public QWidget {
   Q_OBJECT
 
  public:
-  KSmoothDock(DockManager* parent, const QString& configFile,
-              const QString& launchersDir, PanelPosition position);
-  KSmoothDock(DockManager* parent, const QString& configFile,
-              const QString& launchersDir);
-  explicit KSmoothDock(DockManager* parent);
+  KSmoothDock(DockManager* parent,
+              const QString& configFile,
+              const QString& launchersDir,
+              const QString& appearanceConfigFile,
+              PanelPosition position);
+  KSmoothDock(DockManager* parent,
+              const QString& configFile,
+              const QString& launchersDir,
+              const QString& appearanceConfigFile);
 
   // For test only.
   KSmoothDock(const QString& configFile,
-              const QString& launchersDir);
+              const QString& launchersDir,
+              const QString& appearanceConfigFile);
 
   void init();
 
@@ -279,12 +284,14 @@ class KSmoothDock : public QWidget {
 
   Qt::Orientation orientation_;
 
-  // The path to the directory to store quick launchers as desktop files.
+  // Dock-specific configs.
+  KConfig dockConfig_;
+  // The path to the directory to store quick launchers as desktop files
+  // (dock-specific).
   QString launchersDir_;
 
-  // The path to the config file.
-  QString configFile_;
-  KConfig config_;
+  // (Global) appearance configs.
+  KConfig appearanceConfig_;
 
   // The list of all dock items.
   std::vector<std::unique_ptr<DockItem>> items_;

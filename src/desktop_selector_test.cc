@@ -49,6 +49,7 @@ class DesktopSelectorTest: public QObject {
 
   std::unique_ptr<DesktopSelector> desktopSelector_;
   std::unique_ptr<QTemporaryFile> configFile_;
+  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
   std::unique_ptr<KConfig> config_;
 };
 const int DesktopSelectorTest::kMinSize;

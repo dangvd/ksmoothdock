@@ -30,6 +30,8 @@
 #include <KConfig>
 #include <KWindowSystem>
 
+#include "config_helper.h"
+
 namespace ksmoothdock {
 
 // Pager icons.
@@ -61,8 +63,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
     return KWindowSystem::currentDesktop() == desktop_;
   }
 
-  QString getConfigKey() const {
-    return QString("wallpaper") + QString::number(desktop_);
+  QString getWallpaperConfigKey() const {
+    return ConfigHelper::getWallpaperConfigKey(desktop_);
   }
 
   bool isWallpaperOk() const {

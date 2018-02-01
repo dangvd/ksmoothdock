@@ -33,12 +33,12 @@ class WelcomeDialog : public QDialog {
   WelcomeDialog();
   ~WelcomeDialog() {}
 
+  int getSelectedPositionIndex() { return position_->currentIndex(); }
+
  private:
   QLabel *positionLabel_;
   QComboBox *position_;
   QDialogButtonBox *buttonBox_;
-
-  friend class KSmoothDock;
 };
 
 }  // namespace ksmoothdock

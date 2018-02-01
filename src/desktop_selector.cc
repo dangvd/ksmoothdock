@@ -31,6 +31,7 @@
 #include <KLocalizedString>
 #include <KMessageBox>
 
+#include "config_helper.h"
 #include "ksmoothdock.h"
 
 namespace ksmoothdock {
@@ -50,8 +51,8 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
 
 void DesktopSelector::init() {
-  KConfigGroup group(config_, "Pager");
-  wallpaper_ = group.readEntry(getConfigKey(), "");
+  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
+  wallpaper_ = group.readEntry(getWallpaperConfigKey(), "");
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpaper_));
   } else {
@@ -113,8 +114,8 @@ void DesktopSelector::changeWallpaper() {
     setWallpaper(wallpaper_);
   }
 
-  KConfigGroup group(config_, "Pager");
-  group.writeEntry(getConfigKey(), wallpaper_);
+  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
+  group.writeEntry(getWallpaperConfigKey(), wallpaper_);
   config_->sync();
 }
 

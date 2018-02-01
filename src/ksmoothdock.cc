@@ -45,10 +45,10 @@
 #include "add_panel_dialog.h"
 #include "application_menu.h"
 #include "clock.h"
+#include "config_helper.h"
 #include "desktop_selector.h"
 #include "dock_manager.h"
 #include "launcher.h"
-#include "welcome_dialog.h"
 
 namespace ksmoothdock {
 
@@ -62,7 +62,8 @@ const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
 
 KSmoothDock::KSmoothDock(DockManager* parent,
                          const QString& configFile,
-                         const QString& launchersDir)
+                         const QString& launchersDir,
+                         const QString& appearanceConfigFile)
     : QWidget(),
       position_(PanelPosition::Undefined),
       autoHide_(false),
@@ -70,9 +71,9 @@ KSmoothDock::KSmoothDock(DockManager* parent,
       showClock_(false),
       showBorder_(true),
       parent_(parent),
+      dockConfig_(configFile, KConfig::SimpleConfig),
       launchersDir_(launchersDir),
-      configFile_(configFile),
-      config_(configFile, KConfig::SimpleConfig),
+      appearanceConfig_(appearanceConfigFile, KConfig::SimpleConfig),
       aboutDialog_(KAboutData::applicationData(), this),
       configDialog_(this),
       editLaunchersDialog_(this),
@@ -83,19 +84,17 @@ KSmoothDock::KSmoothDock(DockManager* parent,
       isAnimationActive_(false) {}
 
 KSmoothDock::KSmoothDock(DockManager* parent, const QString& configFile,
-                         const QString& launchersDir, PanelPosition position)
-    : KSmoothDock(parent, configFile, launchersDir) {
+                         const QString& launchersDir,
+                         const QString& appearanceConfigFile,
+                         PanelPosition position)
+    : KSmoothDock(parent, configFile, appearanceConfigFile, launchersDir) {
   position_ = position;
 }
 
-KSmoothDock::KSmoothDock(DockManager* parent)
-    : KSmoothDock(parent,
-                  QDir::homePath() + "/.ksmoothdock/ksmoothdockrc",
-                  QDir::homePath() + "/.ksmoothdock/launchers") {}
-
 KSmoothDock::KSmoothDock(const QString& configFile,
-                         const QString& launchersDir)
-    : KSmoothDock(nullptr, configFile, launchersDir) {}
+                         const QString& launchersDir,
+                         const QString& appearanceConfigFile)
+    : KSmoothDock(nullptr, configFile, appearanceConfigFile, launchersDir) {}
 
 void KSmoothDock::init() {
   setAttribute(Qt::WA_TranslucentBackground);
@@ -505,7 +504,7 @@ void KSmoothDock::createMenu() {
 
   const int numScreens = QApplication::desktop()->screenCount();
   if (numScreens > 1) {
-    QMenu* screen = menu_.addMenu(i18n("Screen"));
+    QMenu* screen = menu_.addMenu(i18n(ConfigHelper::kScreen));
     for (int i = 0; i < numScreens; ++i) {
       QAction* action = screen->addAction(
           "Screen " + QString::number(i + 1), this,
@@ -545,69 +544,80 @@ void KSmoothDock::createMenu() {
 }
 
 void KSmoothDock::loadConfig() {
-  KConfigGroup group(&config_, "General");
+  // Dock-specific configs.
+
+  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
 
   if (position_ == PanelPosition::Undefined) {
-    PanelPosition position;
-    const bool firstRun = !QFile(configFile_).exists();
-    if (firstRun) {
-      WelcomeDialog welcome;
-      welcome.exec();
-      position = static_cast<PanelPosition>(welcome.position_->currentIndex());
-    } else {
-      position = static_cast<PanelPosition>(
-          group.readEntry("position", static_cast<int>(PanelPosition::Bottom)));
-    }
-    setPosition(position);
-  } else {
-    setPosition(position_);
+    position_ = static_cast<PanelPosition>(
+        dockGeneral.readEntry(ConfigHelper::kPosition,
+                        static_cast<int>(PanelPosition::Bottom)));
   }
+  setPosition(position_);
 
-  autoHide_ = group.readEntry("autoHide", false);
+  setScreen(dockGeneral.readEntry(ConfigHelper::kScreen, 0));
+
+  autoHide_ = dockGeneral.readEntry(ConfigHelper::kAutoHide, false);
   autoHideAction_->setChecked(autoHide_);
 
-  showApplicationMenu_ = group.readEntry("showApplicationMenu", true);
+  showApplicationMenu_ =
+      dockGeneral.readEntry(ConfigHelper::kShowApplicationMenu, true);
   applicationMenuAction_->setChecked(showApplicationMenu_);
   applicationMenuSettings_->setVisible(showApplicationMenu_);
 
-  showPager_ = group.readEntry("showPager", false);
+  showPager_ = dockGeneral.readEntry(ConfigHelper::kShowPager, false);
   pagerAction_->setChecked(showPager_);
 
-  showClock_ = group.readEntry("showClock", false);
+  showClock_ = dockGeneral.readEntry(ConfigHelper::kShowClock, false);
   clockAction_->setChecked(showClock_);
 
-  minSize_ = group.readEntry("minimumIconSize", kDefaultMinSize);
-  maxSize_ = group.readEntry("maximumIconSize", kDefaultMaxSize);
+  // Appearance configs.
+
+  KConfigGroup appearanceGeneral(&appearanceConfig_,
+                                 ConfigHelper::kGeneralCategory);
+
+  minSize_ = appearanceGeneral.readEntry(ConfigHelper::kMinimumIconSize,
+                                         kDefaultMinSize);
+  maxSize_ = appearanceGeneral.readEntry(ConfigHelper::kMaximumIconSize,
+                                         kDefaultMaxSize);
   if (maxSize_ < minSize_) {
     maxSize_ = minSize_;
   }
   QColor defaultBackgroundColor(kDefaultBackgroundColor);
   defaultBackgroundColor.setAlphaF(kDefaultBackgroundAlpha);
-  backgroundColor_ = group.readEntry("backgroundColor",
-                                     defaultBackgroundColor);
-  showBorder_ = group.readEntry("showBorder", true);
-  borderColor_ = group.readEntry("borderColor",
-                                 QColor(kDefaultBorderColor));
-  tooltipFontSize_ = group.readEntry("tooltipFontSize",
-                                     kDefaultTooltipFontSize);
-  setScreen(group.readEntry("screen", 0));
+  backgroundColor_ = appearanceGeneral.readEntry(ConfigHelper::kBackgroundColor,
+                                                 defaultBackgroundColor);
+  showBorder_ = appearanceGeneral.readEntry(ConfigHelper::kShowBorder, true);
+  borderColor_ = appearanceGeneral.readEntry(ConfigHelper::kBorderColor,
+                                             QColor(kDefaultBorderColor));
+  tooltipFontSize_ = appearanceGeneral.readEntry(ConfigHelper::kTooltipFontSize,
+                                                 kDefaultTooltipFontSize);
 }
 
 void KSmoothDock::saveConfig() {
-  KConfigGroup group(&config_, "General");
-  group.writeEntry("position", static_cast<int>(position_));
-  group.writeEntry("autoHide", autoHide_);
-  group.writeEntry("showApplicationMenu", showApplicationMenu_);
-  group.writeEntry("showPager", showPager_);
-  group.writeEntry("showClock", showClock_);
-  group.writeEntry("minimumIconSize", minSize_);
-  group.writeEntry("maximumIconSize", maxSize_);
-  group.writeEntry("backgroundColor", backgroundColor_);
-  group.writeEntry("showBorder", showBorder_);
-  group.writeEntry("borderColor", borderColor_);
-  group.writeEntry("tooltipFontSize", tooltipFontSize_);
-  group.writeEntry("screen", screen_);
-  config_.sync();
+  // Dock-specific configs.
+  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
+  dockGeneral.writeEntry(ConfigHelper::kPosition, static_cast<int>(position_));
+  dockGeneral.writeEntry(ConfigHelper::kScreen, screen_);
+  dockGeneral.writeEntry(ConfigHelper::kAutoHide, autoHide_);
+  dockGeneral.writeEntry(ConfigHelper::kShowApplicationMenu,
+                         showApplicationMenu_);
+  dockGeneral.writeEntry(ConfigHelper::kShowPager, showPager_);
+  dockGeneral.writeEntry(ConfigHelper::kShowClock, showClock_);
+  dockConfig_.sync();
+
+  // Appearance configs.
+  KConfigGroup appearanceGeneral(&appearanceConfig_,
+                                 ConfigHelper::kGeneralCategory);
+  appearanceGeneral.writeEntry(ConfigHelper::kMinimumIconSize, minSize_);
+  appearanceGeneral.writeEntry(ConfigHelper::kMaximumIconSize, maxSize_);
+  appearanceGeneral.writeEntry(ConfigHelper::kBackgroundColor,
+                               backgroundColor_);
+  appearanceGeneral.writeEntry(ConfigHelper::kShowBorder, showBorder_);
+  appearanceGeneral.writeEntry(ConfigHelper::kBorderColor, borderColor_);
+  appearanceGeneral.writeEntry(ConfigHelper::kTooltipFontSize,
+                               tooltipFontSize_);
+  appearanceConfig_.sync();
 }
 
 void KSmoothDock::initLaunchers() {
@@ -682,7 +692,7 @@ void KSmoothDock::saveLaunchers() {
 void KSmoothDock::initApplicationMenu() {
   if (showApplicationMenu_) {
     auto* item = new ApplicationMenu(
-        this, orientation_, minSize_, maxSize_, &config_);
+        this, orientation_, minSize_, maxSize_, &appearanceConfig_);
     item->init();
     items_.push_back(std::unique_ptr<DockItem>(item));
   }
@@ -692,7 +702,7 @@ void KSmoothDock::initPager() {
   if (showPager_) {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
       auto* item = new DesktopSelector(
-          this, orientation_, minSize_, maxSize_, (i + 1), &config_);
+          this, orientation_, minSize_, maxSize_, (i + 1), &appearanceConfig_);
       item->init();
       items_.push_back(std::unique_ptr<DockItem>(item));
     }
@@ -702,7 +712,7 @@ void KSmoothDock::initPager() {
 void KSmoothDock::initClock() {
   if (showClock_) {
     items_.push_back(std::unique_ptr<DockItem>(new Clock(
-        this, orientation_, minSize_, maxSize_, &config_)));
+        this, orientation_, minSize_, maxSize_, &appearanceConfig_)));
   }
 }
 

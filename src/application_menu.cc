@@ -33,6 +33,7 @@
 #include <KLocalizedString>
 #include <KWindowSystem>
 
+#include "config_helper.h"
 #include "ksmoothdock.h"
 #include "launcher.h"
 
@@ -232,15 +233,15 @@ QMenu::separator { \
 }
 
 void ApplicationMenu::loadConfig() {
-  KConfigGroup group(config_, "Application Menu");
-  setLabel(group.readEntry("label", i18n("Applications")));
-  setIconName(group.readEntry("icon", "start-here-kde"));
+  KConfigGroup group(config_, ConfigHelper::kApplicationMenuCategory);
+  setLabel(group.readEntry(ConfigHelper::kLabel, i18n("Applications")));
+  setIconName(group.readEntry(ConfigHelper::kIcon, "start-here-kde"));
 }
 
 void ApplicationMenu::saveConfig() {
-  KConfigGroup group(config_, "Application Menu");
-  group.writeEntry("label", label_);
-  group.writeEntry("icon", iconName_);
+  KConfigGroup group(config_, ConfigHelper::kApplicationMenuCategory);
+  group.writeEntry(ConfigHelper::kLabel, label_);
+  group.writeEntry(ConfigHelper::kIcon, iconName_);
   config_->sync();
 }
 

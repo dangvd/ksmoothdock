@@ -24,6 +24,7 @@
 
 #include <QString>
 
+#include "config_helper.h"
 #include "ksmoothdock.h"
 
 namespace ksmoothdock {
@@ -50,8 +51,7 @@ class DockManager {
   // Creates a default dock if none exists.
   void createDefaultDock();
 
-  // The config directory.
-  const QString configDir_;
+  ConfigHelper configHelper_;
 
   // The list of all dock instances.
   std::vector<std::unique_ptr<KSmoothDock>> docks_;

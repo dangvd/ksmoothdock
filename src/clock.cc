@@ -32,6 +32,7 @@
 #include <KConfigGroup>
 #include <KLocalizedString>
 
+#include "config_helper.h"
 #include "ksmoothdock.h"
 #include "launcher.h"
 
@@ -125,13 +126,13 @@ void Clock::createMenu() {
 }
 
 void Clock::loadConfig() {
-  KConfigGroup group(config_, "Clock");
-  set24HourClock(group.readEntry("use24HourClock", true));
+  KConfigGroup group(config_, ConfigHelper::kClockCategory);
+  set24HourClock(group.readEntry(ConfigHelper::kUse24HourClock, true));
 }
 
 void Clock::saveConfig() {
-  KConfigGroup group(config_, "Clock");
-  group.writeEntry("use24HourClock", use24HourClock_);
+  KConfigGroup group(config_, ConfigHelper::kClockCategory);
+  group.writeEntry(ConfigHelper::kUse24HourClock, use24HourClock_);
   config_->sync();
 }
 

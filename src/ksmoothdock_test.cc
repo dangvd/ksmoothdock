@@ -37,8 +37,11 @@ class KSmoothDockTest: public QObject {
     QVERIFY(configFile_->open());
     launchersDir_.reset(new QTemporaryDir);
     QVERIFY(launchersDir_->isValid());
+    appearanceConfigFile_.reset(new QTemporaryFile);
+    QVERIFY(appearanceConfigFile_->open());
     dock_.reset(new KSmoothDock(configFile_->fileName(),
-                                launchersDir_->path()));
+                                launchersDir_->path(),
+                                appearanceConfigFile_->fileName()));
     dock_->init();
   }
 
@@ -125,6 +128,7 @@ class KSmoothDockTest: public QObject {
   std::unique_ptr<KSmoothDock> dock_;
   std::unique_ptr<QTemporaryFile> configFile_;
   std::unique_ptr<QTemporaryDir> launchersDir_;
+  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
 };
 const int KSmoothDockTest::kNumDefaultLaunchers;
 

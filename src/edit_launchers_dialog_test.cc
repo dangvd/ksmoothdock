@@ -38,12 +38,15 @@ class EditLaunchersDialogTest: public QObject {
 
  private slots:
   void init() {
-    configFile_.reset(new QTemporaryFile);
-    QVERIFY(configFile_->open());
+    dockConfigFile_.reset(new QTemporaryFile);
+    QVERIFY(dockConfigFile_->open());
     launchersDir_.reset(new QTemporaryDir);
     QVERIFY(launchersDir_->isValid());
-    dock_.reset(new KSmoothDock(configFile_->fileName(),
-                                launchersDir_->path()));
+    appearanceConfigFile_.reset(new QTemporaryFile);
+    QVERIFY(appearanceConfigFile_->open());
+    dock_.reset(new KSmoothDock(dockConfigFile_->fileName(),
+                                launchersDir_->path(),
+                                appearanceConfigFile_->fileName()));
     dock_->init();
 
     dialog_ = dock_->editLaunchersDialog();
@@ -64,7 +67,8 @@ class EditLaunchersDialogTest: public QObject {
  private:
   EditLaunchersDialog* dialog_;
   std::unique_ptr<KSmoothDock> dock_;
-  std::unique_ptr<QTemporaryFile> configFile_;
+  std::unique_ptr<QTemporaryFile> dockConfigFile_;
+  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
   std::unique_ptr<QTemporaryDir> launchersDir_;
 };
 
