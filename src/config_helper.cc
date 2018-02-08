@@ -78,7 +78,7 @@ std::vector<std::tuple<QString, QString>> ConfigHelper::findAllDockConfigs() {
 }
 
 std::tuple<QString, QString> ConfigHelper::findNextDockConfigs() {
-  for (int dockIndex = 0; ; ++dockIndex) {
+  for (int dockIndex = 1; ; ++dockIndex) {
     if (!configDir_.exists(getDockConfigFile(dockIndex))) {
       return std::make_tuple(getDockConfigPath(dockIndex),
                              getDockLaunchersPath(dockIndex));
@@ -95,18 +95,18 @@ void ConfigHelper::convertConfig() {
   std::cout << "Converting single-dock config to multi-dock config";
 
   KConfig singleDockConfig(getSingleDockConfigPath(), KConfig::SimpleConfig);
-  KConfig dock0Config(getDockConfigPath(0), KConfig::SimpleConfig);
+  KConfig dock1Config(getDockConfigPath(1), KConfig::SimpleConfig);
 
   KConfigGroup singleDockGeneral(&singleDockConfig, kGeneralCategory);
-  KConfigGroup dock0General(&dock0Config, kGeneralCategory);
-  copyEntry(kAutoHide, singleDockGeneral, &dock0General);
-  copyEntry(kPosition, singleDockGeneral, &dock0General);
-  copyEntry(kScreen, singleDockGeneral, &dock0General);
-  copyEntry(kShowApplicationMenu, singleDockGeneral, &dock0General);
-  copyEntry(kShowPager, singleDockGeneral, &dock0General);
-  copyEntry(kShowClock, singleDockGeneral, &dock0General);
+  KConfigGroup dock1General(&dock1Config, kGeneralCategory);
+  copyEntry(kAutoHide, singleDockGeneral, &dock1General);
+  copyEntry(kPosition, singleDockGeneral, &dock1General);
+  copyEntry(kScreen, singleDockGeneral, &dock1General);
+  copyEntry(kShowApplicationMenu, singleDockGeneral, &dock1General);
+  copyEntry(kShowPager, singleDockGeneral, &dock1General);
+  copyEntry(kShowClock, singleDockGeneral, &dock1General);
 
-  dock0Config.sync();
+  dock1Config.sync();
 
   KConfig appearanceConfig(getAppearanceConfigPath(), KConfig::SimpleConfig);
   KConfigGroup appearanceGeneral(&appearanceConfig, kGeneralCategory);
@@ -137,7 +137,7 @@ void ConfigHelper::convertConfig() {
   appearanceConfig.sync();
 
   configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
-  configDir_.rename(kSingleDockLaunchers, getDockLaunchersDir(0));
+  configDir_.rename(kSingleDockLaunchers, getDockLaunchersDir(1));
 }
 
 }  // namespace ksmoothdock
