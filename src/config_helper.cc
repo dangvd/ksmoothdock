@@ -92,7 +92,8 @@ void ConfigHelper::convertConfig() {
     return;
   }
 
-  std::cout << "Converting single-dock config to multi-dock config";
+  std::cout << "Converting single-dock config to multi-dock config"
+            << std::endl;
 
   KConfig singleDockConfig(getSingleDockConfigPath(), KConfig::SimpleConfig);
   KConfig dock1Config(getDockConfigPath(1), KConfig::SimpleConfig);

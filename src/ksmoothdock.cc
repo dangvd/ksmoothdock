@@ -87,14 +87,14 @@ KSmoothDock::KSmoothDock(DockManager* parent, const QString& configFile,
                          const QString& launchersDir,
                          const QString& appearanceConfigFile,
                          PanelPosition position)
-    : KSmoothDock(parent, configFile, appearanceConfigFile, launchersDir) {
+    : KSmoothDock(parent, configFile, launchersDir, appearanceConfigFile) {
   position_ = position;
 }
 
 KSmoothDock::KSmoothDock(const QString& configFile,
                          const QString& launchersDir,
                          const QString& appearanceConfigFile)
-    : KSmoothDock(nullptr, configFile, appearanceConfigFile, launchersDir) {}
+    : KSmoothDock(nullptr, configFile, launchersDir, appearanceConfigFile) {}
 
 void KSmoothDock::init() {
   setAttribute(Qt::WA_TranslucentBackground);
@@ -630,8 +630,6 @@ void KSmoothDock::initLaunchers() {
 
 bool KSmoothDock::loadLaunchers() {
   if (!QDir::root().exists(launchersDir_)) {
-    std::cerr << "Launchers folder did not exist: "
-              << launchersDir_.toStdString() << std::endl;
     return false;
   }
 
@@ -639,8 +637,6 @@ bool KSmoothDock::loadLaunchers() {
   QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
                                              QDir::Name);
   if (files.isEmpty()) {
-    std::cerr << "No launcher found in the launchers folder: "
-              << launchersDir_.toStdString() << std::endl;
     return false;
   }
 
