@@ -35,6 +35,7 @@ namespace ksmoothdock {
 
 class KSmoothDock;
 
+// Global appearance configurations.
 class ConfigDialog : public QDialog {
   Q_OBJECT
 

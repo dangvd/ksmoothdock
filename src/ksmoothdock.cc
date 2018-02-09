@@ -176,6 +176,9 @@ QPoint KSmoothDock::getApplicationSubMenuPosition(
 }
 
 void KSmoothDock::reload() {
+  // Reload config as other docks might have changed the appearance config.
+  appearanceConfig_.reparseConfiguration();
+  loadConfig();
   items_.clear();
   initUi();
   update();
@@ -289,7 +292,7 @@ void KSmoothDock::applyConfig() {
   tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
 
   saveConfig();
-  reload();
+  parent_->reloadDocks();
 }
 
 void KSmoothDock::updateConfig() {
@@ -487,7 +490,8 @@ void KSmoothDock::createMenu() {
       SLOT(showApplicationMenuConfigDialog()));
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
       SLOT(showEditLaunchersDialog()));
-  menu_.addAction(QIcon::fromTheme("configure"), i18n("Panel &Settings"), this,
+  menu_.addAction(
+      QIcon::fromTheme("configure"), i18n("Appearance &Settings"), this,
       SLOT(showConfigDialog()));
 
   QMenu* position = menu_.addMenu(i18n("&Position"));

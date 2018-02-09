@@ -65,6 +65,12 @@ void DockManager::addDock(PanelPosition position) {
   return;
 }
 
+void DockManager::reloadDocks() {
+  for (const auto& dock : docks_) {
+    dock->reload();
+  }
+}
+
 bool DockManager::loadDocks() {
   docks_.clear();
   for (const auto& configs : configHelper_.findAllDockConfigs()) {

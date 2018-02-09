@@ -26,7 +26,7 @@ namespace ksmoothdock {
 
 ConfigDialog::ConfigDialog(KSmoothDock* parent)
     : QDialog(parent), parent_(parent) {
-  setWindowTitle(i18n("Panel Settings"));
+  setWindowTitle(i18n("Appearance Settings"));
   resize(665, 350);
 
   minSizeLabel_ = new QLabel(this);
