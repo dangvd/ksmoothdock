@@ -104,6 +104,8 @@ void KSmoothDock::init() {
   animationTimer_.reset(new QTimer(this));
   createMenu();
   loadConfig();
+  // Save the config to create the config file if it does not exist.
+  saveConfig();
   initUi();
 
   connect(animationTimer_.get(), SIGNAL(timeout()), this,
