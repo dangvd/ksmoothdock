@@ -630,6 +630,8 @@ void KSmoothDock::initLaunchers() {
 
 bool KSmoothDock::loadLaunchers() {
   if (!QDir::root().exists(launchersDir_)) {
+    std::cerr << "Launchers folder did not exist: "
+              << launchersDir_.toStdString() << std::endl;
     return false;
   }
 
@@ -637,6 +639,8 @@ bool KSmoothDock::loadLaunchers() {
   QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
                                              QDir::Name);
   if (files.isEmpty()) {
+    std::cerr << "No launcher found in the launchers folder: "
+              << launchersDir_.toStdString() << std::endl;
     return false;
   }
 

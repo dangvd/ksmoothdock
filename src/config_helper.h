@@ -108,10 +108,10 @@ class ConfigHelper  {
     return configDir_.filePath(getDockLaunchersDir(dockIndex));
   }
 
-  static QString getDockLaunchersPathForConfigFile(const QString& configFile) {
-    QString launcherDir = configFile;
-    launcherDir.replace(".conf", "_launchers");
-    return launcherDir;
+  QString getDockLaunchersPathForConfigFile(const QString& configFile) const {
+    QString launchersDir = configFile;
+    launchersDir.replace(".conf", "_launchers");
+    return configDir_.filePath(launchersDir);
   }
 
   // Gets the appearance config file path.
