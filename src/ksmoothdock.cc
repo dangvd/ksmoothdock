@@ -71,6 +71,7 @@ KSmoothDock::KSmoothDock(DockManager* parent,
       showClock_(false),
       showBorder_(true),
       parent_(parent),
+      configFile_(configFile),
       dockConfig_(configFile, KConfig::SimpleConfig),
       launchersDir_(launchersDir),
       appearanceConfig_(appearanceConfigFile, KConfig::SimpleConfig),
@@ -371,7 +372,15 @@ void KSmoothDock::addDock() {
   }
 }
 
-void KSmoothDock::cloneDock() {}
+void KSmoothDock::cloneDock() {
+  AddPanelDialog dialog;
+  if (dialog.exec()) {
+    auto position = static_cast<PanelPosition>(
+        dialog.position_->currentIndex());
+    parent_->cloneDock(position, configFile_, launchersDir_);
+  }
+}
+
 void KSmoothDock::deleteDock() {}
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {

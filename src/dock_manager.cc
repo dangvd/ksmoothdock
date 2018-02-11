@@ -22,6 +22,7 @@
 #include <memory>
 
 #include <QDir>
+#include <QFile>
 #include <QStringList>
 
 #include <KConfig>
@@ -62,7 +63,33 @@ void DockManager::addDock(PanelPosition position) {
       position));
   docks_.back()->init();
   docks_.back()->show();
-  return;
+}
+
+void DockManager::cloneDock(PanelPosition position, const QString& configFile,
+                            const QString& launchersDir) {
+  auto configs = configHelper_.findNextDockConfigs();
+  const auto& newConfigFile = std::get<0>(configs);
+  const auto& newLaunchersDir = std::get<1>(configs);
+  QFile::copy(configFile, newConfigFile);
+
+  // Clone the dock config and launchers.
+  QDir::root().mkpath(newLaunchersDir);
+  QDir dir(launchersDir);
+  QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
+  for (int i = 0; i < files.size(); ++i) {
+    const auto srcFile = launchersDir + "/" + files.at(i);
+    const auto destFile = newLaunchersDir + "/" + files.at(i);
+    QFile::copy(srcFile, destFile);
+  }
+
+  docks_.push_back(std::make_unique<KSmoothDock>(
+      this,
+      newConfigFile,
+      newLaunchersDir,
+      configHelper_.getAppearanceConfigPath(),
+      position));
+  docks_.back()->init();
+  docks_.back()->show();
 }
 
 void DockManager::reloadDocks() {

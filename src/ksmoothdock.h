@@ -285,6 +285,7 @@ class KSmoothDock : public QWidget {
   Qt::Orientation orientation_;
 
   // Dock-specific configs.
+  QString configFile_;
   KConfig dockConfig_;
   // The path to the directory to store quick launchers as desktop files
   // (dock-specific).

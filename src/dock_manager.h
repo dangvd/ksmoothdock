@@ -47,6 +47,10 @@ class DockManager : public QObject {
   // Adds a new dock in the specified position.
   void addDock(PanelPosition position);
 
+  // Clone an existing dock in the specified position.
+  void cloneDock(PanelPosition position, const QString& configFile,
+                 const QString& launchersDir);
+
   // Reloads all the dock instances.
   void reloadDocks();
 
