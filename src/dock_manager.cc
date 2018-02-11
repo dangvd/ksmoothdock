@@ -71,6 +71,12 @@ void DockManager::reloadDocks() {
   }
 }
 
+void DockManager::exit() {
+  for (const auto& dock : docks_) {
+    dock->close();
+  }
+}
+
 bool DockManager::loadDocks() {
   docks_.clear();
   for (const auto& configs : configHelper_.findAllDockConfigs()) {

@@ -546,7 +546,7 @@ void KSmoothDock::createMenu() {
   menu_.addAction(QIcon::fromTheme("help-about"), i18n("A&bout KSmoothDock"),
       this, SLOT(about()));
   menu_.addSeparator();
-  menu_.addAction(i18n("E&xit"), this, SLOT(close()));
+  menu_.addAction(i18n("E&xit"), parent_, SLOT(exit()));
 }
 
 void KSmoothDock::loadConfig() {

@@ -22,6 +22,7 @@
 #include <memory>
 #include <vector>
 
+#include <QObject>
 #include <QString>
 
 #include "config_helper.h"
@@ -30,7 +31,9 @@
 namespace ksmoothdock {
 
 // Initializes and manages all the dock instances.
-class DockManager {
+class DockManager : public QObject {
+  Q_OBJECT
+
  public:
   DockManager(const QString& configDir);
   DockManager();
@@ -46,6 +49,10 @@ class DockManager {
 
   // Reloads all the dock instances.
   void reloadDocks();
+
+ public slots:
+  // Closes all dock instances and exits.
+  void exit();
 
  private:
   // Loads all the dock instances.
