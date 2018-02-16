@@ -23,7 +23,6 @@
 
 #include <QDir>
 #include <QFile>
-#include <QStringList>
 
 #include <KConfig>
 
@@ -35,6 +34,13 @@ DockManager::DockManager(const QString &configDir)
     : configHelper_(configDir) {}
 
 DockManager::DockManager() : DockManager(QDir::homePath() + "/.ksmoothdock") {}
+
+DockManager::~DockManager() {
+  for (const auto& configs : removedDocksConfigs_) {
+    QFile::remove(std::get<0>(configs));
+    ConfigHelper::removeLaunchersDir(std::get<1>(configs));
+  }
+}
 
 void DockManager::init() {
   configHelper_.convertConfig();
@@ -70,17 +76,10 @@ void DockManager::cloneDock(PanelPosition position, const QString& configFile,
   auto configs = configHelper_.findNextDockConfigs();
   const auto& newConfigFile = std::get<0>(configs);
   const auto& newLaunchersDir = std::get<1>(configs);
-  QFile::copy(configFile, newConfigFile);
 
   // Clone the dock config and launchers.
-  QDir::root().mkpath(newLaunchersDir);
-  QDir dir(launchersDir);
-  QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
-  for (int i = 0; i < files.size(); ++i) {
-    const auto srcFile = launchersDir + "/" + files.at(i);
-    const auto destFile = newLaunchersDir + "/" + files.at(i);
-    QFile::copy(srcFile, destFile);
-  }
+  QFile::copy(configFile, newConfigFile);
+  ConfigHelper::copyLaunchersDir(launchersDir, newLaunchersDir);
 
   docks_.push_back(std::make_unique<KSmoothDock>(
       this,
@@ -90,6 +89,11 @@ void DockManager::cloneDock(PanelPosition position, const QString& configFile,
       position));
   docks_.back()->init();
   docks_.back()->show();
+}
+
+void DockManager::removeDock(const QString& configFile,
+                             const QString& launchersDir) {
+  removedDocksConfigs_.push_back(std::make_tuple(configFile, launchersDir));
 }
 
 void DockManager::reloadDocks() {

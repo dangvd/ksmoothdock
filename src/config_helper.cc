@@ -20,6 +20,9 @@
 
 #include <iostream>
 
+#include <QFile>
+#include <QStringList>
+
 #include <KConfig>
 #include <KWindowSystem>
 
@@ -139,6 +142,28 @@ void ConfigHelper::convertConfig() {
 
   configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
   configDir_.rename(kSingleDockLaunchers, getDockLaunchersDir(1));
+}
+
+void ConfigHelper::copyLaunchersDir(const QString& launchersDir,
+                                    const QString& newLaunchersDir) {
+  QDir::root().mkpath(newLaunchersDir);
+  QDir dir(launchersDir);
+  QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
+  for (int i = 0; i < files.size(); ++i) {
+    const auto srcFile = launchersDir + "/" + files.at(i);
+    const auto destFile = newLaunchersDir + "/" + files.at(i);
+    QFile::copy(srcFile, destFile);
+  }
+}
+
+void ConfigHelper::removeLaunchersDir(const QString& launchersDir) {
+  QDir dir(launchersDir);
+  QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
+  for (int i = 0; i < files.size(); ++i) {
+    const auto launcherFile = launchersDir + "/" + files.at(i);
+    QFile::remove(launcherFile);
+  }
+  QDir::root().rmdir(launchersDir);
 }
 
 }  // namespace ksmoothdock

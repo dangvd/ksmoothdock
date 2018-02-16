@@ -177,7 +177,7 @@ class KSmoothDock : public QWidget {
 
   void addDock();
   void cloneDock();
-  void deleteDock();
+  void removeDock();
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;

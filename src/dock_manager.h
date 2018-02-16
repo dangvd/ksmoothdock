@@ -20,6 +20,7 @@
 #define KSMOOTHDOCK_DOCK_MANAGER_H_
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include <QObject>
@@ -38,6 +39,8 @@ class DockManager : public QObject {
   DockManager(const QString& configDir);
   DockManager();
 
+  ~DockManager();
+
   // Loads and initializes the dock instances.
   void init();
 
@@ -47,9 +50,13 @@ class DockManager : public QObject {
   // Adds a new dock in the specified position.
   void addDock(PanelPosition position);
 
-  // Clone an existing dock in the specified position.
+  // Clones an existing dock in the specified position.
   void cloneDock(PanelPosition position, const QString& configFile,
                  const QString& launchersDir);
+
+  // Removes a dock.
+  void removeDock(const QString& configFile,
+                  const QString& launchersDir);
 
   // Reloads all the dock instances.
   void reloadDocks();
@@ -69,6 +76,9 @@ class DockManager : public QObject {
 
   // The list of all dock instances.
   std::vector<std::unique_ptr<KSmoothDock>> docks_;
+
+  // The list of configs of the docks to be removed.
+  std::vector<std::tuple<QString, QString>> removedDocksConfigs_;
 };
 
 }  // namespace ksmoothdock

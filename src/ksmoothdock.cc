@@ -381,7 +381,10 @@ void KSmoothDock::cloneDock() {
   }
 }
 
-void KSmoothDock::deleteDock() {}
+void KSmoothDock::removeDock() {
+  close();
+  parent_->removeDock(configFile_, launchersDir_);
+}
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
   if (isResizing_) {
@@ -490,8 +493,8 @@ void KSmoothDock::createMenu() {
       this, SLOT(addDock()));
   menu_.addAction(QIcon::fromTheme("edit-copy"), i18n("&Clone Panel"),
       this, SLOT(cloneDock()));
-  menu_.addAction(QIcon::fromTheme("edit-delete"), i18n("&Delete Panel"),
-      this, SLOT(deleteDock()));
+  menu_.addAction(QIcon::fromTheme("edit-delete"), i18n("&Remove Panel"),
+      this, SLOT(removeDock()));
   menu_.addSeparator();
 
   applicationMenuSettings_ = menu_.addAction(

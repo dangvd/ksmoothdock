@@ -132,6 +132,13 @@ class ConfigHelper  {
   // Converts the old single-dock config to the new multi-dock config if needed.
   void convertConfig();
 
+  // Copies a launchers directory.
+  static void copyLaunchersDir(const QString& launchersDir,
+                               const QString& newLaunchersDir);
+
+  // Removes a launchers directory.
+  static void removeLaunchersDir(const QString& launchersDir);
+
  private:
   static void copyEntry(const QString& key, const KConfigGroup& sourceGroup,
                         KConfigGroup* destGroup) {
