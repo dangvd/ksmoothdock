@@ -374,6 +374,7 @@ void KSmoothDock::addDock() {
 
 void KSmoothDock::cloneDock() {
   AddPanelDialog dialog;
+  dialog.setWindowTitle(i18n("Clone Panel"));
   if (dialog.exec()) {
     auto position = static_cast<PanelPosition>(
         dialog.position_->currentIndex());
