@@ -26,7 +26,7 @@
 namespace ksmoothdock {
 
 AddPanelDialog::AddPanelDialog() {
-  setWindowTitle(i18n("Add a new panel"));
+  setWindowTitle(i18n("Add Panel"));
   resize(400, 200);
 
   positionLabel_ = new QLabel(this);

@@ -382,8 +382,16 @@ void KSmoothDock::cloneDock() {
 }
 
 void KSmoothDock::removeDock() {
-  close();
-  parent_->removeDock(configFile_, launchersDir_);
+  if (KMessageBox::questionYesNo(
+      nullptr,
+      i18n("Do you really want to remove this panel?"),
+      i18n("Remove Panel"),
+      KStandardGuiItem::yes(),
+      KStandardGuiItem::no(),
+      "confirmRemoveDock") == KMessageBox::Yes) {
+    close();
+    parent_->removeDock(configFile_, launchersDir_);
+  }
 }
 
 void KSmoothDock::paintEvent(QPaintEvent* e) {
