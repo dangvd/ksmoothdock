@@ -38,6 +38,12 @@
 
 namespace ksmoothdock {
 
+constexpr float Clock::kWhRatio;
+constexpr float Clock::kLargeFontScaleFactor;
+constexpr float Clock::kMediumFontScaleFactor;
+constexpr float Clock::kSmallFontScaleFactor;
+constexpr float Clock::kDelta;
+
 Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
              int maxSize, KConfig* config)
     : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
@@ -64,6 +70,7 @@ void Clock::draw(QPainter *painter) const {
   font.setPointSize(std::min(
       font.pointSize() * getWidth() / rect.width(),
       font.pointSize() * getHeight() / rect.height()));
+  font.setPointSize(static_cast<int>(font.pointSize() * fontScaleFactor_));
   painter->setFont(font);
   painter->setRenderHint(QPainter::TextAntialiasing);
 
@@ -114,25 +121,70 @@ void Clock::toggle24HourClock() {
   parent_->notifyRefresh();
 }
 
+void Clock::setFontScaleFactor(float fontScaleFactor) {
+  fontScaleFactor_ = fontScaleFactor;
+  largeFontAction_->setChecked(fontScaleFactor_ > kLargeFontScaleFactor - kDelta);
+  mediumFontAction_->setChecked(
+      fontScaleFactor_ > kMediumFontScaleFactor - kDelta &&
+      fontScaleFactor_ < kMediumFontScaleFactor + kDelta);
+  smallFontAction_->setChecked(fontScaleFactor_ < kSmallFontScaleFactor + kDelta);
+}
+
+void Clock::setLargeFont() {
+  setFontScaleFactor(kLargeFontScaleFactor);
+  saveConfig();
+  parent_->notifyRefresh();
+}
+
+void Clock::setMediumFont() {
+  setFontScaleFactor(kMediumFontScaleFactor);
+  saveConfig();
+  parent_->notifyRefresh();
+}
+
+void Clock::setSmallFont() {
+  setFontScaleFactor(kSmallFontScaleFactor);
+  saveConfig();
+  parent_->notifyRefresh();
+}
+
 void Clock::createMenu() {
   menu_.addAction(QIcon::fromTheme("preferences-system-time"),
                   i18n("Date and Time &Settings"),
                   this,
                   SLOT(setDateAndTime()));
+
   use24HourClockAction_ = menu_.addAction(i18n("Use 24-hour Clock"),
                                           this,
                                           SLOT(toggle24HourClock()));
   use24HourClockAction_->setCheckable(true);
+
+  QMenu* fontSize = menu_.addMenu(i18n("Font Size"));
+  largeFontAction_ = fontSize->addAction(i18n("Large Font"),
+                                                  this,
+                                                  SLOT(setLargeFont()));
+  largeFontAction_->setCheckable(true);
+  mediumFontAction_ = fontSize->addAction(i18n("Medium Font"),
+                                                  this,
+                                                  SLOT(setMediumFont()));
+  mediumFontAction_->setCheckable(true);
+  smallFontAction_ = fontSize->addAction(i18n("Small Font"),
+                                                  this,
+                                                  SLOT(setSmallFont()));
+  smallFontAction_->setCheckable(true);
 }
 
 void Clock::loadConfig() {
   KConfigGroup group(config_, ConfigHelper::kClockCategory);
   set24HourClock(group.readEntry(ConfigHelper::kUse24HourClock, true));
+  setFontScaleFactor(group.readEntry(
+      ConfigHelper::kFontScaleFactor, kLargeFontScaleFactor));
 }
 
 void Clock::saveConfig() {
   KConfigGroup group(config_, ConfigHelper::kClockCategory);
   group.writeEntry(ConfigHelper::kUse24HourClock, use24HourClock_);
+  group.writeEntry(ConfigHelper::kFontScaleFactor, fontScaleFactor_);
   config_->sync();
 }
 

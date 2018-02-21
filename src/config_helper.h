@@ -71,6 +71,7 @@ class ConfigHelper  {
 
   static constexpr char kClockCategory[] = "Clock";
   static constexpr char kUse24HourClock[] = "use24HourClock";
+  static constexpr char kFontScaleFactor[] = "fontScaleFactor";
 
   explicit ConfigHelper(const QString& configDir);
   ~ConfigHelper() = default;

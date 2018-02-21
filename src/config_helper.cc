@@ -55,6 +55,7 @@ constexpr char ConfigHelper::kPagerCategory[];
 constexpr char ConfigHelper::kWallpaper[];
 constexpr char ConfigHelper::kClockCategory[];
 constexpr char ConfigHelper::kUse24HourClock[];
+constexpr char ConfigHelper::kFontScaleFactor[];
 
 ConfigHelper::ConfigHelper(const QString& configDir)
     : configDir_{configDir} {

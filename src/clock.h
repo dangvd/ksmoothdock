@@ -54,8 +54,17 @@ class Clock : public QObject, public IconlessDockItem {
   void set24HourClock(bool enabled);
   void toggle24HourClock();
 
+  void setFontScaleFactor(float fontScaleFactor);
+  void setLargeFont();
+  void setMediumFont();
+  void setSmallFont();
+
  private:
   static constexpr float kWhRatio = 2.8;
+  static constexpr float kLargeFontScaleFactor = 1.0;
+  static constexpr float kMediumFontScaleFactor = 0.8;
+  static constexpr float kSmallFontScaleFactor = 0.6;
+  static constexpr float kDelta = 0.01;
 
   // Creates the context menu.
   void createMenu();
@@ -64,6 +73,7 @@ class Clock : public QObject, public IconlessDockItem {
 
   KConfig* config_;
   bool use24HourClock_;
+  float fontScaleFactor_;
 
   QString timeFormat_;
 
@@ -73,6 +83,9 @@ class Clock : public QObject, public IconlessDockItem {
   QMenu menu_;
 
   QAction* use24HourClockAction_;
+  QAction* largeFontAction_;
+  QAction* mediumFontAction_;
+  QAction* smallFontAction_;
 };
 
 }  // namespace ksmoothdock
