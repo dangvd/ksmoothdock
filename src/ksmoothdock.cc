@@ -106,9 +106,10 @@ void KSmoothDock::init() {
   setMouseTracking(true);
   animationTimer_.reset(new QTimer(this));
   createMenu();
-  loadConfig();
-  // Save the config to create the config file if it does not exist.
-  saveConfig();
+  loadDockConfig();
+  // Save the dock config to create the dock config file if it does not exist.
+  saveDockConfig();
+  loadAppearanceConfig();
   initUi();
 
   connect(animationTimer_.get(), SIGNAL(timeout()), this,
@@ -118,7 +119,7 @@ void KSmoothDock::init() {
 }
 
 KSmoothDock::~KSmoothDock() {
-  saveConfig();
+  saveDockConfig();
 }
 
 void KSmoothDock::resize(int w, int h) {
@@ -179,9 +180,9 @@ QPoint KSmoothDock::getApplicationSubMenuPosition(
 }
 
 void KSmoothDock::reload() {
-  // Reload config as other docks might have changed the appearance config.
+  // Reload appearance config as other docks might have changed it.
   appearanceConfig_.reparseConfiguration();
-  loadConfig();
+  loadAppearanceConfig();
   items_.clear();
   initUi();
   update();
@@ -222,7 +223,7 @@ void KSmoothDock::setPosition(PanelPosition position) {
 void KSmoothDock::togglePager() {
   showPager_ = !showPager_;
   reload();
-  saveConfig();
+  saveDockConfig();
   showPagerInfoDialog();
 }
 
@@ -294,7 +295,7 @@ void KSmoothDock::applyConfig() {
   borderColor_ = configDialog_.borderColor_->color();
   tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
 
-  saveConfig();
+  saveAppearanceConfig();
   parent_->reloadDocks();
 }
 
@@ -550,7 +551,7 @@ void KSmoothDock::createMenu() {
           [this, i]() {
             setScreen(i);
             reload();
-            saveConfig();
+            saveDockConfig();
           });
       action->setCheckable(true);
       screenActions_.push_back(action);
@@ -582,9 +583,7 @@ void KSmoothDock::createMenu() {
   menu_.addAction(i18n("E&xit"), parent_, SLOT(exit()));
 }
 
-void KSmoothDock::loadConfig() {
-  // Dock-specific configs.
-
+void KSmoothDock::loadDockConfig() {
   KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
 
   if (position_ == PanelPosition::Undefined) {
@@ -612,9 +611,21 @@ void KSmoothDock::loadConfig() {
 
   showClock_ = dockGeneral.readEntry(ConfigHelper::kShowClock, false);
   clockAction_->setChecked(showClock_);
+}
 
-  // Appearance configs.
+void KSmoothDock::saveDockConfig() {
+  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
+  dockGeneral.writeEntry(ConfigHelper::kPosition, static_cast<int>(position_));
+  dockGeneral.writeEntry(ConfigHelper::kScreen, screen_);
+  dockGeneral.writeEntry(ConfigHelper::kAutoHide, autoHide_);
+  dockGeneral.writeEntry(ConfigHelper::kShowApplicationMenu,
+                         showApplicationMenu_);
+  dockGeneral.writeEntry(ConfigHelper::kShowPager, showPager_);
+  dockGeneral.writeEntry(ConfigHelper::kShowClock, showClock_);
+  dockConfig_.sync();
+}
 
+void KSmoothDock::loadAppearanceConfig() {
   KConfigGroup appearanceGeneral(&appearanceConfig_,
                                  ConfigHelper::kGeneralCategory);
 
@@ -636,19 +647,7 @@ void KSmoothDock::loadConfig() {
                                                  kDefaultTooltipFontSize);
 }
 
-void KSmoothDock::saveConfig() {
-  // Dock-specific configs.
-  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
-  dockGeneral.writeEntry(ConfigHelper::kPosition, static_cast<int>(position_));
-  dockGeneral.writeEntry(ConfigHelper::kScreen, screen_);
-  dockGeneral.writeEntry(ConfigHelper::kAutoHide, autoHide_);
-  dockGeneral.writeEntry(ConfigHelper::kShowApplicationMenu,
-                         showApplicationMenu_);
-  dockGeneral.writeEntry(ConfigHelper::kShowPager, showPager_);
-  dockGeneral.writeEntry(ConfigHelper::kShowClock, showClock_);
-  dockConfig_.sync();
-
-  // Appearance configs.
+void KSmoothDock::saveAppearanceConfig() {
   KConfigGroup appearanceGeneral(&appearanceConfig_,
                                  ConfigHelper::kGeneralCategory);
   appearanceGeneral.writeEntry(ConfigHelper::kMinimumIconSize, minSize_);

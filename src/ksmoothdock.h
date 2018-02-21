@@ -103,38 +103,38 @@ class KSmoothDock : public QWidget {
   void setPositionTop() {
     setPosition(PanelPosition::Top);
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void setPositionBottom() {
     setPosition(PanelPosition::Bottom);
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void setPositionLeft() {
     setPosition(PanelPosition::Left);
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void setPositionRight() {
     setPosition(PanelPosition::Right);
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void toggleAutoHide() {
     autoHide_ = !autoHide_;
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void toggleApplicationMenu() {
     showApplicationMenu_ = !showApplicationMenu_;
     applicationMenuSettings_->setVisible(showApplicationMenu_);
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   void togglePager();
@@ -148,7 +148,7 @@ class KSmoothDock : public QWidget {
   void toggleClock() {
     showClock_ = !showClock_;
     reload();
-    saveConfig();
+    saveDockConfig();
   }
 
   // Sets the dock on a specific screen given screen index.
@@ -213,8 +213,10 @@ class KSmoothDock : public QWidget {
 
   void createMenu();
 
-  void loadConfig();
-  void saveConfig();
+  void loadDockConfig();
+  void saveDockConfig();
+  void loadAppearanceConfig();
+  void saveAppearanceConfig();
 
   void initLaunchers();
   bool loadLaunchers();
