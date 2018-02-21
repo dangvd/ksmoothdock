@@ -543,7 +543,7 @@ void KSmoothDock::createMenu() {
 
   const int numScreens = QApplication::desktop()->screenCount();
   if (numScreens > 1) {
-    QMenu* screen = menu_.addMenu(i18n(ConfigHelper::kScreen));
+    QMenu* screen = menu_.addMenu(i18n("Screen"));
     for (int i = 0; i < numScreens; ++i) {
       QAction* action = screen->addAction(
           "Screen " + QString::number(i + 1), this,
