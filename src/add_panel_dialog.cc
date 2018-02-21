@@ -40,18 +40,19 @@ AddPanelDialog::AddPanelDialog() {
   position_->setCurrentIndex(1);
   position_->setGeometry(QRect(260, 20, 111, 36));
 
+  screenLabel_ = new QLabel(this);
+  screenLabel_->setText(i18n("Screen"));
+  screenLabel_->setGeometry(QRect(30, 80, 211, 22));
+  screen_ = new QComboBox(this);
   const int numScreens = QApplication::desktop()->screenCount();
-  if (numScreens > 1) {
-    screenLabel_ = new QLabel(this);
-    screenLabel_->setText(i18n("Screen"));
-    screenLabel_->setGeometry(QRect(30, 80, 211, 22));
-    screen_ = new QComboBox(this);
-    for (int i = 1; i <= numScreens; ++i) {
-      screen_->addItem(QString::number(i));
-    }
-    screen_->setCurrentIndex(0);
-    screen_->setGeometry(QRect(260, 70, 111, 36));
+  for (int i = 1; i <= numScreens; ++i) {
+    screen_->addItem(QString::number(i));
   }
+  screen_->setCurrentIndex(0);
+  screen_->setGeometry(QRect(260, 70, 111, 36));
+  const bool isMultiScreen = numScreens > 1;
+  screenLabel_->setVisible(isMultiScreen);
+  screen_->setVisible(isMultiScreen);
 
   buttonBox_ = new QDialogButtonBox(this);
   buttonBox_->setGeometry(QRect(30, 140, 340, 32));

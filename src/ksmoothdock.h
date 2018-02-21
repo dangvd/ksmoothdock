@@ -57,7 +57,8 @@ class KSmoothDock : public QWidget {
               const QString& configFile,
               const QString& launchersDir,
               const QString& appearanceConfigFile,
-              PanelPosition position);
+              PanelPosition position,
+              int screen);
   KSmoothDock(DockManager* parent,
               const QString& configFile,
               const QString& launchersDir,
@@ -253,6 +254,7 @@ class KSmoothDock : public QWidget {
   // Config variables.
 
   PanelPosition position_;
+  int screen_;  // the screen (as screen index) that the dock is on.
   bool autoHide_;
   bool showApplicationMenu_;
   bool showPager_;
@@ -263,7 +265,6 @@ class KSmoothDock : public QWidget {
   bool showBorder_;
   QColor borderColor_;  // no alpha.
   int tooltipFontSize_;
-  int screen_;  // the screen (as screen index) that the dock is on.
 
   // Non-config variables.
 

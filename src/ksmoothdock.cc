@@ -66,6 +66,7 @@ KSmoothDock::KSmoothDock(DockManager* parent,
                          const QString& appearanceConfigFile)
     : QWidget(),
       position_(PanelPosition::Undefined),
+      screen_(-1),
       autoHide_(false),
       showPager_(false),
       showClock_(false),
@@ -87,9 +88,10 @@ KSmoothDock::KSmoothDock(DockManager* parent,
 KSmoothDock::KSmoothDock(DockManager* parent, const QString& configFile,
                          const QString& launchersDir,
                          const QString& appearanceConfigFile,
-                         PanelPosition position)
+                         PanelPosition position, int screen)
     : KSmoothDock(parent, configFile, launchersDir, appearanceConfigFile) {
   position_ = position;
+  screen_ = screen;
 }
 
 KSmoothDock::KSmoothDock(const QString& configFile,
@@ -368,7 +370,8 @@ void KSmoothDock::addDock() {
   if (dialog.exec()) {
     auto position = static_cast<PanelPosition>(
         dialog.position_->currentIndex());
-    parent_->addDock(position);
+    auto screen = dialog.screen_->currentIndex();
+    parent_->addDock(position, screen);
   }
 }
 
@@ -378,7 +381,8 @@ void KSmoothDock::cloneDock() {
   if (dialog.exec()) {
     auto position = static_cast<PanelPosition>(
         dialog.position_->currentIndex());
-    parent_->cloneDock(position, configFile_, launchersDir_);
+    auto screen = dialog.screen_->currentIndex();
+    parent_->cloneDock(position, screen, configFile_, launchersDir_);
   }
 }
 
@@ -590,7 +594,10 @@ void KSmoothDock::loadConfig() {
   }
   setPosition(position_);
 
-  setScreen(dockGeneral.readEntry(ConfigHelper::kScreen, 0));
+  if (screen_ == -1) {
+    screen_ = dockGeneral.readEntry(ConfigHelper::kScreen, 0);
+  }
+  setScreen(screen_);
 
   autoHide_ = dockGeneral.readEntry(ConfigHelper::kAutoHide, false);
   autoHideAction_->setChecked(autoHide_);

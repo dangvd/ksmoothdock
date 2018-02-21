@@ -61,18 +61,20 @@ void DockManager::show() {
   }
 }
 
-void DockManager::addDock(PanelPosition position) {
+void DockManager::addDock(PanelPosition position, int screen) {
   auto configs = configHelper_.findNextDockConfigs();
   docks_.push_back(std::make_unique<KSmoothDock>(
       this,
       std::get<0>(configs),
       std::get<1>(configs),
       configHelper_.getAppearanceConfigPath(),
-      position));
+      position,
+      screen));
   activateNewDock();
 }
 
-void DockManager::cloneDock(PanelPosition position, const QString& configFile,
+void DockManager::cloneDock(PanelPosition position, int screen,
+                            const QString& configFile,
                             const QString& launchersDir) {
   auto configs = configHelper_.findNextDockConfigs();
   const auto& newConfigFile = std::get<0>(configs);
@@ -87,7 +89,8 @@ void DockManager::cloneDock(PanelPosition position, const QString& configFile,
       newConfigFile,
       newLaunchersDir,
       configHelper_.getAppearanceConfigPath(),
-      position));
+      position,
+      screen));
   activateNewDock();
 }
 
@@ -135,7 +138,8 @@ void DockManager::createDefaultDock() {
                    configHelper_.getDockConfigPath(0),
                    configHelper_.getDockLaunchersPath(0),
                    configHelper_.getAppearanceConfigPath(),
-                   position));
+                   position,
+                   0 /* screen */));
 }
 
 void DockManager::activateNewDock() {
