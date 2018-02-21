@@ -383,15 +383,23 @@ void KSmoothDock::cloneDock() {
 }
 
 void KSmoothDock::removeDock() {
+  if (parent_->hasOnlyOneDock()) {
+    KMessageBox::information(
+        nullptr,
+        i18n("The last panel cannot be removed."),
+        i18n("Remove Panel"));
+    return;
+  }
+
   if (KMessageBox::questionYesNo(
-      nullptr,
-      i18n("Do you really want to remove this panel?"),
-      i18n("Remove Panel"),
-      KStandardGuiItem::yes(),
-      KStandardGuiItem::no(),
-      "confirmRemoveDock") == KMessageBox::Yes) {
+        nullptr,
+        i18n("Do you really want to remove this panel?"),
+        i18n("Remove Panel"),
+        KStandardGuiItem::yes(),
+        KStandardGuiItem::no(),
+        "confirmRemoveDock") == KMessageBox::Yes) {
     close();
-    parent_->removeDock(configFile_, launchersDir_);
+    parent_->removeDock(this, configFile_, launchersDir_);
   }
 }
 

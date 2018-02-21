@@ -18,6 +18,7 @@
 
 #include "dock_manager.h"
 
+#include <algorithm>
 #include <iostream>
 #include <memory>
 
@@ -56,6 +57,7 @@ void DockManager::init() {
 void DockManager::show() {
   for (const auto& dock : docks_) {
     dock->show();
+    activeDocks_.push_back(dock.get());
   }
 }
 
@@ -67,8 +69,7 @@ void DockManager::addDock(PanelPosition position) {
       std::get<1>(configs),
       configHelper_.getAppearanceConfigPath(),
       position));
-  docks_.back()->init();
-  docks_.back()->show();
+  activateNewDock();
 }
 
 void DockManager::cloneDock(PanelPosition position, const QString& configFile,
@@ -87,29 +88,34 @@ void DockManager::cloneDock(PanelPosition position, const QString& configFile,
       newLaunchersDir,
       configHelper_.getAppearanceConfigPath(),
       position));
-  docks_.back()->init();
-  docks_.back()->show();
+  activateNewDock();
 }
 
-void DockManager::removeDock(const QString& configFile,
+void DockManager::removeDock(KSmoothDock* dock,
+                             const QString& configFile,
                              const QString& launchersDir) {
+  activeDocks_.erase(std::remove_if(activeDocks_.begin(), activeDocks_.end(),
+                                    [dock](auto* activeDock) {
+                                      return activeDock == dock;
+                                    }));
   removedDocksConfigs_.push_back(std::make_tuple(configFile, launchersDir));
 }
 
 void DockManager::reloadDocks() {
-  for (const auto& dock : docks_) {
+  for (const auto& dock : activeDocks_) {
     dock->reload();
   }
 }
 
 void DockManager::exit() {
-  for (const auto& dock : docks_) {
+  for (const auto& dock : activeDocks_) {
     dock->close();
   }
 }
 
 bool DockManager::loadDocks() {
   docks_.clear();
+  activeDocks_.clear();
   for (const auto& configs : configHelper_.findAllDockConfigs()) {
     docks_.push_back(std::make_unique<KSmoothDock>(
         this,
@@ -130,6 +136,13 @@ void DockManager::createDefaultDock() {
                    configHelper_.getDockLaunchersPath(0),
                    configHelper_.getAppearanceConfigPath(),
                    position));
+}
+
+void DockManager::activateNewDock() {
+  auto& dock = docks_.back();
+  dock->init();
+  dock->show();
+  activeDocks_.push_back(dock.get());
 }
 
 }  // namespace ksmoothdock

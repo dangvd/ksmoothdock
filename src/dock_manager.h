@@ -55,11 +55,15 @@ class DockManager : public QObject {
                  const QString& launchersDir);
 
   // Removes a dock.
-  void removeDock(const QString& configFile,
+  void removeDock(KSmoothDock* dock,
+                  const QString& configFile,
                   const QString& launchersDir);
 
   // Reloads all the dock instances.
   void reloadDocks();
+
+  // Returns true iff there's only one dock.
+  bool hasOnlyOneDock() { return activeDocks_.size() == 1; }
 
  public slots:
   // Closes all dock instances and exits.
@@ -72,10 +76,17 @@ class DockManager : public QObject {
   // Creates a default dock if none exists.
   void createDefaultDock();
 
+  // Activates the newly created dock (last in the list).
+  void activateNewDock();
+
   ConfigHelper configHelper_;
 
   // The list of all dock instances.
   std::vector<std::unique_ptr<KSmoothDock>> docks_;
+
+  // The list of all active docks. An inactive dock is one that has been
+  // requested to be removed.
+  std::vector<KSmoothDock*> activeDocks_;
 
   // The list of configs of the docks to be removed.
   std::vector<std::tuple<QString, QString>> removedDocksConfigs_;
