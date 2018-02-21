@@ -52,6 +52,11 @@ class DockItem {
   // Mouse press event handler.
   virtual void mousePressEvent(QMouseEvent* e) = 0;
 
+  // Some dock items (e.g. Application Menu or Clock) have their own global
+  // (i.e. not dock-specific) config that they need to reload when the config
+  // has been changed by another dock (not their parent dock).
+  virtual void loadConfig() {}
+
   // This is virtual so dynamic label can be implemented in its subclasses.
   virtual QString getLabel() const { return label_; }
   void setLabel(const QString& label) { label_ = label; }

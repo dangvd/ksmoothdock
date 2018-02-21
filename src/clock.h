@@ -43,6 +43,7 @@ class Clock : public QObject, public IconlessDockItem {
 
   void draw(QPainter* painter) const override;
   void mousePressEvent(QMouseEvent* e) override;
+  void loadConfig() override;
   QString getLabel() const override;
 
  public slots:
@@ -59,7 +60,6 @@ class Clock : public QObject, public IconlessDockItem {
   // Creates the context menu.
   void createMenu();
 
-  void loadConfig();
   void saveConfig();
 
   KConfig* config_;

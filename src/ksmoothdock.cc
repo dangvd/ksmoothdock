@@ -189,9 +189,19 @@ void KSmoothDock::reload() {
 }
 
 void KSmoothDock::refresh() {
+  // Reload appearance config as other docks might have changed it.
+  appearanceConfig_.reparseConfiguration();
+  loadAppearanceConfig();
+  for (const auto& item : items_) {
+    item->loadConfig();
+  }
   initLayoutVars();
   updateLayout();
   update();
+}
+
+void KSmoothDock::notifyRefresh() {
+  parent_->refreshDocks();
 }
 
 void KSmoothDock::setStrut() {

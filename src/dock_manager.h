@@ -62,6 +62,9 @@ class DockManager : public QObject {
   // Reloads all the dock instances.
   void reloadDocks();
 
+  // Refreshes all the dock instances.
+  void refreshDocks();
+
   // Returns true iff there's only one dock.
   bool hasOnlyOneDock() { return activeDocks_.size() == 1; }
 

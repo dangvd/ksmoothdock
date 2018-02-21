@@ -110,6 +110,12 @@ void DockManager::reloadDocks() {
   }
 }
 
+void DockManager::refreshDocks() {
+  for (const auto& dock : activeDocks_) {
+    dock->refresh();
+  }
+}
+
 void DockManager::exit() {
   for (const auto& dock : activeDocks_) {
     dock->close();

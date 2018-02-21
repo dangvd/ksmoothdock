@@ -154,7 +154,7 @@ void ApplicationMenu::applyConfig() {
   setLabel(configDialog_.name_->text());
   setIconName(configDialog_.icon_->icon());
   saveConfig();
-  parent_->refresh();
+  parent_->notifyRefresh();
 }
 
 void ApplicationMenu::updateConfig() {

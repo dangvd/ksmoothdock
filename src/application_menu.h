@@ -128,6 +128,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   void init();
 
   void mousePressEvent(QMouseEvent* e) override;
+  void loadConfig() override;
 
   QSize getMenuSize() { return menu_.sizeHint(); }
 
@@ -145,8 +146,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
  private:
   QString getStyleSheet();
-
-  void loadConfig();
+  
   void saveConfig();
 
   // Initializes application categories.

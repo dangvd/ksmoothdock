@@ -110,8 +110,8 @@ void Clock::set24HourClock(bool enabled) {
 
 void Clock::toggle24HourClock() {
   set24HourClock(!use24HourClock_);
-  parent_->update();
   saveConfig();
+  parent_->notifyRefresh();
 }
 
 void Clock::createMenu() {

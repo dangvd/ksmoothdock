@@ -94,6 +94,8 @@ class KSmoothDock : public QWidget {
   void reload();
   // Updates the dock without reloading the items.
   void refresh();
+  // Notifies the dock manager to tell all docks to refresh.
+  void notifyRefresh();
 
   void setStrut();
   void setStrutForApplicationMenu();

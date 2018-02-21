@@ -51,13 +51,7 @@ DesktopSelector::DesktopSelector(KSmoothDock* parent,
       desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
 
 void DesktopSelector::init() {
-  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
-  wallpaper_ = group.readEntry(getWallpaperConfigKey(), "");
-  if (isWallpaperOk()) {
-    setIconScaled(QPixmap(wallpaper_));
-  } else {
-    setIconName("user-desktop");
-  }
+  loadConfig();
   createMenu();
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
       this, SLOT(updateWallpaper(int)));
@@ -87,6 +81,16 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
   }
 }
 
+void DesktopSelector::loadConfig() {
+  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
+  wallpaper_ = group.readEntry(getWallpaperConfigKey(), "");
+  if (isWallpaperOk()) {
+    setIconScaled(QPixmap(wallpaper_));
+  } else {
+    setIconName("user-desktop");
+  }
+}
+
 void DesktopSelector::setIconScaled(const QPixmap& icon) {
   if (icon.width() * desktopHeight_ != icon.height() * desktopWidth_) {
     QPixmap scaledIcon = icon.scaled(desktopWidth_, desktopHeight_);
@@ -108,7 +112,6 @@ void DesktopSelector::changeWallpaper() {
 
   wallpaper_ = wallpaper;
   setIconScaled(QPixmap(wallpaper_));
-  parent_->refresh();
 
   if (isCurrentDesktop()) {
     setWallpaper(wallpaper_);
@@ -117,6 +120,8 @@ void DesktopSelector::changeWallpaper() {
   KConfigGroup group(config_, ConfigHelper::kPagerCategory);
   group.writeEntry(getWallpaperConfigKey(), wallpaper_);
   config_->sync();
+
+  parent_->notifyRefresh();
 }
 
 void DesktopSelector::updateWallpaper(int currentDesktop) {
