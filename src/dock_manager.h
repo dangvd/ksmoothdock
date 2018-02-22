@@ -94,6 +94,7 @@ class DockManager : public QObject {
   // The list of configs of the docks to be removed.
   std::vector<std::tuple<QString, QString>> removedDocksConfigs_;
 
+  friend class DockManagerTest;
   friend class ConfigDialogTest;
 };
 
