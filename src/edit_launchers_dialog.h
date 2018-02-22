@@ -99,10 +99,12 @@ class EditLaunchersDialog : public QDialog {
   void browseCommand();
   void updateInternalCommand(int index);
   void updateDBusCommand(int index);
+  void updateWebCommand(int index);
 
-  void resetInternalAndDBusCommands() {
+  void resetCommandLists() {
     internalCommands_->setCurrentIndex(0);
     dbusCommands_->setCurrentIndex(0);
+    webCommands_->setCurrentIndex(0);
   }
 
  private:
@@ -112,8 +114,8 @@ class EditLaunchersDialog : public QDialog {
   }
 
   void populateInternalCommands();
-
   void populateDBusCommands();
+  void populateWebCommands();
 
   KSmoothDock* parent_;
 
@@ -131,6 +133,7 @@ class EditLaunchersDialog : public QDialog {
   QPushButton *browseCommand_;
   QComboBox *internalCommands_;
   QComboBox *dbusCommands_;
+  QComboBox *webCommands_;
   QLabel *iconLabel_;
   KIconButton *icon_;
 

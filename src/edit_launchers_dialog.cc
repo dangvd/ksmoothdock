@@ -104,7 +104,7 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
       launchers_,
       SIGNAL(currentRowChanged(int)),
       this,
-      SLOT(resetInternalAndDBusCommands()));
+      SLOT(resetCommandLists()));
   launchers_->setSelectionMode(QAbstractItemView::SingleSelection);
   launchers_->setDragEnabled(true);
   launchers_->setAcceptDrops(true);
@@ -149,25 +149,31 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   command_ = new QLineEdit(this);
   command_->setGeometry(QRect(680, 100, 421, 36));
   connect(command_, SIGNAL(textEdited(const QString&)),
-      this, SLOT(resetInternalAndDBusCommands()));
+      this, SLOT(resetCommandLists()));
 
   browseCommand_ = new QPushButton(this);
   browseCommand_->setText(i18n("Browse Command"));
   connect(browseCommand_, SIGNAL(clicked()),
       this, SLOT(browseCommand()));
-  browseCommand_->setGeometry(QRect(680, 160, 271, 38));
+  browseCommand_->setGeometry(QRect(680, 160, 371, 38));
 
   internalCommands_ = new QComboBox(this);
   populateInternalCommands();
-  internalCommands_->setGeometry(QRect(680, 220, 271, 36));
+  internalCommands_->setGeometry(QRect(680, 215, 371, 36));
   connect(internalCommands_, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateInternalCommand(int)));
 
   dbusCommands_ = new QComboBox(this);
   populateDBusCommands();
-  dbusCommands_->setGeometry(QRect(680, 280, 271, 36));
+  dbusCommands_->setGeometry(QRect(680, 270, 371, 36));
   connect(dbusCommands_, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateDBusCommand(int)));
+
+  webCommands_ = new QComboBox(this);
+  populateWebCommands();
+  webCommands_->setGeometry(QRect(680, 325, 371, 36));
+  connect(webCommands_, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(updateWebCommand(int)));
 
   iconLabel_ = new QLabel(this);
   iconLabel_->setText(i18n("Icon"));
@@ -219,7 +225,7 @@ void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
 
 void EditLaunchersDialog::addLauncher() {
   addLauncher(i18n("New Launcher"), "", "xorg");
-  resetInternalAndDBusCommands();
+  resetCommandLists();
 }
 
 void EditLaunchersDialog::removeSelectedLauncher() {
@@ -250,7 +256,7 @@ void EditLaunchersDialog::browseCommand() {
       QDir::homePath());
   if (!command.isEmpty()) {
     command_->setText(command);
-    resetInternalAndDBusCommands();
+    resetCommandLists();
   }
 }
 
@@ -263,6 +269,7 @@ void EditLaunchersDialog::updateInternalCommand(int index) {
     icon_->setIcon(info.iconName);
 
     dbusCommands_->setCurrentIndex(0);
+    webCommands_->setCurrentIndex(0);
   }
 }
 
@@ -275,6 +282,20 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
     icon_->setIcon(info.iconName);
 
     internalCommands_->setCurrentIndex(0);
+    webCommands_->setCurrentIndex(0);
+  }
+}
+
+void EditLaunchersDialog::updateWebCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    name_->setText(webCommands_->itemText(index));
+    LauncherInfo info =
+        webCommands_->itemData(index).value<LauncherInfo>();
+    command_->setText(info.command);
+    icon_->setIcon(info.iconName);
+
+    internalCommands_->setCurrentIndex(0);
+    dbusCommands_->setCurrentIndex(0);
   }
 }
 
@@ -314,6 +335,95 @@ void EditLaunchersDialog::populateDBusCommands() {
   dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
   for (int i = 0; i < kNumItems; ++i) {
     dbusCommands_->addItem(
+        getListItemIcon(kItems[i][1]),
+        i18n(kItems[i][0]),
+        QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
+  }
+}
+
+void EditLaunchersDialog::populateWebCommands() {
+  static const int kNumItems = 25;
+  static const char* const kItems[kNumItems][3] = {
+    // Name, icon, command.
+    {"Google",
+      "applications-internet",
+      "xdg-open https://www.google.com"},
+    {"Google (Chrome New Window)",
+      "applications-internet",
+      "google-chrome --new-window https://www.google.com"},
+    {"Google (Chrome Incognito Window)",
+      "applications-internet",
+      "google-chrome --new-window --incognito https://www.google.com"},
+    {"Google (Firefox New Window)",
+      "applications-internet",
+      "firefox --new-window https://www.google.com"},
+    {"Google (Firefox Private Window)",
+      "applications-internet",
+      "firefox --private-window https://www.google.com"},
+    {"Gmail",
+      "internet-mail",
+      "xdg-open https://www.gmail.com"},
+    {"Gmail (Chrome New Window)",
+      "internet-mail",
+      "google-chrome --new-window https://www.gmail.com"},
+    {"Gmail (Chrome Incognito Window)",
+      "internet-mail",
+      "google-chrome --new-window --incognito https://www.gmail.com"},
+    {"Gmail (Firefox New Window)",
+      "internet-mail",
+      "firefox --new-window https://www.gmail.com"},
+    {"Gmail (Firefox Private Window)",
+      "internet-mail",
+      "firefox --private-window https://www.gmail.com"},
+    {"YouTube",
+      "applications-multimedia",
+      "xdg-open https://www.youtube.com"},
+    {"YouTube (Chrome New Window)",
+      "applications-multimedia",
+      "google-chrome --new-window https://www.youtube.com"},
+    {"YouTube (Chrome Incognito Window)",
+      "applications-multimedia",
+      "google-chrome --new-window --incognito https://www.youtube.com"},
+    {"YouTube (Firefox New Window)",
+      "applications-multimedia",
+      "firefox --new-window https://www.youtube.com"},
+    {"YouTube (Firefox Private Window)",
+      "applications-multimedia",
+      "firefox --private-window https://www.youtube.com"},
+    {"Facebook",
+      "system-users",
+      "xdg-open https://www.facebook.com"},
+    {"Facebook (Chrome New Window)",
+      "system-users",
+      "google-chrome --new-window https://www.facebook.com"},
+    {"Facebook (Chrome Incognito Window)",
+      "system-users",
+      "google-chrome --new-window --incognito https://www.facebook.com"},
+    {"Facebook (Firefox New Window)",
+      "system-users",
+      "firefox --new-window https://www.facebook.com"},
+    {"Facebook (Firefox Private Window)",
+      "system-users",
+      "firefox --private-window https://www.facebook.com"},
+    {"Twitter",
+      "system-users",
+      "xdg-open https://www.twitter.com"},
+    {"Twitter (Chrome New Window)",
+      "system-users",
+      "google-chrome --new-window https://www.twitter.com"},
+    {"Twitter (Chrome Incognito Window)",
+      "system-users",
+      "google-chrome --new-window --incognito https://www.twitter.com"},
+    {"Twitter (Firefox New Window)",
+      "system-users",
+      "firefox --new-window https://www.twitter.com"},
+    {"Twitter (Firefox Private Window)",
+      "system-users",
+      "firefox --private-window https://www.twitter.com"},
+  };
+  webCommands_->addItem(i18n("Launch a Website"));  // header
+  for (int i = 0; i < kNumItems; ++i) {
+    webCommands_->addItem(
         getListItemIcon(kItems[i][1]),
         i18n(kItems[i][0]),
         QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
