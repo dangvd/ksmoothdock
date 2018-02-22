@@ -481,12 +481,19 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   ApplicationMenu* applicationMenu =
       dynamic_cast<ApplicationMenu*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
-    if (launcher && !launcher->isCommandInternal()
-        && !launcher->isCommandDBus()) {
-      // Acknowledge launching the program.
-      showWaitCursor();
+    if (launcher && launcher->isCommandLockScreen()) {
+      leaveEvent(nullptr);
+      QTimer::singleShot(500, []() {
+        Launcher::lockScreen();
+      });
+    } else {
+      if(launcher &&
+         !launcher->isCommandInternal() && !launcher->isCommandDBus()) {
+        // Acknowledge launching the program.
+        showWaitCursor();
+      }
+      items_[i]->mousePressEvent(e);
     }
-    items_[i]->mousePressEvent(e);
   } else if (e->button() == Qt::RightButton) {
     if (launcher || applicationMenu) {
       menu_.popup(e->globalPos());

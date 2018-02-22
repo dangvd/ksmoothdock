@@ -286,7 +286,9 @@ class KSmoothDock : public QWidget {
   int parabolicMaxX_;
   QRect screenGeometry_;  // the geometry of the screen that the dock is on.
 
+  // Number of animation steps when zooming in and out.
   int numAnimationSteps_;
+  // Animation speed, between 0 and 31. The higher the faster.
   int animationSpeed_;
 
   Qt::Orientation orientation_;

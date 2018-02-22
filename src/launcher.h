@@ -24,6 +24,8 @@
 namespace ksmoothdock {
 
 static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
+static constexpr char kLockScreenCommand[] =
+    "qdbus org.kde.screensaver /ScreenSaver Lock";
 
 class Launcher : public IconBasedDockItem {
  public:
@@ -39,6 +41,7 @@ class Launcher : public IconBasedDockItem {
 
   bool isCommandInternal() { return command_ == kShowDesktopCommand; }
   bool isCommandDBus() { return command_.startsWith("qdbus"); }
+  bool isCommandLockScreen() { return command_ == kLockScreenCommand; }
 
   virtual void mousePressEvent(QMouseEvent* e) override;
 
@@ -46,6 +49,7 @@ class Launcher : public IconBasedDockItem {
   void saveToFile(const QString& filePath);
 
   static void launch(const QString& command);
+  static void lockScreen() { launch(kLockScreenCommand); }
 
   // Filters out the field codes (%x) from the command.
   // It simply removes all the arguments if they contain a field code.
