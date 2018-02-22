@@ -167,6 +167,8 @@ class KSmoothDock : public QWidget {
 
   void about();
 
+  // These are for global appearance config.
+  // Dock config is activated from menu items on the context menu directly.
   void showConfigDialog();
   void applyConfig();
   void updateConfig();
