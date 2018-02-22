@@ -85,10 +85,6 @@ class KSmoothDock : public QWidget {
   QPoint getApplicationSubMenuPosition(const QSize& menuSize,
                                        const QRect& subMenuGeometry);
 
-  // For testing only.
-  ConfigDialog* configDialog() { return &configDialog_; }
-  EditLaunchersDialog* editLaunchersDialog() { return &editLaunchersDialog_; }
-
  public slots:
   // Reloads the items and updates the dock.
   void reload();
@@ -347,6 +343,8 @@ class KSmoothDock : public QWidget {
   int mouseY_;
 
   friend class KSmoothDockTest;
+  friend class ConfigDialogTest;
+  friend class EditLaunchersDialogTest;
 };
 
 }  // namespace ksmoothdock

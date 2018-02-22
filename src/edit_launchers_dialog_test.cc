@@ -49,7 +49,7 @@ class EditLaunchersDialogTest: public QObject {
                                 appearanceConfigFile_->fileName()));
     dock_->init();
 
-    dialog_ = dock_->editLaunchersDialog();
+    dialog_ = &dock_->editLaunchersDialog_;
     dialog_->addLauncher("Home Folder", "dolphin", "system-file-manager");
     dialog_->addLauncher("Terminal", "konsole", "utilities-terminal");
     dock_->updateLauncherConfig();

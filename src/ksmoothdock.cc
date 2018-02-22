@@ -107,9 +107,11 @@ void KSmoothDock::init() {
   animationTimer_.reset(new QTimer(this));
   createMenu();
   loadDockConfig();
-  // Save the dock config to create the dock config file if it does not exist.
+  // Save the dock config to create the config file if it does not exist.
   saveDockConfig();
   loadAppearanceConfig();
+  // Save the appearance config to create the config file if it does not exist.
+  saveAppearanceConfig();
   initUi();
 
   connect(animationTimer_.get(), SIGNAL(timeout()), this,

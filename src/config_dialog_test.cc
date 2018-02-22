@@ -28,6 +28,7 @@
 #include <KConfig>
 #include <KConfigGroup>
 
+#include "dock_manager.h"
 #include "ksmoothdock.h"
 
 namespace ksmoothdock {
@@ -37,18 +38,21 @@ class ConfigDialogTest: public QObject {
 
  private slots:
   void init() {
-    configFile_.reset(new QTemporaryFile);
-    QVERIFY(configFile_->open());
-    launchersDir_.reset(new QTemporaryDir);
-    QVERIFY(launchersDir_->isValid());
-    appearanceConfigFile_.reset(new QTemporaryFile);
-    QVERIFY(appearanceConfigFile_->open());
-    dock_.reset(new KSmoothDock(configFile_->fileName(),
-                                launchersDir_->path(),
-                                appearanceConfigFile_->fileName()));
-    dock_->init();
+    configDir_ = std::make_unique<QTemporaryDir>();
+    QVERIFY(configDir_->isValid());
+    dockManager_ = std::make_unique<DockManager>(configDir_->path());
+    auto& configHelper = dockManager_->configHelper_;
+    dockManager_->docks_.push_back(std::make_unique<KSmoothDock>(
+        dockManager_.get(),
+        configHelper.getDockConfigPath(0),
+        configHelper.getDockLaunchersPath(0),
+        configHelper.getAppearanceConfigPath()));
+    dockManager_->activeDocks_.push_back(dockManager_->docks_[0].get());
+    auto* dock = dockManager_->activeDocks_[0];
+    dock->init();
+    config_ = &dock->appearanceConfig_;
 
-    dialog_ = dock_->configDialog();
+    dialog_ = &dock->configDialog_;
     dialog_->minSize_->setValue(48);
     dialog_->maxSize_->setValue(128);
     dialog_->backgroundAlpha_->setValue(0.42);
@@ -56,7 +60,7 @@ class ConfigDialogTest: public QObject {
     dialog_->showBorder_->setChecked(true);
     dialog_->borderColor_->setColor(QColor("white"));
     dialog_->tooltipFontSize_->setValue(20);
-    dock_->updateConfig();
+    dock->updateConfig();
   }
 
   // Tests OK button/logic.
@@ -75,10 +79,9 @@ class ConfigDialogTest: public QObject {
   }
 
   ConfigDialog* dialog_;
-  std::unique_ptr<KSmoothDock> dock_;
-  std::unique_ptr<QTemporaryFile> configFile_;
-  std::unique_ptr<QTemporaryDir> launchersDir_;
-  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
+  KConfig* config_;
+  std::unique_ptr<DockManager> dockManager_;
+  std::unique_ptr<QTemporaryDir> configDir_;
 };
 
 void ConfigDialogTest::ok() {
@@ -94,8 +97,7 @@ void ConfigDialogTest::ok() {
                     Qt::LeftButton);
 
   // Tests that config values have been updated.
-  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
-  KConfigGroup group(&config, "General");
+  KConfigGroup group(config_, "General");
   QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
@@ -119,8 +121,7 @@ void ConfigDialogTest::apply() {
                     Qt::LeftButton);
 
   // Tests that config values have been updated.
-  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
-  KConfigGroup group(&config, "General");
+  KConfigGroup group(config_, "General");
   QCOMPARE(group.readEntry("minimumIconSize", 0), 40);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 80);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
@@ -144,8 +145,7 @@ void ConfigDialogTest::cancel() {
                     Qt::LeftButton);
 
   // Tests that config values haven't changed.
-  KConfig config(configFile_->fileName(), KConfig::SimpleConfig);
-  KConfigGroup group(&config, "General");
+  KConfigGroup group(config_, "General");
   QCOMPARE(group.readEntry("minimumIconSize", 0), 48);
   QCOMPARE(group.readEntry("maximumIconSize", 0), 128);
   QCOMPARE(group.readEntry("backgroundColor", QColor()).rgb(),
