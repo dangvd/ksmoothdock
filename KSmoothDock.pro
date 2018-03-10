@@ -1,8 +1,3 @@
-# Created by and for Qt Creator This file was created for editing the project sources only.
-# You may attempt to use it for building too, by modifying this file here.
-
-#TARGET = KSmoothDock
-
 TEMPLATE = app
 TARGET = ksmoothdock
 
@@ -63,6 +58,3 @@ QT += core gui widgets testlib KConfigCore KConfigGui \
     KWidgetsAddons KWindowSystem
 
 CONFIG += c++14
-
-#DEFINES = 
-

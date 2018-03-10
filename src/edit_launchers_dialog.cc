@@ -275,7 +275,8 @@ void EditLaunchersDialog::loadData() {
 
 void EditLaunchersDialog::saveData() {
   const int launcherCount = launchers_->count();
-  std::vector<LauncherConfig> launcherConfigs(launcherCount);
+  std::vector<LauncherConfig> launcherConfigs;
+  launcherConfigs.reserve(launcherCount);
   for (int i = 0; i < launcherCount; ++i) {
     auto* listItem = launchers_->item(i);
     auto info = listItem->data(Qt::UserRole).value<LauncherInfo>();

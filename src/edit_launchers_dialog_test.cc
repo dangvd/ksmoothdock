@@ -21,10 +21,7 @@
 
 #include <memory>
 
-#include <QDir>
-#include <QStringList>
 #include <QTemporaryDir>
-#include <QTemporaryFile>
 #include <QtTest>
 
 #include <KConfig>
@@ -39,7 +36,9 @@ class EditLaunchersDialogTest: public QObject {
 
  private slots:
   void init() {
-    dialog_ = std::make_unique<EditLaunchersDialog>(&model_, kDockId);
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+    dialog_ = std::make_unique<EditLaunchersDialog>(model_.get(), kDockId);
   }
 
   // Tests OK button/logic.
@@ -53,10 +52,10 @@ class EditLaunchersDialogTest: public QObject {
 
  private:
   int launcherCount() {
-    return static_cast<int>(model_.launcherConfigs(kDockId).size());
+    return static_cast<int>(model_->launcherConfigs(kDockId).size());
   }
 
-  MultiDockModel model_;
+  std::unique_ptr<MultiDockModel> model_;
   std::unique_ptr<EditLaunchersDialog> dialog_;
 };
 
@@ -66,7 +65,7 @@ void EditLaunchersDialogTest::ok() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 3);
+  QCOMPARE(launcherCount(), 1);
 }
 
 void EditLaunchersDialogTest::apply() {
@@ -75,7 +74,7 @@ void EditLaunchersDialogTest::apply() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 3);
+  QCOMPARE(launcherCount(), 1);
 }
 
 void EditLaunchersDialogTest::cancel() {
@@ -84,7 +83,7 @@ void EditLaunchersDialogTest::cancel() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 2);
+  QCOMPARE(launcherCount(), 0);
 }
 
 }  // namespace ksmoothdock
