@@ -43,6 +43,8 @@ class AddPanelDialog : public QDialog {
   Ui::AddPanelDialog *ui;
 
   MultiDockModel* model_;
+
+  friend class AddPanelDialogTest;
 };
 
 }  // namespace ksmoothdock
