@@ -24,9 +24,9 @@ namespace ksmoothdock {
 
 MultiDockView::MultiDockView(MultiDockModel* model)
     : model_(model) {
-  loadData();
   connect(model_, SIGNAL(dockAdded(int)), this, SLOT(onDockAdded(int)));
   connect(model_, SIGNAL(dockRemoved(int)), this, SLOT(onDockRemoved(int)));
+  loadData();
 }
 
 void MultiDockView::show() {
@@ -58,7 +58,7 @@ void MultiDockView::loadData() {
 
   if (docks_.empty()) {
     WelcomeDialog welcome(model_);
-    welcome.show();
+    welcome.exec();
   }
 }
 
