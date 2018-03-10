@@ -22,6 +22,7 @@
 #include <cmath>
 #include <memory>
 
+#include <QPushButton>
 #include <QTemporaryDir>
 #include <QtTest>
 

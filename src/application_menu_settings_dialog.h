@@ -52,6 +52,8 @@ class ApplicationMenuSettingsDialog : public QDialog {
   KIconButton* icon_;
 
   MultiDockModel* model_;
+
+  friend class ApplicationMenuSettingsDialogTest;
 };
 
 }  // namespace ksmoothdock
