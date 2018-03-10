@@ -89,3 +89,7 @@ target_link_libraries(application_menu_settings_dialog_test
     Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(application_menu_settings_dialog_test
     application_menu_settings_dialog_test)
+
+add_executable(welcome_dialog_test welcome_dialog_test.cc)
+target_link_libraries(welcome_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(welcome_dialog_test welcome_dialog_test)

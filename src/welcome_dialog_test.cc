@@ -16,37 +16,42 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_WELCOME_DIALOG_H_
-#define KSMOOTHDOCK_WELCOME_DIALOG_H_
+#include "welcome_dialog.h"
+#include "ui_welcome_dialog.h"
 
-#include <QDialog>
+#include <memory>
 
-#include "multi_dock_model.h"
-
-namespace Ui {
-  class WelcomeDialog;
-}
+#include <QPushButton>
+#include <QTemporaryDir>
+#include <QtTest>
 
 namespace ksmoothdock {
 
-class WelcomeDialog : public QDialog {
+class WelcomeDialogTest: public QObject {
   Q_OBJECT
 
- public:
-  explicit WelcomeDialog(MultiDockModel* model);
-  ~WelcomeDialog();
+ private slots:
+  void init() {
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+    dialog_ = std::make_unique<WelcomeDialog>(model_.get());
+  }
 
- public slots:
-  void accept() override;
+  // Tests OK button.
+  void ok();
 
  private:
-  Ui::WelcomeDialog *ui;
-
-  MultiDockModel* model_;
-
-  friend class WelcomeDialogTest;
+  std::unique_ptr<MultiDockModel> model_;
+  std::unique_ptr<WelcomeDialog> dialog_;
 };
+
+void WelcomeDialogTest::ok() {
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Ok),
+                    Qt::LeftButton);
+  QCOMPARE(model_->dockCount(), 1);
+}
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_WELCOME_DIALOG_H_
+QTEST_MAIN(ksmoothdock::WelcomeDialogTest)
+#include "welcome_dialog_test.moc"
