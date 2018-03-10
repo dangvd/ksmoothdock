@@ -122,7 +122,8 @@ std::vector<LauncherConfig> MultiDockModel::loadDockLaunchers(
     return createDefaultLaunchers();
   }
 
-  std::vector<LauncherConfig> launchers(files.size());
+  std::vector<LauncherConfig> launchers;
+  launchers.reserve(files.size());
   for (int i = 0; i < files.size(); ++i) {
     const QString& desktopFile = dockLaunchersPath + "/" + files.at(i);
     launchers.push_back(LauncherConfig(desktopFile));
@@ -144,7 +145,8 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
     {"System Settings", "preferences-system", "systemsettings5"}
   };
 
-  std::vector<LauncherConfig> launchers(kNumItems);
+  std::vector<LauncherConfig> launchers;
+  launchers.reserve(kNumItems);
   for (int i = 0; i < kNumItems; ++i) {
     launchers.push_back(
         LauncherConfig(kItems[i][0], kItems[i][1], kItems[i][2]));
