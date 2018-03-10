@@ -26,7 +26,6 @@
 #include <QColor>
 #include <QCursor>
 #include <QDesktopWidget>
-#include <QDir>
 #include <QIcon>
 #include <QListWidgetItem>
 #include <QPainter>
@@ -45,7 +44,6 @@
 #include "application_menu.h"
 #include "clock.h"
 #include "command_utils.h"
-#include "config_helper.h"
 #include "desktop_selector.h"
 #include "launcher.h"
 #include "multi_dock_view.h"

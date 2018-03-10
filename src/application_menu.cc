@@ -33,7 +33,6 @@
 #include <KWindowSystem>
 
 #include "command_utils.h"
-#include "config_helper.h"
 #include "dock_panel.h"
 #include "launcher.h"
 

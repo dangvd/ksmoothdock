@@ -30,7 +30,6 @@
 #include <KLocalizedString>
 #include <KMessageBox>
 
-#include "config_helper.h"
 #include "dock_panel.h"
 
 namespace ksmoothdock {

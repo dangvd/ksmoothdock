@@ -22,8 +22,6 @@
 
 #include <QProcess>
 
-#include <KConfig>
-#include <KConfigGroup>
 #include <KDesktopFile>
 #include <KLocalizedString>
 #include <KMessageBox>
