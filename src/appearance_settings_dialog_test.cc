@@ -22,6 +22,7 @@
 #include <cmath>
 #include <memory>
 
+#include <QTemporaryDir>
 #include <QtTest>
 
 namespace ksmoothdock {
@@ -31,16 +32,18 @@ class AppearanceSettingsDialogTest: public QObject {
 
  private slots:
   void init() {
-    model_.setMinIconSize(48);
-    model_.setMaxIconSize(128);
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+    model_->setMinIconSize(48);
+    model_->setMaxIconSize(128);
     QColor color("white");
     color.setAlphaF(0.42);
-    model_.setBackgroundColor(color);
-    model_.setShowBorder(true);
-    model_.setBorderColor(QColor("white"));
-    model_.setTooltipFontSize(20);
+    model_->setBackgroundColor(color);
+    model_->setShowBorder(true);
+    model_->setBorderColor(QColor("white"));
+    model_->setTooltipFontSize(20);
 
-    dialog_ = std::make_unique<AppearanceSettingsDialog>(&model_);
+    dialog_ = std::make_unique<AppearanceSettingsDialog>(model_.get());
   }
 
   // Tests UI initialization.
@@ -61,7 +64,7 @@ class AppearanceSettingsDialogTest: public QObject {
     return std::fabs(x - y) < kDelta;
   }
 
-  MultiDockModel model_;
+  std::unique_ptr<MultiDockModel> model_;
   std::unique_ptr<AppearanceSettingsDialog> dialog_;
 };
 
@@ -88,13 +91,13 @@ void AppearanceSettingsDialogTest::ok() {
                     Qt::LeftButton);
 
   // Tests that the model has been updated.
-  QCOMPARE(model_.minIconSize(), 40);
-  QCOMPARE(model_.maxIconSize(), 80);
-  QCOMPARE(model_.backgroundColor().rgb(), QColor("green").rgb());
-  compareDouble(model_.backgroundColor().alphaF(), 0.1);
-  QCOMPARE(model_.showBorder(), false);
-  QCOMPARE(model_.borderColor(), QColor("blue"));
-  QCOMPARE(model_.tooltipFontSize(), 24);
+  QCOMPARE(model_->minIconSize(), 40);
+  QCOMPARE(model_->maxIconSize(), 80);
+  QCOMPARE(model_->backgroundColor().rgb(), QColor("green").rgb());
+  compareDouble(model_->backgroundColor().alphaF(), 0.1);
+  QCOMPARE(model_->showBorder(), false);
+  QCOMPARE(model_->borderColor(), QColor("blue"));
+  QCOMPARE(model_->tooltipFontSize(), 24);
 }
 
 void AppearanceSettingsDialogTest::apply() {
@@ -110,13 +113,13 @@ void AppearanceSettingsDialogTest::apply() {
                     Qt::LeftButton);
 
   // Tests that the model has been updated.
-  QCOMPARE(model_.minIconSize(), 40);
-  QCOMPARE(model_.maxIconSize(), 80);
-  QCOMPARE(model_.backgroundColor().rgb(), QColor("green").rgb());
-  compareDouble(model_.backgroundColor().alphaF(), 0.1);
-  QCOMPARE(model_.showBorder(), false);
-  QCOMPARE(model_.borderColor(), QColor("blue"));
-  QCOMPARE(model_.tooltipFontSize(), 24);
+  QCOMPARE(model_->minIconSize(), 40);
+  QCOMPARE(model_->maxIconSize(), 80);
+  QCOMPARE(model_->backgroundColor().rgb(), QColor("green").rgb());
+  compareDouble(model_->backgroundColor().alphaF(), 0.1);
+  QCOMPARE(model_->showBorder(), false);
+  QCOMPARE(model_->borderColor(), QColor("blue"));
+  QCOMPARE(model_->tooltipFontSize(), 24);
 }
 
 void AppearanceSettingsDialogTest::cancel() {
@@ -132,13 +135,13 @@ void AppearanceSettingsDialogTest::cancel() {
                     Qt::LeftButton);
 
   // Tests that the model has not been updated.
-  QCOMPARE(model_.minIconSize(), 48);
-  QCOMPARE(model_.maxIconSize(), 128);
-  QCOMPARE(model_.backgroundColor().rgb(), QColor("white").rgb());
-  compareDouble(model_.backgroundColor().alphaF(), 0.42);
-  QCOMPARE(model_.showBorder(), true);
-  QCOMPARE(model_.borderColor(), QColor("white"));
-  QCOMPARE(model_.tooltipFontSize(), 20);
+  QCOMPARE(model_->minIconSize(), 48);
+  QCOMPARE(model_->maxIconSize(), 128);
+  QCOMPARE(model_->backgroundColor().rgb(), QColor("white").rgb());
+  compareDouble(model_->backgroundColor().alphaF(), 0.42);
+  QCOMPARE(model_->showBorder(), true);
+  QCOMPARE(model_->borderColor(), QColor("white"));
+  QCOMPARE(model_->tooltipFontSize(), 20);
 }
 
 }  // namespace ksmoothdock

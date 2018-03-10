@@ -70,7 +70,6 @@ class MultiDockModel : public QObject {
 
  public:
   MultiDockModel(const QString& configDir);
-  MultiDockModel() : MultiDockModel(QDir::homePath() + "/.ksmoothdock") {}
   ~MultiDockModel();
 
   MultiDockModel(const MultiDockModel&) = delete;

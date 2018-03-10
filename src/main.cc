@@ -17,6 +17,7 @@
  */
 
 #include <QApplication>
+#include <QDir>
 
 #include <KAboutData>
 #include <KDBusService>
@@ -40,7 +41,7 @@ int main(int argc, char** argv) {
       "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
 
-  ksmoothdock::MultiDockModel model;
+  ksmoothdock::MultiDockModel model(QDir::homePath() + "/.ksmoothdock");
   ksmoothdock::MultiDockView view(&model);
   view.show();
   return app.exec();

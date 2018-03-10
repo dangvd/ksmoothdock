@@ -18,12 +18,12 @@
 
 #include "desktop_selector.h"
 
-#include <cstdlib>
+#include <cmath>
 #include <memory>
 
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QTemporaryFile>
+#include <QTemporaryDir>
 #include <QTest>
 
 namespace ksmoothdock {
@@ -33,8 +33,10 @@ class DesktopSelectorTest: public QObject {
 
  private slots:
   void init() {
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
     desktopSelector_.reset(new DesktopSelector(
-        nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize, 1));
+        nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize, 1));
   }
 
   // Tests that the icon is scaled to screen's width/height ratio if needed.
@@ -44,7 +46,7 @@ class DesktopSelectorTest: public QObject {
   static const int kMinSize = 64;
   static const int kMaxSize = 64;
 
-  MultiDockModel model_;
+  std::unique_ptr<MultiDockModel> model_;
   std::unique_ptr<DesktopSelector> desktopSelector_;
 };
 const int DesktopSelectorTest::kMinSize;
@@ -56,8 +58,8 @@ void DesktopSelectorTest::setIconScaled() {
   const int desktopWidth = QApplication::desktop()->screenGeometry().width();
   const int desktopHeight = QApplication::desktop()->screenGeometry().height();
   // Gives room to rounding difference.
-  QVERIFY(abs(desktopSelector_->getIcon(kMinSize).width() -
-              desktopWidth * kMinSize / desktopHeight) <= 1);
+  QVERIFY(std::abs(desktopSelector_->getIcon(kMinSize).width() -
+                   desktopWidth * kMinSize / desktopHeight) <= 1);
 }
 
 }  // namespace ksmoothdock

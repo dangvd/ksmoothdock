@@ -19,15 +19,9 @@
 #include "application_menu.h"
 
 #include <memory>
-#include <string>
-#include <unordered_map>
 
 #include <QTemporaryDir>
-#include <QTemporaryFile>
 #include <QTest>
-
-#include <KConfig>
-#include <KConfigGroup>
 
 namespace ksmoothdock {
 
@@ -35,6 +29,11 @@ class ApplicationMenuTest: public QObject {
   Q_OBJECT
 
  private slots:
+  void init() {
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+  }
+
   void loadEntries_singleDir();
   void loadEntries_multipleDirs();
 
@@ -61,7 +60,7 @@ class ApplicationMenuTest: public QObject {
     config.sync();
   }
 
-  MultiDockModel model_;
+  std::unique_ptr<MultiDockModel> model_;
 };
 const int ApplicationMenuTest::kNumCategories;
 
@@ -73,7 +72,7 @@ void ApplicationMenuTest::loadEntries_singleDir() {
              "Network");
 
   ApplicationMenu applicationMenu(
-      nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize, { entryDir.path() });
+      nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize, { entryDir.path() });
   applicationMenu.initCategories();
   applicationMenu.loadEntries();
 
@@ -127,7 +126,7 @@ void ApplicationMenuTest::loadEntries_multipleDirs() {
 
 
   ApplicationMenu applicationMenu(
-      nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize,
+      nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
       { entryDir1.path(), entryDir1.path() + "/dir-not-exist", entryDir2.path(),
         entryDir3.path() });
   applicationMenu.initCategories();
