@@ -26,7 +26,7 @@ namespace ksmoothdock {
 // Base class for dock items without an icon, such as clock.
 class IconlessDockItem : public DockItem {
  public:
-  IconlessDockItem(KSmoothDock* parent, const QString& label,
+  IconlessDockItem(DockPanel* parent, const QString& label,
       Qt::Orientation orientation, int minSize, int maxSize, float whRatio)
       : DockItem(parent, label, orientation, minSize, maxSize),
         whRatio_(whRatio) {}

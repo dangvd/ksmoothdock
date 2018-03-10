@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2018 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,45 +16,44 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_APPLICATION_MENU_CONFIG_DIALOG_H_
-#define KSMOOTHDOCK_APPLICATION_MENU_CONFIG_DIALOG_H_
+#ifndef KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
+#define KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
 
-#include <QAbstractButton>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QLineEdit>
 
 #include <KIconButton>
 
+#include "multi_dock_model.h"
+
+namespace Ui {
+  class ApplicationMenuSettingsDialog;
+}
+
 namespace ksmoothdock {
 
-class ApplicationMenu;
-class KSmoothDock;
-
-class ApplicationMenuConfigDialog : public QDialog {
+class ApplicationMenuSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  ApplicationMenuConfigDialog(KSmoothDock* parent,
-                              ApplicationMenu* applicationMenu);
+  explicit ApplicationMenuSettingsDialog(MultiDockModel* model);
+  ~ApplicationMenuSettingsDialog();
+
+  void reload() { loadData(); }
 
  public slots:
+  void accept() override;
   void buttonClicked(QAbstractButton* button);
 
  private:
-  ApplicationMenu* applicationMenu_;
+  void loadData();
+  void saveData();
 
-  QLabel *nameLabel_;
-  QLineEdit *name_;
-  QLabel *iconLabel_;
-  KIconButton *icon_;
+  Ui::ApplicationMenuSettingsDialog *ui;
+  KIconButton* icon_;
 
-  QDialogButtonBox *buttonBox_;
-
-  friend class ApplicationMenu;
+  MultiDockModel* model_;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_APPLICATION_MENU_CONFIG_DIALOG_H_
+#endif  // KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_

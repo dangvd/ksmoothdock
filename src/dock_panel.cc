@@ -16,7 +16,7 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 
 #include <algorithm>
 #include <iostream>
@@ -37,7 +37,6 @@
 #include <Qt>
 
 #include <KAboutData>
-#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <netwm_def.h>
@@ -45,61 +44,37 @@
 #include "add_panel_dialog.h"
 #include "application_menu.h"
 #include "clock.h"
+#include "command_utils.h"
 #include "config_helper.h"
 #include "desktop_selector.h"
-#include "dock_manager.h"
 #include "launcher.h"
+#include "multi_dock_view.h"
 
 namespace ksmoothdock {
 
-const int KSmoothDock::kDefaultMinSize;
-const int KSmoothDock::kDefaultMaxSize;
-const int KSmoothDock::kDefaultTooltipFontSize;
-const int KSmoothDock::kTooltipSpacing;
-const float KSmoothDock::kDefaultBackgroundAlpha = 0.42;
-const char KSmoothDock::kDefaultBackgroundColor[] = "#638abd";
-const char KSmoothDock::kDefaultBorderColor[] = "#b1c4de";
+const int DockPanel::kTooltipSpacing;
 
-KSmoothDock::KSmoothDock(DockManager* parent,
-                         const QString& configFile,
-                         const QString& launchersDir,
-                         const QString& appearanceConfigFile)
+DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
     : QWidget(),
-      position_(PanelPosition::Undefined),
-      screen_(-1),
+      parent_(parent),
+      model_(model),
+      dockId_(dockId),
       autoHide_(false),
       showPager_(false),
       showClock_(false),
       showBorder_(true),
-      parent_(parent),
-      configFile_(configFile),
-      dockConfig_(configFile, KConfig::SimpleConfig),
-      launchersDir_(launchersDir),
-      appearanceConfig_(appearanceConfigFile, KConfig::SimpleConfig),
       aboutDialog_(KAboutData::applicationData(), this),
-      configDialog_(this),
-      editLaunchersDialog_(this),
+      appearanceSettingsDialog_(model),
+      editLaunchersDialog_(model, dockId),
       isMinimized_(true),
       isResizing_(false),
       isEntering_(false),
       isLeaving_(false),
-      isAnimationActive_(false) {}
-
-KSmoothDock::KSmoothDock(DockManager* parent, const QString& configFile,
-                         const QString& launchersDir,
-                         const QString& appearanceConfigFile,
-                         PanelPosition position, int screen)
-    : KSmoothDock(parent, configFile, launchersDir, appearanceConfigFile) {
-  position_ = position;
-  screen_ = screen;
+      isAnimationActive_(false) {
+  init();
 }
 
-KSmoothDock::KSmoothDock(const QString& configFile,
-                         const QString& launchersDir,
-                         const QString& appearanceConfigFile)
-    : KSmoothDock(nullptr, configFile, launchersDir, appearanceConfigFile) {}
-
-void KSmoothDock::init() {
+void DockPanel::init() {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
@@ -107,24 +82,19 @@ void KSmoothDock::init() {
   animationTimer_.reset(new QTimer(this));
   createMenu();
   loadDockConfig();
-  // Save the dock config to create the config file if it does not exist.
-  saveDockConfig();
   loadAppearanceConfig();
-  // Save the appearance config to create the config file if it does not exist.
-  saveAppearanceConfig();
   initUi();
 
   connect(animationTimer_.get(), SIGNAL(timeout()), this,
       SLOT(updateAnimation()));
   connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
       this, SLOT(updatePager()));
+  connect(model_, SIGNAL(appearanceChanged()), this, SLOT(reload()));
+  connect(model_, SIGNAL(dockLaunchersChanged(int)),
+          this, SLOT(onDockLaunchersChanged(int)));
 }
 
-KSmoothDock::~KSmoothDock() {
-  saveDockConfig();
-}
-
-void KSmoothDock::resize(int w, int h) {
+void DockPanel::resize(int w, int h) {
   isResizing_ = true;
   QWidget::resize(w, h);
   int x, y;
@@ -153,7 +123,7 @@ void KSmoothDock::resize(int w, int h) {
   isResizing_ = false;
 }
 
-QPoint KSmoothDock::getApplicationMenuPosition(const QSize& menuSize) {
+QPoint DockPanel::applicationMenuPosition(const QSize& menuSize) {
   if (position_ == PanelPosition::Top) {
     return QPoint(minX_, minY_ + minHeight_);
   } else if (position_ == PanelPosition::Bottom) {
@@ -165,7 +135,7 @@ QPoint KSmoothDock::getApplicationMenuPosition(const QSize& menuSize) {
   }
 }
 
-QPoint KSmoothDock::getApplicationSubMenuPosition(
+QPoint DockPanel::applicationSubMenuPosition(
     const QSize& menuSize, const QRect& subMenuGeometry) {
   if (position_ == PanelPosition::Top) {
     return QPoint(subMenuGeometry.x(),
@@ -181,36 +151,18 @@ QPoint KSmoothDock::getApplicationSubMenuPosition(
   return QPoint(subMenuGeometry.x(), subMenuGeometry.y());  // no change.
 }
 
-void KSmoothDock::reload() {
-  // Reload appearance config as other docks might have changed it.
-  appearanceConfig_.reparseConfiguration();
+void DockPanel::reload() {
   loadAppearanceConfig();
   items_.clear();
   initUi();
   update();
 }
 
-void KSmoothDock::refresh() {
-  // Reload appearance config as other docks might have changed it.
-  appearanceConfig_.reparseConfiguration();
-  loadAppearanceConfig();
-  for (const auto& item : items_) {
-    item->loadConfig();
-  }
-  initLayoutVars();
-  updateLayout();
-  update();
-}
-
-void KSmoothDock::notifyRefresh() {
-  parent_->refreshDocks();
-}
-
-void KSmoothDock::setStrut() {
+void DockPanel::setStrut() {
   setStrut(isHorizontal() ? minHeight_ : minWidth_);
 }
 
-void KSmoothDock::setStrutForApplicationMenu() {
+void DockPanel::setStrutForApplicationMenu() {
   ApplicationMenu* applicationMenu = dynamic_cast<ApplicationMenu*>(
       items_[0].get());
   if (applicationMenu) {
@@ -221,7 +173,7 @@ void KSmoothDock::setStrutForApplicationMenu() {
   }
 }
 
-void KSmoothDock::setPosition(PanelPosition position) {
+void DockPanel::setPosition(PanelPosition position) {
   position_ = position;
   orientation_ = (position_ == PanelPosition::Top ||
       position_ == PanelPosition::Bottom)
@@ -232,14 +184,14 @@ void KSmoothDock::setPosition(PanelPosition position) {
   positionRight_->setChecked(position == PanelPosition::Right);
 }
 
-void KSmoothDock::togglePager() {
+void DockPanel::togglePager() {
   showPager_ = !showPager_;
   reload();
   saveDockConfig();
   showPagerInfoDialog();
 }
 
-void KSmoothDock::setScreen(int screen) {
+void DockPanel::setScreen(int screen) {
   screen_ = screen;
   for (int i = 0; i < static_cast<int>(screenActions_.size()); ++i) {
     screenActions_[i]->setChecked(i == screen);
@@ -247,7 +199,7 @@ void KSmoothDock::setScreen(int screen) {
   screenGeometry_ = QApplication::desktop()->screenGeometry(screen);
 }
 
-void KSmoothDock::updateAnimation() {
+void DockPanel::updateAnimation() {
   for (const auto& item : items_) {
     item->nextAnimationStep();
   }
@@ -271,136 +223,50 @@ void KSmoothDock::updateAnimation() {
   repaint();
 }
 
-void KSmoothDock::resetCursor() {
+void DockPanel::resetCursor() {
   setCursor(QCursor(Qt::ArrowCursor));
 }
 
-void KSmoothDock::showOnlineDocumentation() {
+void DockPanel::showOnlineDocumentation() {
   Launcher::launch(
       "xdg-open https://github.com/dangvd/ksmoothdock/wiki/Documentation");
 }
 
-void KSmoothDock::about() {
+void DockPanel::about() {
   aboutDialog_.show();
 }
 
-void KSmoothDock::showConfigDialog() {
-  configDialog_.minSize_->setValue(minSize_);
-  configDialog_.maxSize_->setValue(maxSize_);
-  configDialog_.backgroundAlpha_->setValue(backgroundColor_.alphaF());
-  configDialog_.backgroundColor_->setColor(QColor(backgroundColor_.rgb()));
-  configDialog_.showBorder_->setChecked(showBorder_);
-  configDialog_.borderColor_->setColor(borderColor_);
-  configDialog_.tooltipFontSize_->setValue(tooltipFontSize_);
-  configDialog_.show();
+void DockPanel::showAppearanceSettingsDialog() {
+  appearanceSettingsDialog_.reload();
+  appearanceSettingsDialog_.show();
 }
 
-void KSmoothDock::applyConfig() {
-  minSize_ = configDialog_.minSize_->value();
-  if (configDialog_.maxSize_->value() < minSize_) {
-    configDialog_.maxSize_->setValue(minSize_);
-  }
-  maxSize_ = configDialog_.maxSize_->value();
-  backgroundColor_ = configDialog_.backgroundColor_->color();
-  backgroundColor_.setAlphaF(configDialog_.backgroundAlpha_->value());
-  showBorder_ = configDialog_.showBorder_->isChecked();
-  borderColor_ = configDialog_.borderColor_->color();
-  tooltipFontSize_ = configDialog_.tooltipFontSize_->value();
-
-  saveAppearanceConfig();
-  parent_->reloadDocks();
-}
-
-void KSmoothDock::updateConfig() {
-  applyConfig();
-  configDialog_.hide();
-}
-
-void KSmoothDock::resetConfig() {
-  configDialog_.minSize_->setValue(kDefaultMinSize);
-  configDialog_.maxSize_->setValue(kDefaultMaxSize);
-  configDialog_.backgroundAlpha_->setValue(kDefaultBackgroundAlpha);
-  configDialog_.backgroundColor_->setColor(QColor(kDefaultBackgroundColor));
-  configDialog_.showBorder_->setChecked(true);
-  configDialog_.borderColor_->setColor(QColor(kDefaultBorderColor));
-  configDialog_.tooltipFontSize_->setValue(kDefaultTooltipFontSize);  
-}
-
-void KSmoothDock::showEditLaunchersDialog() {
-  editLaunchersDialog_.launchers_->clear();
-  for (const auto& item : items_) {
-    Launcher* launcher = dynamic_cast<Launcher*>(item.get());
-    if (launcher) {
-      QListWidgetItem* listItem = new QListWidgetItem(
-          QIcon(launcher->getIcon(kListIconSize)), launcher->label_);
-          listItem->setData(Qt::UserRole, QVariant::fromValue(
-              LauncherInfo(launcher->iconName_, launcher->command_)));
-      editLaunchersDialog_.launchers_->addItem(listItem);
-    }
-  }
-  editLaunchersDialog_.launchers_->setCurrentRow(0);
+void DockPanel::showEditLaunchersDialog() {
+  editLaunchersDialog_.reload();
   editLaunchersDialog_.show();
 }
 
-void KSmoothDock::applyLauncherConfig() {
-  items_.clear();
-  initApplicationMenu();
-
-  const int numLaunchers = editLaunchersDialog_.launchers_->count();
-  reserveItems(numLaunchers);
-  for (int i = 0; i < numLaunchers; ++i) {
-    QListWidgetItem* listItem = editLaunchersDialog_.launchers_->item(i);
-    LauncherInfo info = listItem->data(Qt::UserRole).value<LauncherInfo>();
-    items_.push_back(std::unique_ptr<DockItem>(
-        new Launcher(this, listItem->text(), orientation_, info.iconName,
-            minSize_, maxSize_, info.command)));
-  }
-  saveLaunchers();
-
-  initPager();
-  initClock();
-  initLayoutVars();
-  updateLayout();
-  update();
-}
-
-void KSmoothDock::updateLauncherConfig() {
-  applyLauncherConfig();
-  editLaunchersDialog_.hide();
-}
-
-void KSmoothDock::showApplicationMenuConfigDialog() {
+void DockPanel::showApplicationMenuSettingsDialog() {
   ApplicationMenu* applicationMenu =
       dynamic_cast<ApplicationMenu*>(items_[0].get());
   if (applicationMenu) {
-    applicationMenu->showConfigDialog();
+    applicationMenu->showSettingsDialog();
   }
 }
 
-// TODO(dangvd): Handle multi-screens.
-void KSmoothDock::addDock() {
-  AddPanelDialog dialog;
-  if (dialog.exec()) {
-    auto position = static_cast<PanelPosition>(
-        dialog.position_->currentIndex());
-    auto screen = dialog.screen_->currentIndex();
-    parent_->addDock(position, screen);
-  }
+void DockPanel::addDock() {
+  AddPanelDialog dialog(model_);
+  dialog.show();
 }
 
-void KSmoothDock::cloneDock() {
-  AddPanelDialog dialog;
+void DockPanel::cloneDock() {
+  AddPanelDialog dialog(model_);
   dialog.setWindowTitle(i18n("Clone Panel"));
-  if (dialog.exec()) {
-    auto position = static_cast<PanelPosition>(
-        dialog.position_->currentIndex());
-    auto screen = dialog.screen_->currentIndex();
-    parent_->cloneDock(position, screen, configFile_, launchersDir_);
-  }
+  dialog.show();
 }
 
-void KSmoothDock::removeDock() {
-  if (parent_->hasOnlyOneDock()) {
+void DockPanel::removeDock() {
+  if (model_->dockCount() == 1) {
     KMessageBox::information(
         nullptr,
         i18n("The last panel cannot be removed."),
@@ -416,11 +282,11 @@ void KSmoothDock::removeDock() {
         KStandardGuiItem::no(),
         "confirmRemoveDock") == KMessageBox::Yes) {
     close();
-    parent_->removeDock(this, configFile_, launchersDir_);
+    model_->removeDock(dockId_);
   }
 }
 
-void KSmoothDock::paintEvent(QPaintEvent* e) {
+void DockPanel::paintEvent(QPaintEvent* e) {
   if (isResizing_) {
     return;  // to avoid potential flicker.
   }
@@ -453,12 +319,12 @@ void KSmoothDock::paintEvent(QPaintEvent* e) {
 
   // Draw the items from the end to avoid zoomed items getting clipped by
   // non-zoomed items.
-  for (int i = numItems() - 1; i >= 0; --i) {
+  for (int i = itemCount() - 1; i >= 0; --i) {
     items_[i]->draw(&painter);
   }
 }
 
-void KSmoothDock::mouseMoveEvent(QMouseEvent* e) {
+void DockPanel::mouseMoveEvent(QMouseEvent* e) {
   if (isAnimationActive_) {
     return;
   }
@@ -469,13 +335,13 @@ void KSmoothDock::mouseMoveEvent(QMouseEvent* e) {
   updateLayout(e->x(), e->y());
 }
 
-void KSmoothDock::mousePressEvent(QMouseEvent* e) {
+void DockPanel::mousePressEvent(QMouseEvent* e) {
   if (isAnimationActive_) {
     return;
   }
 
   int i = findActiveItem(e->x(), e->y());
-  if (i < 0 || i >= numItems()) {
+  if (i < 0 || i >= itemCount()) {
     return;
   }
 
@@ -483,14 +349,15 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   ApplicationMenu* applicationMenu =
       dynamic_cast<ApplicationMenu*>(items_[i].get());
   if (e->button() == Qt::LeftButton) {
-    if (launcher && launcher->isCommandLockScreen()) {
+    if (launcher && isCommandLockScreen(launcher->command())) {
       leaveEvent(nullptr);
       QTimer::singleShot(500, []() {
         Launcher::lockScreen();
       });
     } else {
       if(launcher &&
-         !launcher->isCommandInternal() && !launcher->isCommandDBus()) {
+         !isCommandInternal(launcher->command()) &&
+         !isCommandDBus(launcher->command())) {
         // Acknowledge launching the program.
         showWaitCursor();
       }
@@ -505,11 +372,11 @@ void KSmoothDock::mousePressEvent(QMouseEvent* e) {
   }
 }
 
-void KSmoothDock::enterEvent (QEvent* e) {
+void DockPanel::enterEvent (QEvent* e) {
   isEntering_ = true;
 }
 
-void KSmoothDock::leaveEvent(QEvent* e) {
+void DockPanel::leaveEvent(QEvent* e) {
   if (isMinimized_) {
     return;
   }
@@ -519,7 +386,7 @@ void KSmoothDock::leaveEvent(QEvent* e) {
   tooltip_.hide();
 }
 
-void KSmoothDock::initUi() {
+void DockPanel::initUi() {
   initApplicationMenu();
   initLaunchers();
   initPager();
@@ -529,7 +396,7 @@ void KSmoothDock::initUi() {
   setStrut();
 }
 
-void KSmoothDock::createMenu() {
+void DockPanel::createMenu() {
   menu_.addAction(QIcon::fromTheme("list-add"), i18n("&Add Panel"),
       this, SLOT(addDock()));
   menu_.addAction(QIcon::fromTheme("edit-copy"), i18n("&Clone Panel"),
@@ -540,12 +407,12 @@ void KSmoothDock::createMenu() {
 
   applicationMenuSettings_ = menu_.addAction(
       QIcon::fromTheme("configure"), i18n("Application &Menu Settings"), this,
-      SLOT(showApplicationMenuConfigDialog()));
+      SLOT(showApplicationMenuSettingsDialog()));
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
       SLOT(showEditLaunchersDialog()));
   menu_.addAction(
       QIcon::fromTheme("configure"), i18n("Appearance &Settings"), this,
-      SLOT(showConfigDialog()));
+      SLOT(showAppearanceSettingsDialog()));
 
   QMenu* position = menu_.addMenu(i18n("&Position"));
   positionTop_ = position->addAction(i18n("&Top"), this,
@@ -602,181 +469,79 @@ void KSmoothDock::createMenu() {
   menu_.addAction(i18n("E&xit"), parent_, SLOT(exit()));
 }
 
-void KSmoothDock::loadDockConfig() {
-  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
+void DockPanel::loadDockConfig() {
+  setPosition(model_->panelPosition(dockId_));
+  setScreen(model_->screen(dockId_));
 
-  if (position_ == PanelPosition::Undefined) {
-    position_ = static_cast<PanelPosition>(
-        dockGeneral.readEntry(ConfigHelper::kPosition,
-                        static_cast<int>(PanelPosition::Bottom)));
-  }
-  setPosition(position_);
-
-  if (screen_ == -1) {
-    screen_ = dockGeneral.readEntry(ConfigHelper::kScreen, 0);
-  }
-  setScreen(screen_);
-
-  autoHide_ = dockGeneral.readEntry(ConfigHelper::kAutoHide, false);
+  autoHide_ = model_->autoHide(dockId_);
   autoHideAction_->setChecked(autoHide_);
 
-  showApplicationMenu_ =
-      dockGeneral.readEntry(ConfigHelper::kShowApplicationMenu, true);
+  showApplicationMenu_ = model_->showApplicationMenu(dockId_);
   applicationMenuAction_->setChecked(showApplicationMenu_);
   applicationMenuSettings_->setVisible(showApplicationMenu_);
 
-  showPager_ = dockGeneral.readEntry(ConfigHelper::kShowPager, false);
+  showPager_ = model_->showPager(dockId_);
   pagerAction_->setChecked(showPager_);
 
-  showClock_ = dockGeneral.readEntry(ConfigHelper::kShowClock, false);
+  showClock_ = model_->showClock(dockId_);
   clockAction_->setChecked(showClock_);
 }
 
-void KSmoothDock::saveDockConfig() {
-  KConfigGroup dockGeneral(&dockConfig_, ConfigHelper::kGeneralCategory);
-  dockGeneral.writeEntry(ConfigHelper::kPosition, static_cast<int>(position_));
-  dockGeneral.writeEntry(ConfigHelper::kScreen, screen_);
-  dockGeneral.writeEntry(ConfigHelper::kAutoHide, autoHide_);
-  dockGeneral.writeEntry(ConfigHelper::kShowApplicationMenu,
-                         showApplicationMenu_);
-  dockGeneral.writeEntry(ConfigHelper::kShowPager, showPager_);
-  dockGeneral.writeEntry(ConfigHelper::kShowClock, showClock_);
-  dockConfig_.sync();
+void DockPanel::saveDockConfig() {
+  model_->setPanelPosition(dockId_, position_);
+  model_->setScreen(dockId_, screen_);
+  model_->setAutoHide(dockId_, autoHide_);
+  model_->setShowApplicationMenu(dockId_, showApplicationMenu_);
+  model_->setShowPager(dockId_, showPager_);
+  model_->setShowClock(dockId_, showClock_);
+  model_->saveDockConfig(dockId_);
 }
 
-void KSmoothDock::loadAppearanceConfig() {
-  KConfigGroup appearanceGeneral(&appearanceConfig_,
-                                 ConfigHelper::kGeneralCategory);
-
-  minSize_ = appearanceGeneral.readEntry(ConfigHelper::kMinimumIconSize,
-                                         kDefaultMinSize);
-  maxSize_ = appearanceGeneral.readEntry(ConfigHelper::kMaximumIconSize,
-                                         kDefaultMaxSize);
-  if (maxSize_ < minSize_) {
-    maxSize_ = minSize_;
-  }
-  QColor defaultBackgroundColor(kDefaultBackgroundColor);
-  defaultBackgroundColor.setAlphaF(kDefaultBackgroundAlpha);
-  backgroundColor_ = appearanceGeneral.readEntry(ConfigHelper::kBackgroundColor,
-                                                 defaultBackgroundColor);
-  showBorder_ = appearanceGeneral.readEntry(ConfigHelper::kShowBorder, true);
-  borderColor_ = appearanceGeneral.readEntry(ConfigHelper::kBorderColor,
-                                             QColor(kDefaultBorderColor));
-  tooltipFontSize_ = appearanceGeneral.readEntry(ConfigHelper::kTooltipFontSize,
-                                                 kDefaultTooltipFontSize);
+void DockPanel::loadAppearanceConfig() {
+  minSize_ = model_->minIconSize();
+  maxSize_ = model_->maxIconSize();
+  backgroundColor_ = model_->backgroundColor();
+  showBorder_ = model_->showBorder();
+  borderColor_ = model_->borderColor();
+  tooltipFontSize_ = model_->tooltipFontSize();
 }
 
-void KSmoothDock::saveAppearanceConfig() {
-  KConfigGroup appearanceGeneral(&appearanceConfig_,
-                                 ConfigHelper::kGeneralCategory);
-  appearanceGeneral.writeEntry(ConfigHelper::kMinimumIconSize, minSize_);
-  appearanceGeneral.writeEntry(ConfigHelper::kMaximumIconSize, maxSize_);
-  appearanceGeneral.writeEntry(ConfigHelper::kBackgroundColor,
-                               backgroundColor_);
-  appearanceGeneral.writeEntry(ConfigHelper::kShowBorder, showBorder_);
-  appearanceGeneral.writeEntry(ConfigHelper::kBorderColor, borderColor_);
-  appearanceGeneral.writeEntry(ConfigHelper::kTooltipFontSize,
-                               tooltipFontSize_);
-  appearanceConfig_.sync();
-}
-
-void KSmoothDock::initLaunchers() {
-  if (!loadLaunchers()) {
-    createDefaultLaunchers();
-    QDir::root().mkpath(launchersDir_);
-    saveLaunchers();
+void DockPanel::initLaunchers() {
+  for (const auto& launcherConfig : model_->launcherConfigs(dockId_)) {
+    items_.push_back(std::make_unique<Launcher>(
+        this, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
+        maxSize_, launcherConfig.command));
   }
 }
 
-bool KSmoothDock::loadLaunchers() {
-  if (!QDir::root().exists(launchersDir_)) {
-    return false;
-  }
-
-  QDir launchersDir(launchersDir_);
-  QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
-                                             QDir::Name);
-  if (files.isEmpty()) {
-    return false;
-  }
-
-  reserveItems(files.size());
-  for (int i = 0; i < files.size(); ++i) {
-    const QString& file = launchersDir_ + "/" + files.at(i);
-    items_.push_back(std::unique_ptr<DockItem>(
-        new Launcher(this, file, orientation_, minSize_, maxSize_)));
-  }
-  return true;
-}
-
-void KSmoothDock::createDefaultLaunchers() {
-  static const int kNumItems = 7;
-  static const char* const kItems[kNumItems][3] = {
-    // Name, icon name, command.
-    {"Show Desktop", "user-desktop", kShowDesktopCommand},
-    {"Terminal", "utilities-terminal", "konsole"},
-    {"File Manager", "system-file-manager", "dolphin"},
-    {"Text Editor", "kate", "kate"},
-    {"Web Browser", "applications-internet", "firefox"},
-    {"Audio Player", "audio-headphones", "amarok"},
-    {"System Settings", "preferences-system", "systemsettings5"}
-  };
-  reserveItems(kNumItems);
-  for (int i = 0; i < kNumItems; ++i) {
-    items_.push_back(std::unique_ptr<DockItem>(
-      new Launcher(this, kItems[i][0], orientation_, kItems[i][1], minSize_,
-          maxSize_, kItems[i][2])));
-  }
-}
-
-void KSmoothDock::saveLaunchers() {
-  QDir launchersDir(launchersDir_);
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
-  for (int i = 0; i < files.size(); ++i) {
-    launchersDir.remove(files.at(i));
-  }
-
-  int id = 1;
-  for (const auto& item : items_) {
-    Launcher* launcher = dynamic_cast<Launcher*>(item.get());
-    if (launcher) {
-      launcher->saveToFile(QString("%1/%2 - %3.desktop")
-          .arg(launchersDir_)
-          .arg(id, 2, 10, QChar('0'))
-          .arg(item->label_));
-      ++id;
-    }
-  }
-}
-
-void KSmoothDock::initApplicationMenu() {
+void DockPanel::initApplicationMenu() {
   if (showApplicationMenu_) {
     auto* item = new ApplicationMenu(
-        this, orientation_, minSize_, maxSize_, &appearanceConfig_);
+        this, model_, orientation_, minSize_, maxSize_);
     item->init();
     items_.push_back(std::unique_ptr<DockItem>(item));
   }
 }
 
-void KSmoothDock::initPager() {
+void DockPanel::initPager() {
   if (showPager_) {
     for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
       auto* item = new DesktopSelector(
-          this, orientation_, minSize_, maxSize_, (i + 1), &appearanceConfig_);
+          this, model_, orientation_, minSize_, maxSize_, (i + 1));
       item->init();
       items_.push_back(std::unique_ptr<DockItem>(item));
     }
   }
 }
 
-void KSmoothDock::initClock() {
+void DockPanel::initClock() {
   if (showClock_) {
     items_.push_back(std::unique_ptr<DockItem>(new Clock(
-        this, orientation_, minSize_, maxSize_, &appearanceConfig_)));
+        this, model_, orientation_, minSize_, maxSize_)));
   }
 }
 
-void KSmoothDock::initLayoutVars() {
+void DockPanel::initLayoutVars() {
   itemSpacing_ = minSize_ / 2;
   parabolicMaxX_ = static_cast<int>(2.5 * (minSize_ + itemSpacing_));
   numAnimationSteps_ = 20;
@@ -792,17 +557,17 @@ void KSmoothDock::initLayoutVars() {
   // (horizontal mode) or between minHeight_ and
   // maxHeight_ (vertical mode).
   int delta = 0;
-  if (numItems() >= 5) {
+  if (itemCount() >= 5) {
     delta = parabolic(0) + 2 * parabolic(distance) +
         2 * parabolic(2 * distance) - 5 * minSize_;
-  } else if (numItems() == 4) {
+  } else if (itemCount() == 4) {
     delta = parabolic(0) + 2 * parabolic(distance) +
         parabolic(2 * distance) - 4 * minSize_;
-  } else if (numItems() == 3) {
+  } else if (itemCount() == 3) {
     delta = parabolic(0) + 2 * parabolic(distance) - 3 * minSize_;
-  } else if (numItems() == 2) {
+  } else if (itemCount() == 2) {
     delta = parabolic(0) + parabolic(distance) - 2 * minSize_;
-  } else if (numItems() == 1) {
+  } else if (itemCount() == 1) {
     delta = parabolic(0) - minSize_;
   }
 
@@ -825,7 +590,7 @@ void KSmoothDock::initLayoutVars() {
   }
 }
 
-void KSmoothDock::updateLayout() {
+void DockPanel::updateLayout() {
   const int distance = minSize_ + itemSpacing_;
   if (isLeaving_) {
     for (const auto& item : items_) {
@@ -840,7 +605,7 @@ void KSmoothDock::updateLayout() {
     }
   }
 
-  for (int i = 0; i < numItems(); ++i) {
+  for (int i = 0; i < itemCount(); ++i) {
     items_[i]->size_ = minSize_;
     if (isHorizontal()) {
       items_[i]->left_ = (i == 0) ? itemSpacing_ / 2
@@ -903,7 +668,7 @@ void KSmoothDock::updateLayout() {
   }
 }
 
-void KSmoothDock::updateLayout(int x, int y) {
+void DockPanel::updateLayout(int x, int y) {
   const int distance = minSize_ + itemSpacing_;
   if (isEntering_) {
     for (const auto& item : items_) {
@@ -940,7 +705,7 @@ void KSmoothDock::updateLayout(int x, int y) {
   } else {  // Vertical
     items_[0]->top_ = itemSpacing_ / 2;
   }
-  for (int i = 0; i < numItems(); ++i) {
+  for (int i = 0; i < itemCount(); ++i) {
     int delta;
     if (isHorizontal()) {
       delta = abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
@@ -973,18 +738,18 @@ void KSmoothDock::updateLayout(int x, int y) {
       }
     }
   }
-  for (int i = numItems() - 1; i >= last_update_index + 1; --i) {
+  for (int i = itemCount() - 1; i >= last_update_index + 1; --i) {
     if (isHorizontal()) {
-      items_[i]->left_ = (i == numItems() - 1)
+      items_[i]->left_ = (i == itemCount() - 1)
           ? maxWidth_ - itemSpacing_ / 2 - items_[i]->getMinWidth()
           : items_[i + 1]->left_ - items_[i]->getMinWidth() - itemSpacing_;
     } else {  // Vertical
-      items_[i]->top_ = (i == numItems() - 1)
+      items_[i]->top_ = (i == itemCount() - 1)
           ? maxHeight_ - itemSpacing_ / 2 - items_[i]->getMinHeight()
           : items_[i + 1]->top_ - items_[i]->getMinHeight() - itemSpacing_;
     }
   }
-  if (first_update_index == 0 && last_update_index < numItems() - 1) {
+  if (first_update_index == 0 && last_update_index < itemCount() - 1) {
     for (int i = last_update_index; i >= first_update_index; --i) {
       if (isHorizontal()) {
         items_[i]->left_ = items_[i + 1]->left_ - items_[i]->getWidth()
@@ -1026,7 +791,7 @@ void KSmoothDock::updateLayout(int x, int y) {
   update();
 }
 
-void KSmoothDock::setStrut(int width) {
+void DockPanel::setStrut(int width) {
   // Somehow if we use setExtendedStrut() as below when screen_ is 0,
   // the strut extends the whole combined desktop instead of just the first
   // screen.
@@ -1082,9 +847,9 @@ void KSmoothDock::setStrut(int width) {
   }
 }
 
-int KSmoothDock::findActiveItem(int x, int y) {
+int DockPanel::findActiveItem(int x, int y) {
   int i = 0;
-  while (i < numItems() &&
+  while (i < itemCount() &&
       ((orientation_ == Qt::Horizontal && items_[i]->left_ < x) ||
       (orientation_ == Qt::Vertical && items_[i]->top_ < y))) {
     ++i;
@@ -1092,9 +857,9 @@ int KSmoothDock::findActiveItem(int x, int y) {
   return i - 1;
 }
 
-void KSmoothDock::showTooltip(int x, int y) {
+void DockPanel::showTooltip(int x, int y) {
   int i = findActiveItem(x, y);
-  if (i < 0 || i >= numItems()) {
+  if (i < 0 || i >= itemCount()) {
     tooltip_.hide();
   } else {
     showTooltip(i);
@@ -1103,7 +868,7 @@ void KSmoothDock::showTooltip(int x, int y) {
   }
 }
 
-void KSmoothDock::showTooltip(int i) {
+void DockPanel::showTooltip(int i) {
   tooltip_.setText(items_[i]->getLabel());
   int x, y;
   if (position_ == PanelPosition::Top) {
@@ -1129,12 +894,12 @@ void KSmoothDock::showTooltip(int i) {
   tooltip_.show();
 }
 
-void KSmoothDock::showWaitCursor() {
+void DockPanel::showWaitCursor() {
   setCursor(QCursor(Qt::WaitCursor));
   QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
 }
 
-void KSmoothDock::showPagerInfoDialog() {
+void DockPanel::showPagerInfoDialog() {
   if (showPager_) {
     KMessageBox::information(
         nullptr,
@@ -1147,7 +912,7 @@ void KSmoothDock::showPagerInfoDialog() {
   }
 }
 
-int KSmoothDock::parabolic(int x) {
+int DockPanel::parabolic(int x) {
   // Assume x >= 0.
   if (x > parabolicMaxX_) {
     return minSize_;

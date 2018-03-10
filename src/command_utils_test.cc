@@ -16,36 +16,35 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_LAUNCHER_H_
-#define KSMOOTHDOCK_LAUNCHER_H_
-
-#include "icon_based_dock_item.h"
-
 #include "command_utils.h"
+
+#include <QTest>
 
 namespace ksmoothdock {
 
-class Launcher : public IconBasedDockItem {
- public:
-  Launcher(DockPanel* parent, const QString& label,
-      Qt::Orientation orientation, const QString& iconName, int minSize,
-      int maxSize, const QString& command);
+class CommandUtilsTest: public QObject {
+  Q_OBJECT
 
-  virtual ~Launcher() = default;
+ private slots:
+  void testIsCommandDBus();
 
-  QString command() const { return command_; }
-
-  virtual void mousePressEvent(QMouseEvent* e) override;
-
-  static void launch(const QString& command);
-  static void lockScreen() { launch(kLockScreenCommand); }
-
- private:
-  QString command_;
-
-  friend class DockPanel;
+  void testFilterFieldCodes();
 };
+
+void CommandUtilsTest::testIsCommandDBus() {
+  QVERIFY(!isCommandDBus("konsole"));
+  QVERIFY(isCommandDBus("qdbus org.kde.ksmserver /KSMServer logout 1 0 3"));
+}
+
+void CommandUtilsTest::testFilterFieldCodes() {
+  QCOMPARE(filterFieldCodes("konsole"), QString("konsole"));
+  QCOMPARE(filterFieldCodes("google-chrome --new-window"),
+           QString("google-chrome --new-window"));
+  QCOMPARE(filterFieldCodes("dolphin %u"), QString("dolphin"));
+  QCOMPARE(filterFieldCodes("kate -b %U"), QString("kate"));
+}
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_LAUNCHER_H_
+QTEST_MAIN(ksmoothdock::CommandUtilsTest)
+#include "command_utils_test.moc"

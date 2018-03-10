@@ -27,14 +27,14 @@
 #include <QStringBuilder>
 #include <QUrl>
 
-#include <KConfigGroup>
 #include <KDesktopFile>
 #include <KIconLoader>
 #include <KLocalizedString>
 #include <KWindowSystem>
 
+#include "command_utils.h"
 #include "config_helper.h"
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 #include "launcher.h"
 
 namespace ksmoothdock {
@@ -102,14 +102,14 @@ bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
 }
 
 ApplicationMenu::ApplicationMenu(
-    KSmoothDock *parent, Qt::Orientation orientation, int minSize, int maxSize,
-    KConfig *config, const QStringList& entryDirs)
+    DockPanel *parent, MultiDockModel* model, Qt::Orientation orientation,
+    int minSize, int maxSize, const QStringList& entryDirs)
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
-      config_(config),
+      model_(model),
       entryDirs_(entryDirs),
       fileWatcher_(entryDirs),
-      configDialog_(parent, this) {}
+      settingsDialog_(model) {}
 
 void ApplicationMenu::init() {
   menu_.setStyle(&style_);
@@ -131,7 +131,7 @@ void ApplicationMenu::init() {
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
-    menu_.popup(parent_->getApplicationMenuPosition(getMenuSize()));
+    menu_.popup(parent_->applicationMenuPosition(getMenuSize()));
   }
 }
 
@@ -144,29 +144,16 @@ void ApplicationMenu::reloadMenu() {
   buildMenu();
 }
 
-void ApplicationMenu::showConfigDialog() {
-  configDialog_.name_->setText(label_);
-  configDialog_.icon_->setIcon(iconName_);
-  configDialog_.show();
-}
-
-void ApplicationMenu::applyConfig() {
-  setLabel(configDialog_.name_->text());
-  setIconName(configDialog_.icon_->icon());
-  saveConfig();
-  parent_->notifyRefresh();
-}
-
-void ApplicationMenu::updateConfig() {
-  applyConfig();
-  configDialog_.hide();
+void ApplicationMenu::showSettingsDialog() {
+  settingsDialog_.reload();
+  settingsDialog_.show();
 }
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
   QMenu* menu = dynamic_cast<QMenu*>(object);
   if (menu) {
     if (event->type() == QEvent::Show) {
-      menu->popup(parent_->getApplicationSubMenuPosition(getMenuSize(),
+      menu->popup(parent_->applicationSubMenuPosition(getMenuSize(),
                                                          menu->geometry()));
       // Filter this event.
       return true;
@@ -201,8 +188,8 @@ bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
 }
 
 QString ApplicationMenu::getStyleSheet() {
-  QColor bgColor = parent_->getBackgroundColor();
-  QColor borderColor = parent_->getBorderColor();
+  QColor bgColor = parent_->backgroundColor();
+  QColor borderColor = parent_->borderColor();
   return " \
 QMenu { \
   background-color: " % bgColor.name(QColor::HexArgb) % ";"
@@ -233,16 +220,8 @@ QMenu::separator { \
 }
 
 void ApplicationMenu::loadConfig() {
-  KConfigGroup group(config_, ConfigHelper::kApplicationMenuCategory);
-  setLabel(group.readEntry(ConfigHelper::kLabel, i18n("Applications")));
-  setIconName(group.readEntry(ConfigHelper::kIcon, "start-here-kde"));
-}
-
-void ApplicationMenu::saveConfig() {
-  KConfigGroup group(config_, ConfigHelper::kApplicationMenuCategory);
-  group.writeEntry(ConfigHelper::kLabel, label_);
-  group.writeEntry(ConfigHelper::kIcon, iconName_);
-  config_->sync();
+  setLabel(model_->applicationMenuName());
+  setIconName(model_->applicationMenuIcon());
 }
 
 void ApplicationMenu::initCategories() {
@@ -316,7 +295,7 @@ bool ApplicationMenu::loadEntry(const QString &file) {
   for (int i = 0; i < categories.size(); ++i) {
     const std::string category = categories[i].toStdString();
     if (categoryMap_.count(category) > 0) {
-      const QString command = Launcher::filterFieldCodes(
+      const QString command = filterFieldCodes(
           desktopFile.entryMap("Desktop Entry")["Exec"]);
       ApplicationEntry newEntry(desktopFile.readName(),
                                 desktopFile.readGenericName(),

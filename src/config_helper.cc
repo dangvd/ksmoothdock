@@ -75,17 +75,17 @@ std::vector<std::tuple<QString, QString>> ConfigHelper::findAllDockConfigs() {
   for (int i = 0; i < files.size(); ++i) {
     const QString& configFile = files.at(i);
     allConfigs.push_back(std::make_tuple(
-        getDockConfigPath(configFile),
+        dockConfigPath(configFile),
         getDockLaunchersPathForConfigFile(configFile)));
   }
   return allConfigs;
 }
 
 std::tuple<QString, QString> ConfigHelper::findNextDockConfigs() {
-  for (int dockIndex = 1; ; ++dockIndex) {
-    if (!configDir_.exists(getDockConfigFile(dockIndex))) {
-      return std::make_tuple(getDockConfigPath(dockIndex),
-                             getDockLaunchersPath(dockIndex));
+  for (int dockId = 1; ; ++dockId) {
+    if (!configDir_.exists(dockConfigFile(dockId))) {
+      return std::make_tuple(dockConfigPath(dockId),
+                             dockLaunchersPath(dockId));
     }
   }
 }
@@ -99,8 +99,8 @@ void ConfigHelper::convertConfig() {
   std::cout << "Converting single-dock config to multi-dock config"
             << std::endl;
 
-  KConfig singleDockConfig(getSingleDockConfigPath(), KConfig::SimpleConfig);
-  KConfig dock1Config(getDockConfigPath(1), KConfig::SimpleConfig);
+  KConfig singleDockConfig(singleDockConfigPath(), KConfig::SimpleConfig);
+  KConfig dock1Config(dockConfigPath(1), KConfig::SimpleConfig);
 
   KConfigGroup singleDockGeneral(&singleDockConfig, kGeneralCategory);
   KConfigGroup dock1General(&dock1Config, kGeneralCategory);
@@ -113,7 +113,7 @@ void ConfigHelper::convertConfig() {
 
   dock1Config.sync();
 
-  KConfig appearanceConfig(getAppearanceConfigPath(), KConfig::SimpleConfig);
+  KConfig appearanceConfig(appearanceConfigPath(), KConfig::SimpleConfig);
   KConfigGroup appearanceGeneral(&appearanceConfig, kGeneralCategory);
   copyEntry(kBackgroundColor, singleDockGeneral, &appearanceGeneral);
   copyEntry(kBorderColor, singleDockGeneral, &appearanceGeneral);
@@ -131,7 +131,7 @@ void ConfigHelper::convertConfig() {
   KConfigGroup appearancePager(&appearanceConfig, kPagerCategory);
   const int numDesktops = KWindowSystem::numberOfDesktops();
   for (int desktop = 1; desktop <= numDesktops; ++desktop) {
-    copyEntry(getWallpaperConfigKey(desktop), singleDockPager,
+    copyEntry(wallpaperConfigKey(desktop), singleDockPager,
               &appearancePager);
   }
 
@@ -142,7 +142,7 @@ void ConfigHelper::convertConfig() {
   appearanceConfig.sync();
 
   configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
-  configDir_.rename(kSingleDockLaunchers, getDockLaunchersDir(1));
+  configDir_.rename(kSingleDockLaunchers, dockLaunchersDir(1));
 }
 
 void ConfigHelper::copyLaunchersDir(const QString& launchersDir,

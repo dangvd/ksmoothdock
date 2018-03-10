@@ -26,9 +26,8 @@
 #include <QObject>
 #include <QString>
 
-#include <KConfig>
-
 #include "calendar.h"
+#include "multi_dock_model.h"
 
 namespace ksmoothdock {
 
@@ -37,8 +36,8 @@ class Clock : public QObject, public IconlessDockItem {
   Q_OBJECT
 
  public:
-  Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-        int maxSize, KConfig *config);
+  Clock(DockPanel* parent, MultiDockModel* model, Qt::Orientation orientation,
+        int minSize, int maxSize);
   virtual ~Clock() {}
 
   void draw(QPainter* painter) const override;
@@ -61,9 +60,6 @@ class Clock : public QObject, public IconlessDockItem {
 
  private:
   static constexpr float kWhRatio = 2.8;
-  static constexpr float kLargeFontScaleFactor = 1.0;
-  static constexpr float kMediumFontScaleFactor = 0.8;
-  static constexpr float kSmallFontScaleFactor = 0.6;
   static constexpr float kDelta = 0.01;
 
   // Creates the context menu.
@@ -71,7 +67,8 @@ class Clock : public QObject, public IconlessDockItem {
 
   void saveConfig();
 
-  KConfig* config_;
+  MultiDockModel* model_;
+
   bool use24HourClock_;
   float fontScaleFactor_;
 

@@ -27,23 +27,22 @@
 #include <QPainter>
 #include <QPixmap>
 
-#include <KConfigGroup>
 #include <KLocalizedString>
 #include <KMessageBox>
 
 #include "config_helper.h"
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 
 namespace ksmoothdock {
 
-DesktopSelector::DesktopSelector(KSmoothDock* parent,
-    Qt::Orientation orientation, int minSize,
-    int maxSize, int desktop, KConfig *config)
+DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
+                                 Qt::Orientation orientation, int minSize,
+                                 int maxSize, int desktop)
     : IconBasedDockItem(parent, 
           i18n("Desktop ") + QString::number(desktop),
           orientation, "" /* no icon yet */, minSize, maxSize),
+      model_(model),
       desktop_(desktop),
-      config_(config),
       plasmaShellDBus_("org.kde.plasmashell",
                        "/PlasmaShell",
                        "org.kde.PlasmaShell"),
@@ -63,8 +62,8 @@ void DesktopSelector::draw(QPainter* painter) const {
 
   // Only draw the border for the current desktop if using a custom wallpaper
   // and dock has border.
-  if (isCurrentDesktop() && isWallpaperOk() && parent_->hasBorder()) {
-    painter->setPen(parent_->getBorderColor());
+  if (isCurrentDesktop() && isWallpaperOk() && parent_->showBorder()) {
+    painter->setPen(parent_->borderColor());
     painter->drawRect(left_ - 1, top_ - 1, getWidth() + 1, getHeight() + 1);
   }
 }
@@ -82,8 +81,7 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
 }
 
 void DesktopSelector::loadConfig() {
-  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
-  wallpaper_ = group.readEntry(getWallpaperConfigKey(), "");
+  wallpaper_ = model_->wallpaper(desktop_);
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpaper_));
   } else {
@@ -117,11 +115,8 @@ void DesktopSelector::changeWallpaper() {
     setWallpaper(wallpaper_);
   }
 
-  KConfigGroup group(config_, ConfigHelper::kPagerCategory);
-  group.writeEntry(getWallpaperConfigKey(), wallpaper_);
-  config_->sync();
-
-  parent_->notifyRefresh();
+  model_->setWallpaper(desktop_, wallpaper_);
+  model_->saveAppearanceConfig();
 }
 
 void DesktopSelector::updateWallpaper(int currentDesktop) {

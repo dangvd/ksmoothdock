@@ -33,10 +33,10 @@ namespace ksmoothdock {
 // Base class for icon-based dock items, such as launchers and pager icons.
 class IconBasedDockItem : public DockItem {
  public:
-  IconBasedDockItem(KSmoothDock* parent, const QString& label,
+  IconBasedDockItem(DockPanel* parent, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
       int maxSize);
-  IconBasedDockItem(KSmoothDock* parent, const QString& label,
+  IconBasedDockItem(DockPanel* parent, const QString& label,
       Qt::Orientation orientation, const QPixmap& icon, int minSize,
       int maxSize);
   virtual ~IconBasedDockItem() {}
@@ -67,7 +67,7 @@ class IconBasedDockItem : public DockItem {
 
   void generateIcons(const QPixmap& icon);
 
-  friend class KSmoothDock;
+  friend class DockPanel;
 };
 
 }  // namespace ksmoothdock

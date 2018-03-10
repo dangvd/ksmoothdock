@@ -1,6 +1,6 @@
- /*
+/*
  * This file is part of KSmoothDock.
- * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2018 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,33 +17,25 @@
  */
 
 #include "welcome_dialog.h"
-
-#include <KLocalizedString>
+#include "ui_welcome_dialog.h"
 
 namespace ksmoothdock {
 
-WelcomeDialog::WelcomeDialog() {
-  setWindowTitle(i18n("Welcome to KSmoothDock!"));
-  resize(500, 150);
+WelcomeDialog::WelcomeDialog(MultiDockModel* model)
+    : QDialog(nullptr),
+      ui(new Ui::WelcomeDialog),
+      model_(model) {
+  ui->setupUi(this);
+}
 
-  positionLabel_ = new QLabel(this);
-  positionLabel_->setText(i18n("Please select the initial panel position"));
-  positionLabel_->setGeometry(QRect(30, 30, 311, 22));
-  position_ = new QComboBox(this);
-  position_->addItem(i18n("Top"));
-  position_->addItem(i18n("Bottom"));
-  position_->addItem(i18n("Left"));
-  position_->addItem(i18n("Right"));
-  position_->setCurrentIndex(1);
-  position_->setGeometry(QRect(360, 20, 111, 36));
+WelcomeDialog::~WelcomeDialog() {
+  delete ui;
+}
 
-  buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(80, 90, 340, 32));
-  buttonBox_->setOrientation(Qt::Horizontal);
-  buttonBox_->setStandardButtons(QDialogButtonBox::Ok);
-  buttonBox_->setCenterButtons(true);
-
-  connect(buttonBox_, SIGNAL(accepted()), this, SLOT(accept()));
+void WelcomeDialog::accept() {
+  QDialog::accept();
+  model_->addDock(static_cast<PanelPosition>(ui->position->currentIndex()),
+                  0 /* screen */);
 }
 
 }  // namespace ksmoothdock

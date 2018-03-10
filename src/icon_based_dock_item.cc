@@ -26,7 +26,7 @@ namespace ksmoothdock {
 
 const int IconBasedDockItem::kIconLoadSize;
 
-IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, const QString& label,
+IconBasedDockItem::IconBasedDockItem(DockPanel* parent, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
     int maxSize)
     : DockItem(parent, label, orientation, minSize, maxSize),
@@ -34,7 +34,7 @@ IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, const QString& label,
   setIconName(iconName);
 }
 
-IconBasedDockItem::IconBasedDockItem(KSmoothDock* parent, const QString& label,
+IconBasedDockItem::IconBasedDockItem(DockPanel* parent, const QString& label,
     Qt::Orientation orientation, const QPixmap& icon, int minSize, int maxSize)
     : DockItem(parent, label, orientation, minSize, maxSize),
     icons_(maxSize - minSize + 1) {

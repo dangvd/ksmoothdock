@@ -16,35 +16,36 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_WELCOME_DIALOG_H_
-#define KSMOOTHDOCK_WELCOME_DIALOG_H_
+#ifndef KSMOOTHDOCK_COMMAND_UTILS_H_
+#define KSMOOTHDOCK_COMMAND_UTILS_H_
 
-#include <QDialog>
-
-#include "multi_dock_model.h"
-
-namespace Ui {
-  class WelcomeDialog;
-}
+#include <QString>
 
 namespace ksmoothdock {
 
-class WelcomeDialog : public QDialog {
-  Q_OBJECT
+static constexpr char kShowDesktopCommand[] = "SHOW_DESKTOP";
+static constexpr char kLockScreenCommand[] =
+    "qdbus org.kde.screensaver /ScreenSaver Lock";
 
- public:
-  explicit WelcomeDialog(MultiDockModel* model);
-  ~WelcomeDialog();
+inline QString filterFieldCodes(const QString& command) {
+  if (command.contains('%')) {
+    return command.left(command.indexOf(' '));
+  }
+  return command;
+}
 
- public slots:
-  void accept() override;
+inline bool isCommandInternal(const QString& command) {
+  return command == kShowDesktopCommand;
+}
 
- private:
-  Ui::WelcomeDialog *ui;
+inline bool isCommandDBus(const QString& command) {
+  return command.startsWith("qdbus");
+}
 
-  MultiDockModel* model_;
-};
+inline bool isCommandLockScreen(const QString& command) {
+  return command == kLockScreenCommand;
+}
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_WELCOME_DIALOG_H_
+#endif  // KSMOOTHDOCK_COMMAND_UTILS_H_

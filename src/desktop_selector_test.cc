@@ -33,11 +33,8 @@ class DesktopSelectorTest: public QObject {
 
  private slots:
   void init() {
-    configFile_.reset(new QTemporaryFile);
-    QVERIFY(configFile_->open());
-    config_.reset(new KConfig(configFile_->fileName(), KConfig::SimpleConfig));
     desktopSelector_.reset(new DesktopSelector(
-        nullptr, Qt::Horizontal, kMinSize, kMaxSize, 1, config_.get()));
+        nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize, 1));
   }
 
   // Tests that the icon is scaled to screen's width/height ratio if needed.
@@ -47,10 +44,8 @@ class DesktopSelectorTest: public QObject {
   static const int kMinSize = 64;
   static const int kMaxSize = 64;
 
+  MultiDockModel model_;
   std::unique_ptr<DesktopSelector> desktopSelector_;
-  std::unique_ptr<QTemporaryFile> configFile_;
-  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
-  std::unique_ptr<KConfig> config_;
 };
 const int DesktopSelectorTest::kMinSize;
 const int DesktopSelectorTest::kMaxSize;

@@ -16,8 +16,8 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_KSMOOTHDOCK_H_
-#define KSMOOTHDOCK_KSMOOTHDOCK_H_
+#ifndef KSMOOTHDOCK_DOCK_PANEL_H_
+#define KSMOOTHDOCK_DOCK_PANEL_H_
 
 #include <memory>
 #include <vector>
@@ -34,64 +34,47 @@
 #include <QWidget>
 
 #include <KAboutApplicationDialog>
-#include <KConfig>
 #include <KWindowSystem>
 
-#include "config_dialog.h"
+#include "appearance_settings_dialog.h"
 #include "dock_item.h"
 #include "edit_launchers_dialog.h"
 #include "tooltip.h"
 
 namespace ksmoothdock {
 
-class DockManager;
+class MultiDockView;
 
-enum class PanelPosition {Top, Bottom, Left, Right, Undefined};
-
-// KSmoothDock's main class that represents the dock itself.
-class KSmoothDock : public QWidget {
+// A dock panel. The user can have multiple dock panels at the same time.
+class DockPanel : public QWidget {
   Q_OBJECT
 
  public:
-  KSmoothDock(DockManager* parent,
-              const QString& configFile,
-              const QString& launchersDir,
-              const QString& appearanceConfigFile,
-              PanelPosition position,
-              int screen);
-  KSmoothDock(DockManager* parent,
-              const QString& configFile,
-              const QString& launchersDir,
-              const QString& appearanceConfigFile);
-
-  // For test only.
-  KSmoothDock(const QString& configFile,
-              const QString& launchersDir,
-              const QString& appearanceConfigFile);
-
-  void init();
-
-  virtual ~KSmoothDock();
+  // No pointer ownership.
+  DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId);
+  virtual ~DockPanel() = default;
 
   void resize(int w, int h);
 
-  bool hasBorder() { return showBorder_; }
-  QColor getBorderColor() { return borderColor_; }
-  QColor getBackgroundColor() { return backgroundColor_; }
+  bool showBorder() { return showBorder_; }
+  QColor borderColor() { return borderColor_; }
+  QColor backgroundColor() { return backgroundColor_; }
 
   // Gets the position to show the application menu.
-  QPoint getApplicationMenuPosition(const QSize& menuSize);
+  QPoint applicationMenuPosition(const QSize& menuSize);
   // Gets the position to show the application menu's sub-menus.
-  QPoint getApplicationSubMenuPosition(const QSize& menuSize,
+  QPoint applicationSubMenuPosition(const QSize& menuSize,
                                        const QRect& subMenuGeometry);
 
  public slots:
   // Reloads the items and updates the dock.
   void reload();
-  // Updates the dock without reloading the items.
-  void refresh();
-  // Notifies the dock manager to tell all docks to refresh.
-  void notifyRefresh();
+
+  void onDockLaunchersChanged(int dockId) {
+    if (dockId_ == dockId) {
+      reload();
+    }
+  }
 
   void setStrut();
   void setStrutForApplicationMenu();
@@ -163,18 +146,12 @@ class KSmoothDock : public QWidget {
 
   void about();
 
-  // These are for global appearance config.
-  // Dock config is activated from menu items on the context menu directly.
-  void showConfigDialog();
-  void applyConfig();
-  void updateConfig();
-  void resetConfig();
-
+  // These are for global appearance settings.
+  // Dock-specific settings are activated from menu items on the context menu
+  // directly.
+  void showAppearanceSettingsDialog();
   void showEditLaunchersDialog();
-  void applyLauncherConfig();
-  void updateLauncherConfig();
-
-  void showApplicationMenuConfigDialog();
+  void showApplicationMenuSettingsDialog();
 
   void addDock();
   void cloneDock();
@@ -188,19 +165,14 @@ class KSmoothDock : public QWidget {
   virtual void leaveEvent(QEvent* e) override;
 
  private:
-  static const int kDefaultMinSize = 48;
-  static const int kDefaultMaxSize = 128;
-  static const int kDefaultTooltipFontSize = 20;
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
 
-  static const float kDefaultBackgroundAlpha;
-  static const char kDefaultBackgroundColor[];
-  static const char kDefaultBorderColor[];
+  void init();
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
-  int numItems() { return static_cast<int>(items_.size()); }
+  int itemCount() { return static_cast<int>(items_.size()); }
 
   void reserveItems(int numLaunchers) {
     const int numPagerIcons = showPager_ ? KWindowSystem::numberOfDesktops()
@@ -216,13 +188,8 @@ class KSmoothDock : public QWidget {
   void loadDockConfig();
   void saveDockConfig();
   void loadAppearanceConfig();
-  void saveAppearanceConfig();
 
   void initLaunchers();
-  bool loadLaunchers();
-  void createDefaultLaunchers();
-  void saveLaunchers();
-
   void initApplicationMenu();
   void initPager();
   void initClock();
@@ -253,6 +220,12 @@ class KSmoothDock : public QWidget {
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
 
+  MultiDockView* parent_;
+
+  // The model.
+  MultiDockModel* model_;
+  int dockId_;
+
   // Config variables.
 
   PanelPosition position_;
@@ -270,8 +243,6 @@ class KSmoothDock : public QWidget {
 
   // Non-config variables.
 
-  DockManager* parent_;
-
   int itemSpacing_;
   int minX_;  // X-coordinate when minimized.
   int minY_;  // Y-coordinate when minimized.
@@ -288,16 +259,6 @@ class KSmoothDock : public QWidget {
   int animationSpeed_;
 
   Qt::Orientation orientation_;
-
-  // Dock-specific configs.
-  QString configFile_;
-  KConfig dockConfig_;
-  // The path to the directory to store quick launchers as desktop files
-  // (dock-specific).
-  QString launchersDir_;
-
-  // (Global) appearance configs.
-  KConfig appearanceConfig_;
 
   // The list of all dock items.
   std::vector<std::unique_ptr<DockItem>> items_;
@@ -317,7 +278,7 @@ class KSmoothDock : public QWidget {
   std::vector<QAction*> screenActions_;
 
   KAboutApplicationDialog aboutDialog_;
-  ConfigDialog configDialog_;
+  AppearanceSettingsDialog appearanceSettingsDialog_;
   EditLaunchersDialog editLaunchersDialog_;
 
   // The tooltip object to show tooltip for the active item.
@@ -342,11 +303,11 @@ class KSmoothDock : public QWidget {
   int mouseX_;
   int mouseY_;
 
-  friend class KSmoothDockTest;
+  friend class DockPanelTest;
   friend class ConfigDialogTest;
   friend class EditLaunchersDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_KSMOOTHDOCK_H_
+#endif  // KSMOOTHDOCK_DOCK_PANEL_H_

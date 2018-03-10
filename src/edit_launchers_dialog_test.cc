@@ -17,6 +17,7 @@
  */
 
 #include "edit_launchers_dialog.h"
+#include "ui_edit_launchers_dialog.h"
 
 #include <memory>
 
@@ -29,30 +30,16 @@
 #include <KConfig>
 #include <KConfigGroup>
 
-#include "ksmoothdock.h"
-
 namespace ksmoothdock {
+
+constexpr int kDockId = 0;
 
 class EditLaunchersDialogTest: public QObject {
   Q_OBJECT
 
  private slots:
   void init() {
-    dockConfigFile_.reset(new QTemporaryFile);
-    QVERIFY(dockConfigFile_->open());
-    launchersDir_.reset(new QTemporaryDir);
-    QVERIFY(launchersDir_->isValid());
-    appearanceConfigFile_.reset(new QTemporaryFile);
-    QVERIFY(appearanceConfigFile_->open());
-    dock_.reset(new KSmoothDock(dockConfigFile_->fileName(),
-                                launchersDir_->path(),
-                                appearanceConfigFile_->fileName()));
-    dock_->init();
-
-    dialog_ = &dock_->editLaunchersDialog_;
-    dialog_->addLauncher("Home Folder", "dolphin", "system-file-manager");
-    dialog_->addLauncher("Terminal", "konsole", "utilities-terminal");
-    dock_->updateLauncherConfig();
+    dialog_ = std::make_unique<EditLaunchersDialog>(&model_, kDockId);
   }
 
   // Tests OK button/logic.
@@ -65,41 +52,39 @@ class EditLaunchersDialogTest: public QObject {
   void cancel();
 
  private:
-  EditLaunchersDialog* dialog_;
-  std::unique_ptr<KSmoothDock> dock_;
-  std::unique_ptr<QTemporaryFile> dockConfigFile_;
-  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
-  std::unique_ptr<QTemporaryDir> launchersDir_;
+  int launcherCount() {
+    return static_cast<int>(model_.launcherConfigs(kDockId).size());
+  }
+
+  MultiDockModel model_;
+  std::unique_ptr<EditLaunchersDialog> dialog_;
 };
 
 void EditLaunchersDialogTest::ok() {
   dialog_->addLauncher("Text Editor", "kate", "kate");
-  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Ok),
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Ok),
                     Qt::LeftButton);
-  // Tests that launchers dir has been updated.
-  QDir launchersDir(launchersDir_->path());
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
-  QCOMPARE(files.size(), 3);
+
+  // Verify.
+  QCOMPARE(launcherCount(), 3);
 }
 
 void EditLaunchersDialogTest::apply() {
   dialog_->addLauncher("Text Editor", "kate", "kate");
-  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Apply),
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Apply),
                     Qt::LeftButton);
-  // Tests that launchers dir has been updated.
-  QDir launchersDir(launchersDir_->path());
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
-  QCOMPARE(files.size(), 3);
+
+  // Verify.
+  QCOMPARE(launcherCount(), 3);
 }
 
 void EditLaunchersDialogTest::cancel() {
   dialog_->addLauncher("Text Editor", "kate", "kate");
-  QTest::mouseClick(dialog_->buttonBox_->button(QDialogButtonBox::Cancel),
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
-  // Tests that launchers dir hasn't changed.
-  QDir launchersDir(launchersDir_->path());
-  QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
-  QCOMPARE(files.size(), 2);
+
+  // Verify.
+  QCOMPARE(launcherCount(), 2);
 }
 
 }  // namespace ksmoothdock

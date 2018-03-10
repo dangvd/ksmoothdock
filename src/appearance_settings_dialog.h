@@ -16,35 +16,48 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_WELCOME_DIALOG_H_
-#define KSMOOTHDOCK_WELCOME_DIALOG_H_
+#ifndef KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_
+#define KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_
 
 #include <QDialog>
+
+#include <KColorButton>
 
 #include "multi_dock_model.h"
 
 namespace Ui {
-  class WelcomeDialog;
+  class AppearanceSettingsDialog;
 }
 
 namespace ksmoothdock {
 
-class WelcomeDialog : public QDialog {
+class AppearanceSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit WelcomeDialog(MultiDockModel* model);
-  ~WelcomeDialog();
+  explicit AppearanceSettingsDialog(MultiDockModel* model);
+  ~AppearanceSettingsDialog();
+
+  void reload() { loadData(); }
 
  public slots:
   void accept() override;
+  void buttonClicked(QAbstractButton* button);
 
  private:
-  Ui::WelcomeDialog *ui;
+  void loadData();
+  void resetData();
+  void saveData();
+
+  Ui::AppearanceSettingsDialog *ui;
+  KColorButton* backgroundColor_;
+  KColorButton* borderColor_;
 
   MultiDockModel* model_;
+
+  friend class AppearanceSettingsDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_WELCOME_DIALOG_H_
+#endif  // KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_

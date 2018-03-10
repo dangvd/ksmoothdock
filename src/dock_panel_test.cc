@@ -16,7 +16,7 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 
 #include <memory>
 
@@ -28,25 +28,16 @@
 
 namespace ksmoothdock {
 
-class KSmoothDockTest: public QObject {
+constexpr int kDockId = 0;
+constexpr int kDefaultLauncherCount = 7;
+
+class DockPanelTest: public QObject {
   Q_OBJECT
 
  private slots:
   void init() {
-    configFile_.reset(new QTemporaryFile);
-    QVERIFY(configFile_->open());
-    launchersDir_.reset(new QTemporaryDir);
-    QVERIFY(launchersDir_->isValid());
-    appearanceConfigFile_.reset(new QTemporaryFile);
-    QVERIFY(appearanceConfigFile_->open());
-    dock_.reset(new KSmoothDock(configFile_->fileName(),
-                                launchersDir_->path(),
-                                appearanceConfigFile_->fileName()));
-    dock_->init();
+    dock_.reset(new DockPanel(nullptr, &model_, kDockId));
   }
-
-  // Tests creating default launchers.
-  void createDefaultLaunchers();
 
   // Tests setting position.
   void setPosition();
@@ -64,8 +55,6 @@ class KSmoothDockTest: public QObject {
   void toggleClock();
 
  private:
-  static const int kNumDefaultLaunchers = 7;
-
   void verifyPosition(PanelPosition position) {
     QCOMPARE(dock_->position_, position);
     QCOMPARE(dock_->orientation_,
@@ -98,9 +87,9 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showApplicationMenu_, enabled);
     QCOMPARE(dock_->applicationMenuAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers);
+      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount);
     }
   }
 
@@ -108,10 +97,10 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showPager_, enabled);
     QCOMPARE(dock_->pagerAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(),
-               kNumDefaultLaunchers + KWindowSystem::numberOfDesktops() + 1);
+      QCOMPARE(dock_->itemCount(),
+               kDefaultLauncherCount + KWindowSystem::numberOfDesktops() + 1);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
     }
   }
 
@@ -119,28 +108,17 @@ class KSmoothDockTest: public QObject {
     QCOMPARE(dock_->showClock_, enabled);
     QCOMPARE(dock_->clockAction_->isChecked(), enabled);
     if (enabled) {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 2);
+      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 2);
     } else {
-      QCOMPARE(dock_->numItems(), kNumDefaultLaunchers + 1);
+      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
     }
   }
 
-  std::unique_ptr<KSmoothDock> dock_;
-  std::unique_ptr<QTemporaryFile> configFile_;
-  std::unique_ptr<QTemporaryDir> launchersDir_;
-  std::unique_ptr<QTemporaryFile> appearanceConfigFile_;
+  MultiDockModel model_;
+  std::unique_ptr<DockPanel> dock_;
 };
-const int KSmoothDockTest::kNumDefaultLaunchers;
 
-void KSmoothDockTest::createDefaultLaunchers() {
-  // Tests that default launchers have been created.
-  QDir launchersDir(launchersDir_->path());
-  QStringList files = launchersDir.entryList({"*.desktop"}, QDir::Files,
-                                             QDir::Name);
-  QCOMPARE(files.size(), kNumDefaultLaunchers);
-}
-
-void KSmoothDockTest::setPosition() {
+void DockPanelTest::setPosition() {
   verifyPosition(PanelPosition::Bottom);
   dock_->positionLeft_->trigger();
   verifyPosition(PanelPosition::Left);
@@ -152,7 +130,7 @@ void KSmoothDockTest::setPosition() {
   verifyPosition(PanelPosition::Bottom);
 }
 
-void KSmoothDockTest::autoHide() {
+void DockPanelTest::autoHide() {
   verifyAutoHide(false);
   dock_->autoHideAction_->trigger();
   verifyAutoHide(true);
@@ -160,7 +138,7 @@ void KSmoothDockTest::autoHide() {
   verifyAutoHide(false);
 }
 
-void KSmoothDockTest::toggleApplicationMenu() {
+void DockPanelTest::toggleApplicationMenu() {
   verifyApplicationMenu(true);
   dock_->applicationMenuAction_->trigger();
   verifyApplicationMenu(false);
@@ -168,12 +146,12 @@ void KSmoothDockTest::toggleApplicationMenu() {
   verifyApplicationMenu(true);
 }
 
-void KSmoothDockTest::togglePager() {
+void DockPanelTest::togglePager() {
   verifyPager(false);
   // TODO: Test when the pager is enabled.
 }
 
-void KSmoothDockTest::toggleClock() {
+void DockPanelTest::toggleClock() {
   verifyClock(false);
   dock_->clockAction_->trigger();
   verifyClock(true);
@@ -183,5 +161,5 @@ void KSmoothDockTest::toggleClock() {
 
 }  // namespace ksmoothdock
 
-QTEST_MAIN(ksmoothdock::KSmoothDockTest)
-#include "ksmoothdock_test.moc"
+QTEST_MAIN(ksmoothdock::DockPanelTest)
+#include "dock_panel_test.moc"

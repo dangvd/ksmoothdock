@@ -31,21 +31,12 @@
 
 namespace ksmoothdock {
 
-Launcher::Launcher(KSmoothDock* parent, const QString& label,
+Launcher::Launcher(DockPanel* parent, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
     int maxSize, const QString& command)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize,
           maxSize), 
       command_(command) {}
-
-Launcher::Launcher(KSmoothDock* parent, const QString& file,
-    Qt::Orientation orientation, int minSize, int maxSize)
-    : IconBasedDockItem(parent, "", orientation, "", minSize, maxSize) {
-  KDesktopFile desktopFile(file);
-  label_ = desktopFile.readName();
-  command_ = filterFieldCodes(desktopFile.entryMap("Desktop Entry")["Exec"]);
-  setIconName(desktopFile.readIcon());
-}
 
 void Launcher::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.
@@ -57,29 +48,11 @@ void Launcher::mousePressEvent(QMouseEvent* e) {
   }
 }
 
-void Launcher::saveToFile(const QString& filePath) {
-  KConfig config(filePath, KConfig::SimpleConfig);
-  KConfigGroup group(&config, "Desktop Entry");
-  group.writeEntry("Name", label_);
-  group.writeEntry("Exec", command_);
-  group.writeEntry("Icon", iconName_);
-  group.writeEntry("Type", "Application");
-  group.writeEntry("Terminal", false);
-  config.sync();
-}
-
 void Launcher::launch(const QString& command) {
   if (!QProcess::startDetached(command)) {
     KMessageBox::error(nullptr,
         i18n("Could not run command: ") + command);
   }
-}
-
-QString Launcher::filterFieldCodes(const QString& command) {
-  if (command.contains('%')) {
-    return command.left(command.indexOf(' '));
-  }
-  return command;
 }
 
 }  // namespace ksmoothdock

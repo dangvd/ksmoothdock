@@ -20,18 +20,11 @@
 #define KSMOOTHDOCK_EDIT_LAUNCHERS_DIALOG_H_
 
 #include <QAbstractButton>
-#include <QAction>
-#include <QButtonGroup>
-#include <QComboBox>
 #include <QDataStream>
 #include <QDialog>
-#include <QDialogButtonBox>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
 #include <QDropEvent>
-#include <QIcon>
-#include <QLabel>
-#include <QLineEdit>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QMetaType>
@@ -39,11 +32,15 @@
 #include <KIconButton>
 #include <KIconLoader>
 
+#include "multi_dock_model.h"
+
+namespace Ui {
+  class EditLaunchersDialog;
+}
+
 namespace ksmoothdock {
 
 static constexpr int kListIconSize = 48;
-
-class KSmoothDock;
 
 // User data for the items in QListWidget/QComboBox.
 struct LauncherInfo {
@@ -78,13 +75,16 @@ class EditLaunchersDialog : public QDialog {
   Q_OBJECT
 
  public:
-  EditLaunchersDialog(KSmoothDock* parent);
-  ~EditLaunchersDialog() {}
+  EditLaunchersDialog(MultiDockModel* model, int dockId);
+  ~EditLaunchersDialog() = default;
+
+  void reload() { loadData(); }
 
   void addLauncher(const QString& name, const QString& command,
       const QString& iconName);
 
  public slots:
+  void accept() override;
   void buttonClicked(QAbstractButton* button);
 
   void refreshSelectedLauncher(QListWidgetItem* current,
@@ -100,14 +100,12 @@ class EditLaunchersDialog : public QDialog {
   void updateInternalCommand(int index);
   void updateDBusCommand(int index);
   void updateWebCommand(int index);
-
-  void resetCommandLists() {
-    internalCommands_->setCurrentIndex(0);
-    dbusCommands_->setCurrentIndex(0);
-    webCommands_->setCurrentIndex(0);
-  }
+  void resetCommandLists();
 
  private:
+  void loadData();
+  void saveData();
+
   QIcon getListItemIcon(const QString& iconName) {
     return QIcon(KIconLoader::global()->loadIcon(iconName,
         KIconLoader::NoGroup, kListIconSize));
@@ -117,29 +115,13 @@ class EditLaunchersDialog : public QDialog {
   void populateDBusCommands();
   void populateWebCommands();
 
-  KSmoothDock* parent_;
-
+  Ui::EditLaunchersDialog *ui;
   LauncherList *launchers_;
-  QLabel *launchersNote_;
-
-  QPushButton *add_;
-  QPushButton *remove_;
-  QPushButton *update_;
-
-  QLabel *nameLabel_;
-  QLineEdit *name_;
-  QLabel *commandLabel_;
-  QLineEdit *command_;
-  QPushButton *browseCommand_;
-  QComboBox *internalCommands_;
-  QComboBox *dbusCommands_;
-  QComboBox *webCommands_;
-  QLabel *iconLabel_;
   KIconButton *icon_;
 
-  QDialogButtonBox *buttonBox_;
+  MultiDockModel* model_;
+  int dockId_;
 
-  friend class KSmoothDock;
   friend class EditLaunchersDialogTest;
 };
 

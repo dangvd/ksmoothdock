@@ -24,12 +24,12 @@
 
 namespace ksmoothdock {
 
-class KSmoothDock;
+class DockPanel;
 
 // A calendar widget. This is shown when the user clicks on the clock.
 class Calendar : public QDialog {
  public:
-  Calendar(KSmoothDock* parent);
+  Calendar(DockPanel* parent);
 
   // Toggles showing the calendar.
   //

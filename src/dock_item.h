@@ -26,7 +26,7 @@
 
 namespace ksmoothdock {
 
-class KSmoothDock;
+class DockPanel;
 
 // Base class for all dock items, e.g. launchers and pager icons.
 //
@@ -34,7 +34,7 @@ class KSmoothDock;
 // the dock's parabolic zooming effect smoother.
 class DockItem {
  public:
-  DockItem(KSmoothDock* parent, const QString& label,
+  DockItem(DockPanel* parent, const QString& label,
       Qt::Orientation orientation, int minSize, int maxSize)
       : parent_(parent), label_(label), orientation_(orientation),
         minSize_(minSize), maxSize_(maxSize), size_(minSize) {}
@@ -121,7 +121,7 @@ class DockItem {
   }
 
  protected:
-  KSmoothDock* parent_;
+  DockPanel* parent_;
   QString label_; // Label of the dock item.
   Qt::Orientation orientation_; // Orientation (horizontal/vertical).
   int minSize_;
@@ -146,7 +146,7 @@ class DockItem {
   int numSteps_;
 
  private:
-  friend class KSmoothDock;
+  friend class DockPanel;
 };
 
 }  // namespace ksmoothdock

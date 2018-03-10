@@ -20,6 +20,7 @@
 #define KSMOOTHDOCK_APPLICATION_MENU_H_
 
 #include "icon_based_dock_item.h"
+#include "multi_dock_model.h"
 
 #include <list>
 #include <string>
@@ -37,13 +38,11 @@
 #include <QString>
 #include <QStringList>
 
-#include <KConfig>
-
-#include "application_menu_config_dialog.h"
+#include "application_menu_settings_dialog.h"
 
 namespace ksmoothdock {
 
-static constexpr int kApplicationMenuIconSize = 32;
+constexpr int kApplicationMenuIconSize = 32;
 
 class ApplicationMenuStyle : public QProxyStyle {
  public:
@@ -117,8 +116,11 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
  public:
   ApplicationMenu(
-      KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-      int maxSize, KConfig* config,
+      DockPanel* parent,
+      MultiDockModel* model,
+      Qt::Orientation orientation,
+      int minSize,
+      int maxSize,
       const QStringList& entryDirs = {
           "/usr/share/applications",
           "/usr/share/applications/kde4",
@@ -135,11 +137,9 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
  public slots:
   void reloadMenu();
 
-  void showConfigDialog();
-  void applyConfig();
-  void updateConfig();
+  void showSettingsDialog();
 
- protected:
+protected:
   // Intercepts sub-menus's show events to adjust their position to improve
   // visibility.
   bool eventFilter(QObject* object, QEvent* event) override;
@@ -147,8 +147,6 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
  private:
   QString getStyleSheet();
   
-  void saveConfig();
-
   // Initializes application categories.
   void initCategories();
 
@@ -170,7 +168,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
   static const std::vector<Category> kSessionSystemCategories;
   static const ApplicationEntry kSearchEntry;
 
-  KConfig* config_;
+  MultiDockModel* model_;
 
   // The directories that contains the list of all application entries as
   // desktop files, e.g. /usr/share/applications
@@ -189,7 +187,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
 
   QFileSystemWatcher fileWatcher_;
 
-  ApplicationMenuConfigDialog configDialog_;
+  ApplicationMenuSettingsDialog settingsDialog_;
 
   // Drag support.
 

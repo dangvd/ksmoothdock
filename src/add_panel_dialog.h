@@ -19,10 +19,13 @@
 #ifndef KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
 #define KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
 
-#include <QComboBox>
 #include <QDialog>
-#include <QDialogButtonBox>
-#include <QLabel>
+
+#include "multi_dock_model.h"
+
+namespace Ui {
+  class AddPanelDialog;
+}
 
 namespace ksmoothdock {
 
@@ -30,17 +33,16 @@ class AddPanelDialog : public QDialog {
   Q_OBJECT
 
  public:
-  AddPanelDialog();
-  ~AddPanelDialog() = default;
+  explicit AddPanelDialog(MultiDockModel* model);
+  ~AddPanelDialog();
+
+ public slots:
+  void accept() override;
 
  private:
-  QLabel *positionLabel_;
-  QComboBox *position_;
-  QLabel *screenLabel_;
-  QComboBox *screen_;
-  QDialogButtonBox *buttonBox_;
+  Ui::AddPanelDialog *ui;
 
-  friend class KSmoothDock;
+  MultiDockModel* model_;
 };
 
 }  // namespace ksmoothdock

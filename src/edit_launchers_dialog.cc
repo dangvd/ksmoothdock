@@ -17,6 +17,7 @@
  */
 
 #include "edit_launchers_dialog.h"
+#include "ui_edit_launchers_dialog.h"
 
 #include <QFileDialog>
 #include <QMimeData>
@@ -25,9 +26,10 @@
 #include <Qt>
 
 #include <KDesktopFile>
+#include <KIconLoader>
 #include <KLocalizedString>
 
-#include "ksmoothdock.h"
+#include "command_utils.h"
 #include "launcher.h"
 
 namespace ksmoothdock {
@@ -76,7 +78,7 @@ void LauncherList::dropEvent(QDropEvent* event) {
         QString(event->mimeData()->data("text/uri-list")).trimmed();
     KDesktopFile desktopFile(QUrl(fileUrl).toLocalFile());
     const QString name = desktopFile.readName();
-    const QString command = Launcher::filterFieldCodes(
+    const QString command = filterFieldCodes(
         desktopFile.entryMap("Desktop Entry")["Exec"]);
     const QString iconName = desktopFile.readIcon();
     parent_->addLauncher(name, command, iconName);
@@ -85,10 +87,12 @@ void LauncherList::dropEvent(QDropEvent* event) {
   }
 }
 
-EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
-    : QDialog(parent), parent_(parent) {
-  setWindowTitle(i18n("Edit Launchers"));
-  resize(1120, 580);
+EditLaunchersDialog::EditLaunchersDialog(MultiDockModel* model, int dockId)
+    : QDialog(nullptr),
+      ui(new Ui::EditLaunchersDialog),
+      model_(model),
+      dockId_(dockId) {
+  ui->setupUi(this);
 
   qRegisterMetaType<LauncherInfo>();
   qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
@@ -110,94 +114,40 @@ EditLaunchersDialog::EditLaunchersDialog(KSmoothDock* parent)
   launchers_->setAcceptDrops(true);
   launchers_->setDropIndicatorShown(true);
   launchers_->setDragDropMode(QAbstractItemView::DragDrop);
-  launchersNote_ = new QLabel(this);
-  launchersNote_->setTextFormat(Qt::RichText);
-  launchersNote_->setText(i18n(
-      "Note: <a href=https://github.com/dangvd/ksmoothdock/wiki/Documentation"
-      "#editLaunchers_dragAndDrop>Drag and drop</a> is supported."));
-  launchersNote_->setGeometry(QRect(20, 475, 351, 22));
-  connect(launchersNote_, SIGNAL(linkActivated(const QString&)),
+
+  connect(ui->launchersNote, SIGNAL(linkActivated(const QString&)),
           this, SLOT(openLink(const QString&)));
-
-  add_ = new QPushButton(this);
-  add_->setText(i18n("Add"));
-  add_->setIcon(QIcon::fromTheme("list-add"));
-  add_->setGeometry(QRect(410, 120, 121, 38));
-  connect(add_, SIGNAL(clicked()), this, SLOT(addLauncher()));
-
-  remove_ = new QPushButton(this);
-  remove_->setText(i18n("Remove"));
-  remove_->setIcon(QIcon::fromTheme("list-remove"));
-  remove_->setGeometry(QRect(410, 190, 121, 38));
-  connect(remove_, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
-
-  update_ = new QPushButton(this);
-  update_->setText(i18n("Update"));
-  update_->setIcon(QIcon::fromTheme("arrow-left"));
-  update_->setGeometry(QRect(410, 260, 121, 38));
-  connect(update_, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
-
-  nameLabel_ = new QLabel(this);
-  nameLabel_->setText(i18n("Name"));
-  nameLabel_->setGeometry(QRect(570, 30, 72, 22));
-  name_ = new QLineEdit(this);
-  name_->setGeometry(QRect(680, 20, 421, 36));
-
-  commandLabel_ = new QLabel(this);
-  commandLabel_->setText(i18n("Command"));
-  commandLabel_->setGeometry(QRect(570, 110, 101, 22));
-  command_ = new QLineEdit(this);
-  command_->setGeometry(QRect(680, 100, 421, 36));
-  connect(command_, SIGNAL(textEdited(const QString&)),
+  connect(ui->add, SIGNAL(clicked()), this, SLOT(addLauncher()));
+  connect(ui->remove, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
+  connect(ui->update, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
+  connect(ui->command, SIGNAL(textEdited(const QString&)),
       this, SLOT(resetCommandLists()));
-
-  browseCommand_ = new QPushButton(this);
-  browseCommand_->setText(i18n("Browse Command"));
-  connect(browseCommand_, SIGNAL(clicked()),
+  connect(ui->browseCommand, SIGNAL(clicked()),
       this, SLOT(browseCommand()));
-  browseCommand_->setGeometry(QRect(680, 160, 371, 38));
 
-  internalCommands_ = new QComboBox(this);
   populateInternalCommands();
-  internalCommands_->setGeometry(QRect(680, 215, 371, 36));
-  connect(internalCommands_, SIGNAL(currentIndexChanged(int)),
+  connect(ui->internalCommands, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateInternalCommand(int)));
-
-  dbusCommands_ = new QComboBox(this);
   populateDBusCommands();
-  dbusCommands_->setGeometry(QRect(680, 270, 371, 36));
-  connect(dbusCommands_, SIGNAL(currentIndexChanged(int)),
+  connect(ui->dbusCommands, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateDBusCommand(int)));
-
-  webCommands_ = new QComboBox(this);
   populateWebCommands();
-  webCommands_->setGeometry(QRect(680, 325, 371, 36));
-  connect(webCommands_, SIGNAL(currentIndexChanged(int)),
+  connect(ui->webCommands, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateWebCommand(int)));
 
-  iconLabel_ = new QLabel(this);
-  iconLabel_->setText(i18n("Icon"));
-  iconLabel_->setGeometry(QRect(570, 418, 72, 22));
   icon_ = new KIconButton(this);
   icon_->setGeometry(QRect(680, 390, 80, 80));
 
-  buttonBox_ = new QDialogButtonBox(this);
-  buttonBox_->setGeometry(QRect(80, 520, 960, 32));
-  buttonBox_->setOrientation(Qt::Horizontal);
-  buttonBox_->setStandardButtons(QDialogButtonBox::Apply | QDialogButtonBox::Ok
-      |QDialogButtonBox::Cancel);
-  buttonBox_->setCenterButtons(true);
-  connect(buttonBox_, SIGNAL(accepted()),
-      parent_, SLOT(updateLauncherConfig()));
-  connect(buttonBox_, SIGNAL(rejected()), this, SLOT(reject()));
-  connect(buttonBox_, SIGNAL(clicked(QAbstractButton*)), this,
+  connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));
+
+  loadData();
 }
 
 void EditLaunchersDialog::addLauncher(const QString& name,
     const QString& command, const QString& iconName) {
-  name_->setText(name);
-  command_->setText(command);
+  ui->name->setText(name);
+  ui->command->setText(command);
   icon_->setIcon(iconName);
   QListWidgetItem* item = new QListWidgetItem(getListItemIcon(iconName), name);
   item->setData(Qt::UserRole, QVariant::fromValue(
@@ -206,19 +156,24 @@ void EditLaunchersDialog::addLauncher(const QString& name,
   launchers_->setCurrentItem(item);
 }
 
+void EditLaunchersDialog::accept() {
+  QDialog::accept();
+  saveData();
+}
+
 void EditLaunchersDialog::buttonClicked(QAbstractButton* button) {
-  auto role = buttonBox_->buttonRole(button);
+  auto role = ui->buttonBox->buttonRole(button);
   if (role == QDialogButtonBox::ApplyRole) {
-    parent_->applyLauncherConfig();
+    saveData();
   }
 }
 
 void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
     QListWidgetItem* previous) {
   if (current != nullptr) {
-    name_->setText(current->text());
+    ui->name->setText(current->text());
     LauncherInfo info = current->data(Qt::UserRole).value<LauncherInfo>();
-    command_->setText(info.command);
+    ui->command->setText(info.command);
     icon_->setIcon(info.iconName);
   }
 }
@@ -238,10 +193,10 @@ void EditLaunchersDialog::removeSelectedLauncher() {
 void EditLaunchersDialog::updateSelectedLauncher() {
   QListWidgetItem* item = launchers_->currentItem();
   if (item != nullptr) {
-    item->setText(name_->text());
+    item->setText(ui->name->text());
     item->setIcon(getListItemIcon(icon_->icon()));
     item->setData(Qt::UserRole, QVariant::fromValue(
-        LauncherInfo(icon_->icon(), command_->text())));
+        LauncherInfo(icon_->icon(), ui->command->text())));
   }
 }
 
@@ -255,53 +210,84 @@ void EditLaunchersDialog::browseCommand() {
       i18n("Browse Command"),
       QDir::homePath());
   if (!command.isEmpty()) {
-    command_->setText(command);
+    ui->command->setText(command);
     resetCommandLists();
   }
 }
 
 void EditLaunchersDialog::updateInternalCommand(int index) {
   if (index > 0) {  // Excludes header.
-    name_->setText(internalCommands_->itemText(index));
+    ui->name->setText(ui->internalCommands->itemText(index));
     LauncherInfo info =
-        internalCommands_->itemData(index).value<LauncherInfo>();
-    command_->setText(info.command);
+        ui->internalCommands->itemData(index).value<LauncherInfo>();
+    ui->command->setText(info.command);
     icon_->setIcon(info.iconName);
 
-    dbusCommands_->setCurrentIndex(0);
-    webCommands_->setCurrentIndex(0);
+    ui->dbusCommands->setCurrentIndex(0);
+    ui->webCommands->setCurrentIndex(0);
   }
 }
 
 void EditLaunchersDialog::updateDBusCommand(int index) {
   if (index > 0) {  // Excludes header.
-    name_->setText(dbusCommands_->itemText(index));
+    ui->name->setText(ui->dbusCommands->itemText(index));
     LauncherInfo info =
-        dbusCommands_->itemData(index).value<LauncherInfo>();
-    command_->setText(info.command);
+        ui->dbusCommands->itemData(index).value<LauncherInfo>();
+    ui->command->setText(info.command);
     icon_->setIcon(info.iconName);
 
-    internalCommands_->setCurrentIndex(0);
-    webCommands_->setCurrentIndex(0);
+    ui->internalCommands->setCurrentIndex(0);
+    ui->webCommands->setCurrentIndex(0);
   }
 }
 
 void EditLaunchersDialog::updateWebCommand(int index) {
   if (index > 0) {  // Excludes header.
-    name_->setText(webCommands_->itemText(index));
+    ui->name->setText(ui->webCommands->itemText(index));
     LauncherInfo info =
-        webCommands_->itemData(index).value<LauncherInfo>();
-    command_->setText(info.command);
+        ui->webCommands->itemData(index).value<LauncherInfo>();
+    ui->command->setText(info.command);
     icon_->setIcon(info.iconName);
 
-    internalCommands_->setCurrentIndex(0);
-    dbusCommands_->setCurrentIndex(0);
+    ui->internalCommands->setCurrentIndex(0);
+    ui->dbusCommands->setCurrentIndex(0);
   }
 }
 
+void EditLaunchersDialog::resetCommandLists() {
+  ui->internalCommands->setCurrentIndex(0);
+  ui->dbusCommands->setCurrentIndex(0);
+  ui->webCommands->setCurrentIndex(0);
+}
+
+void EditLaunchersDialog::loadData() {
+  launchers_->clear();
+  for (const auto& item : model_->launcherConfigs(dockId_)) {
+    QPixmap icon = KIconLoader::global()->loadIcon(
+        item.icon, KIconLoader::NoGroup, kListIconSize);
+    QListWidgetItem* listItem = new QListWidgetItem(
+          icon, item.name);
+    listItem->setData(Qt::UserRole, QVariant::fromValue(
+                        LauncherInfo(item.icon, item.command)));
+    launchers_->addItem(listItem);
+  }
+}
+
+void EditLaunchersDialog::saveData() {
+  const int launcherCount = launchers_->count();
+  std::vector<LauncherConfig> launcherConfigs(launcherCount);
+  for (int i = 0; i < launcherCount; ++i) {
+    auto* listItem = launchers_->item(i);
+    auto info = listItem->data(Qt::UserRole).value<LauncherInfo>();
+    launcherConfigs.push_back(LauncherConfig(
+                                listItem->text(), info.iconName, info.command));
+  }
+  model_->setLauncherConfigs(dockId_, launcherConfigs);
+}
+
 void EditLaunchersDialog::populateInternalCommands() {
-  internalCommands_->addItem(i18n("Use an internal command"));  // header
-  internalCommands_->addItem(
+  ui->internalCommands->addItem(i18n("Use an internal command"));  // header
+  ui->internalCommands->addItem(
       getListItemIcon("user-desktop"),
       i18n("Show Desktop"),
       QVariant::fromValue(LauncherInfo("user-desktop", kShowDesktopCommand)));
@@ -335,9 +321,9 @@ void EditLaunchersDialog::populateDBusCommands() {
       "system-shutdown",
       "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"}
   };
-  dbusCommands_->addItem(i18n("Use a D-Bus command"));  // header
+  ui->dbusCommands->addItem(i18n("Use a D-Bus command"));  // header
   for (int i = 0; i < kNumItems; ++i) {
-    dbusCommands_->addItem(
+    ui->dbusCommands->addItem(
         getListItemIcon(kItems[i][1]),
         i18n(kItems[i][0]),
         QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
@@ -424,9 +410,9 @@ void EditLaunchersDialog::populateWebCommands() {
       "system-users",
       "firefox --private-window https://www.twitter.com"},
   };
-  webCommands_->addItem(i18n("Launch a Website"));  // header
+  ui->webCommands->addItem(i18n("Launch a Website"));  // header
   for (int i = 0; i < kNumItems; ++i) {
-    webCommands_->addItem(
+    ui->webCommands->addItem(
         getListItemIcon(kItems[i][1]),
         i18n(kItems[i][0]),
         QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));

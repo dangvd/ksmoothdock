@@ -77,36 +77,36 @@ class ConfigHelper  {
   ~ConfigHelper() = default;
 
   // Gets the config file path of the old single-dock config.
-  QString getSingleDockConfigPath() const {
+  QString singleDockConfigPath() const {
     return configDir_.filePath(kSingleDockConfig);
   }
 
   // Gets the launchers dir path of the old single-dock config.
-  QString getSingleDockLaunchersPath() const {
+  QString singleDockLaunchersPath() const {
     return configDir_.filePath(kSingleDockLaunchers);
   }
 
   // Gets the config file name of a dock.
-  QString getDockConfigFile(int dockIndex) const {
-    return QString("panel_") + QString::number(dockIndex) + ".conf";
+  QString dockConfigFile(int dockId) const {
+    return QString("panel_") + QString::number(dockId) + ".conf";
   }
 
   // Gets the config file path of a dock.
-  QString getDockConfigPath(int dockIndex) const {
-    return configDir_.filePath(getDockConfigFile(dockIndex));
+  QString dockConfigPath(int dockId) const {
+    return configDir_.filePath(dockConfigFile(dockId));
   }
 
-  QString getDockConfigPath(QString configFile) const {
+  QString dockConfigPath(QString configFile) const {
     return configDir_.filePath(configFile);
   }
 
-  static QString getDockLaunchersDir(int dockIndex) {
-    return QString("panel_") + QString::number(dockIndex) + "_launchers";
+  static QString dockLaunchersDir(int dockId) {
+    return QString("panel_") + QString::number(dockId) + "_launchers";
   }
 
   // Gets the launchers dir path of a dock.
-  QString getDockLaunchersPath(int dockIndex) const {
-    return configDir_.filePath(getDockLaunchersDir(dockIndex));
+  QString dockLaunchersPath(int dockId) const {
+    return configDir_.filePath(dockLaunchersDir(dockId));
   }
 
   QString getDockLaunchersPathForConfigFile(const QString& configFile) const {
@@ -116,15 +116,16 @@ class ConfigHelper  {
   }
 
   // Gets the appearance config file path.
-  QString getAppearanceConfigPath() const {
+  QString appearanceConfigPath() const {
     return configDir_.filePath(kAppearanceConfig);
   }
 
-  static QString getWallpaperConfigKey(int desktop) {
+  static QString wallpaperConfigKey(int desktop) {
     return QString("wallpaper") + QString::number(desktop);
   }
 
   // Finds the configs of all existing docks.
+  // Returns a list of a tuple of <dock config path, dock launchers path>.
   std::vector<std::tuple<QString, QString>> findAllDockConfigs();
 
   // Finds the next available configs for a new dock.

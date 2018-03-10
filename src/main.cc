@@ -22,7 +22,8 @@
 #include <KDBusService>
 #include <KLocalizedString>
 
-#include "dock_manager.h"
+#include "multi_dock_model.h"
+#include "multi_dock_view.h"
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);
@@ -39,8 +40,8 @@ int main(int argc, char** argv) {
       "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
 
-  ksmoothdock::DockManager dock_manager;
-  dock_manager.init();
-  dock_manager.show();
+  ksmoothdock::MultiDockModel model;
+  ksmoothdock::MultiDockView view(&model);
+  view.show();
   return app.exec();
 }

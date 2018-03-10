@@ -27,10 +27,9 @@
 #include <QObject>
 #include <QString>
 
-#include <KConfig>
 #include <KWindowSystem>
 
-#include "config_helper.h"
+#include "multi_dock_model.h"
 
 namespace ksmoothdock {
 
@@ -39,8 +38,9 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   Q_OBJECT
 
  public:
-  DesktopSelector(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-      int maxSize, int desktop, KConfig *config);
+  DesktopSelector(DockPanel* parent, MultiDockModel* model,
+                  Qt::Orientation orientation, int minSize, int maxSize,
+                  int desktop);
 
   void init();
 
@@ -63,10 +63,6 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
     return KWindowSystem::currentDesktop() == desktop_;
   }
 
-  QString getWallpaperConfigKey() const {
-    return ConfigHelper::getWallpaperConfigKey(desktop_);
-  }
-
   bool isWallpaperOk() const {
     return !wallpaper_.isEmpty() && QFile::exists(wallpaper_);
   }
@@ -74,6 +70,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   void setWallpaper(const QString& wallpaper);
 
   void createMenu();
+
+  MultiDockModel* model_;
 
   // The desktop that this desktop selector manages, 1-based.
   int desktop_;

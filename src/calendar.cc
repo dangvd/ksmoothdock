@@ -22,11 +22,11 @@
 
 #include <KLocalizedString>
 
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 
 namespace ksmoothdock {
 
-Calendar::Calendar(KSmoothDock* parent)
+Calendar::Calendar(DockPanel* parent)
     : QDialog(parent),
       calendar_(this) {
   setWindowTitle(i18n("Calendar"));

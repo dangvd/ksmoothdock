@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2018 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,36 +16,46 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_LAUNCHER_H_
-#define KSMOOTHDOCK_LAUNCHER_H_
+#ifndef KSMOOTHDOCK_MULTI_DOCK_VIEW_H_
+#define KSMOOTHDOCK_MULTI_DOCK_VIEW_H_
 
-#include "icon_based_dock_item.h"
+#include <memory>
+#include <unordered_map>
 
-#include "command_utils.h"
+#include <QObject>
+
+#include "dock_panel.h"
+#include "multi_dock_model.h"
 
 namespace ksmoothdock {
 
-class Launcher : public IconBasedDockItem {
+// The view.
+class MultiDockView : public QObject {
+  Q_OBJECT
+
  public:
-  Launcher(DockPanel* parent, const QString& label,
-      Qt::Orientation orientation, const QString& iconName, int minSize,
-      int maxSize, const QString& command);
+  // No pointer ownership.
+  MultiDockView(MultiDockModel* model);
+  ~MultiDockView() = default;
 
-  virtual ~Launcher() = default;
+  void show();
 
-  QString command() const { return command_; }
+ public slots:
+  void exit();
 
-  virtual void mousePressEvent(QMouseEvent* e) override;
-
-  static void launch(const QString& command);
-  static void lockScreen() { launch(kLockScreenCommand); }
+  void onDockAdded(int dockId);
+  void onDockRemoved(int dockId);
 
  private:
-  QString command_;
+  void loadData();
 
-  friend class DockPanel;
+  // Creates a default dock if none exists.
+  void createDefaultDock();
+
+  MultiDockModel* model_;  // No ownership.
+  std::unordered_map<int, std::unique_ptr<DockPanel>> docks_;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_LAUNCHER_H_
+#endif // KSMOOTHDOCK_MULTI_DOCK_VIEW_H_

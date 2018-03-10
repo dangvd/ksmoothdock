@@ -35,12 +35,6 @@ class ApplicationMenuTest: public QObject {
   Q_OBJECT
 
  private slots:
-  void init() {
-    configFile_.reset(new QTemporaryFile);
-    QVERIFY(configFile_->open());
-    config_.reset(new KConfig(configFile_->fileName(), KConfig::SimpleConfig));
-  }
-
   void loadEntries_singleDir();
   void loadEntries_multipleDirs();
 
@@ -67,8 +61,7 @@ class ApplicationMenuTest: public QObject {
     config.sync();
   }
 
-  std::unique_ptr<QTemporaryFile> configFile_;
-  std::unique_ptr<KConfig> config_;
+  MultiDockModel model_;
 };
 const int ApplicationMenuTest::kNumCategories;
 
@@ -80,8 +73,7 @@ void ApplicationMenuTest::loadEntries_singleDir() {
              "Network");
 
   ApplicationMenu applicationMenu(
-      nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
-      { entryDir.path() });
+      nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize, { entryDir.path() });
   applicationMenu.initCategories();
   applicationMenu.loadEntries();
 
@@ -135,7 +127,7 @@ void ApplicationMenuTest::loadEntries_multipleDirs() {
 
 
   ApplicationMenu applicationMenu(
-      nullptr, Qt::Horizontal, kMinSize, kMaxSize, config_.get(),
+      nullptr, &model_, Qt::Horizontal, kMinSize, kMaxSize,
       { entryDir1.path(), entryDir1.path() + "/dir-not-exist", entryDir2.path(),
         entryDir3.path() });
   applicationMenu.initCategories();

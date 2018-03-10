@@ -29,26 +29,21 @@
 #include <QTime>
 #include <QTimer>
 
-#include <KConfigGroup>
 #include <KLocalizedString>
 
-#include "config_helper.h"
-#include "ksmoothdock.h"
+#include "dock_panel.h"
 #include "launcher.h"
 
 namespace ksmoothdock {
 
 constexpr float Clock::kWhRatio;
-constexpr float Clock::kLargeFontScaleFactor;
-constexpr float Clock::kMediumFontScaleFactor;
-constexpr float Clock::kSmallFontScaleFactor;
 constexpr float Clock::kDelta;
 
-Clock::Clock(KSmoothDock* parent, Qt::Orientation orientation, int minSize,
-             int maxSize, KConfig* config)
+Clock::Clock(DockPanel* parent, MultiDockModel* model,
+             Qt::Orientation orientation, int minSize, int maxSize)
     : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
                        kWhRatio),
-      config_(config),
+      model_(model),
       calendar_(parent) {
   createMenu();
   loadConfig();
@@ -118,7 +113,6 @@ void Clock::set24HourClock(bool enabled) {
 void Clock::toggle24HourClock() {
   set24HourClock(!use24HourClock_);
   saveConfig();
-  parent_->notifyRefresh();
 }
 
 void Clock::setFontScaleFactor(float fontScaleFactor) {
@@ -133,19 +127,16 @@ void Clock::setFontScaleFactor(float fontScaleFactor) {
 void Clock::setLargeFont() {
   setFontScaleFactor(kLargeFontScaleFactor);
   saveConfig();
-  parent_->notifyRefresh();
 }
 
 void Clock::setMediumFont() {
   setFontScaleFactor(kMediumFontScaleFactor);
   saveConfig();
-  parent_->notifyRefresh();
 }
 
 void Clock::setSmallFont() {
   setFontScaleFactor(kSmallFontScaleFactor);
   saveConfig();
-  parent_->notifyRefresh();
 }
 
 void Clock::createMenu() {
@@ -175,17 +166,14 @@ void Clock::createMenu() {
 }
 
 void Clock::loadConfig() {
-  KConfigGroup group(config_, ConfigHelper::kClockCategory);
-  set24HourClock(group.readEntry(ConfigHelper::kUse24HourClock, true));
-  setFontScaleFactor(group.readEntry(
-      ConfigHelper::kFontScaleFactor, kLargeFontScaleFactor));
+  set24HourClock(model_->use24HourClock());
+  setFontScaleFactor(model_->fontScaleFactor());
 }
 
 void Clock::saveConfig() {
-  KConfigGroup group(config_, ConfigHelper::kClockCategory);
-  group.writeEntry(ConfigHelper::kUse24HourClock, use24HourClock_);
-  group.writeEntry(ConfigHelper::kFontScaleFactor, fontScaleFactor_);
-  config_->sync();
+  model_->setUse24HourClock(use24HourClock_);
+  model_->setFontScaleFactor(fontScaleFactor_);
+  model_->saveAppearanceConfig();
 }
 
 }  // namespace ksmoothdock
