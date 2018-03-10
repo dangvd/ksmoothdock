@@ -21,14 +21,16 @@
 #include <memory>
 
 #include <QTemporaryDir>
-#include <QTemporaryFile>
 #include <QtTest>
 
 #include <KWindowSystem>
 
+#include "multi_dock_view.h"
+
 namespace ksmoothdock {
 
 constexpr int kDockId = 0;
+constexpr int kScreen = 0;
 constexpr int kDefaultLauncherCount = 7;
 
 class DockPanelTest: public QObject {
@@ -36,7 +38,11 @@ class DockPanelTest: public QObject {
 
  private slots:
   void init() {
-    dock_.reset(new DockPanel(nullptr, &model_, kDockId));
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+    model_->addDock(PanelPosition::Bottom, kScreen);
+    view_ = std::make_unique<MultiDockView>(model_.get());
+    dock_ = std::make_unique<DockPanel>(view_.get(), model_.get(), kDockId);
   }
 
   // Tests setting position.
@@ -114,7 +120,8 @@ class DockPanelTest: public QObject {
     }
   }
 
-  MultiDockModel model_;
+  std::unique_ptr<MultiDockModel> model_;
+  std::unique_ptr<MultiDockView> view_;
   std::unique_ptr<DockPanel> dock_;
 };
 
