@@ -30,7 +30,7 @@
 
 namespace ksmoothdock {
 
-constexpr int kDockId = 0;
+constexpr int kDockId = 1;
 
 class EditLaunchersDialogTest: public QObject {
   Q_OBJECT

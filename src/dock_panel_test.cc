@@ -29,7 +29,7 @@
 
 namespace ksmoothdock {
 
-constexpr int kDockId = 0;
+constexpr int kDockId = 1;
 constexpr int kScreen = 0;
 constexpr int kDefaultLauncherCount = 7;
 
