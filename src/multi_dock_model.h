@@ -356,6 +356,9 @@ class MultiDockModel : public QObject {
   std::unordered_map<int,
                      std::tuple<std::unique_ptr<KConfig>,
                                 std::vector<LauncherConfig>>> dockConfigs_;
+
+  // ID for the next dock.
+  int nextDockId_;
 };
 
 }  // namespace ksmoothdock

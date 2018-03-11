@@ -231,17 +231,17 @@ void DockPanel::showOnlineDocumentation() {
 }
 
 void DockPanel::about() {
-  aboutDialog_.show();
+  aboutDialog_.exec();
 }
 
 void DockPanel::showAppearanceSettingsDialog() {
   appearanceSettingsDialog_.reload();
-  appearanceSettingsDialog_.show();
+  appearanceSettingsDialog_.exec();
 }
 
 void DockPanel::showEditLaunchersDialog() {
   editLaunchersDialog_.reload();
-  editLaunchersDialog_.show();
+  editLaunchersDialog_.exec();
 }
 
 void DockPanel::showApplicationMenuSettingsDialog() {
@@ -254,13 +254,13 @@ void DockPanel::showApplicationMenuSettingsDialog() {
 
 void DockPanel::addDock() {
   AddPanelDialog dialog(model_);
-  dialog.show();
+  dialog.exec();
 }
 
 void DockPanel::cloneDock() {
   AddPanelDialog dialog(model_);
   dialog.setWindowTitle(i18n("Clone Panel"));
-  dialog.show();
+  dialog.exec();
 }
 
 void DockPanel::removeDock() {

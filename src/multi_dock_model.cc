@@ -58,6 +58,7 @@ MultiDockModel::MultiDockModel(const QString& configDir)
         loadDockLaunchers(std::get<1>(configs)));
     ++dockId;
   }
+  nextDockId_ = dockId;
 }
 
 MultiDockModel::~MultiDockModel() {
@@ -76,7 +77,8 @@ void MultiDockModel::addDock(PanelPosition position, int screen) {
 int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
                             PanelPosition position, int screen) {
   // Dock ID starts from 1.
-  const auto dockId = dockConfigs_.size() + 1;
+  const auto dockId = nextDockId_;
+  ++nextDockId_;
   dockConfigs_[dockId] = std::make_tuple(
       std::make_unique<KConfig>(std::get<0>(configs), KConfig::SimpleConfig),
       loadDockLaunchers(std::get<1>(configs)));

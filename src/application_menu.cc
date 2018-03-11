@@ -145,7 +145,7 @@ void ApplicationMenu::reloadMenu() {
 
 void ApplicationMenu::showSettingsDialog() {
   settingsDialog_.reload();
-  settingsDialog_.show();
+  settingsDialog_.exec();
 }
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
