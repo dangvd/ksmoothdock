@@ -46,7 +46,10 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     : configHelper_(configDir),
       appearanceConfig_(configHelper_.appearanceConfigPath(),
                         KConfig::SimpleConfig) {
-  configHelper_.convertConfig();
+  if (configHelper_.convertConfig()) {
+    appearanceConfig_.reparseConfiguration();
+  }
+
   int dockId = 0;
   for (const auto& configs : configHelper_.findAllDockConfigs()) {
     dockConfigs_[dockId] = std::make_tuple(

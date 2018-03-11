@@ -90,10 +90,10 @@ std::tuple<QString, QString> ConfigHelper::findNextDockConfigs() {
   }
 }
 
-void ConfigHelper::convertConfig() {
+bool ConfigHelper::convertConfig() {
   if (!configDir_.exists(kSingleDockConfig) ||
       configDir_.exists(kAppearanceConfig)) {
-    return;
+    return false;
   }
 
   std::cout << "Converting single-dock config to multi-dock config"
@@ -143,6 +143,8 @@ void ConfigHelper::convertConfig() {
 
   configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
   configDir_.rename(kSingleDockLaunchers, dockLaunchersDir(1));
+
+  return true;
 }
 
 void ConfigHelper::copyLaunchersDir(const QString& launchersDir,

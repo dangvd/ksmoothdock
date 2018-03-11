@@ -132,7 +132,7 @@ class ConfigHelper  {
   std::tuple<QString, QString> findNextDockConfigs();
 
   // Converts the old single-dock config to the new multi-dock config if needed.
-  void convertConfig();
+  bool convertConfig();
 
   // Copies a launchers directory.
   static void copyLaunchersDir(const QString& launchersDir,
