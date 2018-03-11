@@ -72,6 +72,12 @@ void MultiDockModel::addDock(PanelPosition position, int screen) {
   setShowApplicationMenu(dockId, kDefaultShowApplicationMenu);
   setShowPager(dockId, kDefaultShowPager);
   setShowClock(dockId, kDefaultShowClock);
+
+  if (dockCount() == 1) {
+    syncAppearanceConfig();
+  }
+  syncDockConfig(dockId);
+  syncLaunchersConfig(dockId);
 }
 
 int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
@@ -98,7 +104,9 @@ void MultiDockModel::cloneDock(int srcDockId, PanelPosition position,
   ConfigHelper::copyLaunchersDir(configHelper_.dockLaunchersPath(srcDockId),
                                  std::get<1>(configs));
 
-  addDock(configs, position, screen);
+  auto dockId = addDock(configs, position, screen);
+  syncDockConfig(dockId);
+  syncLaunchersConfig(dockId);
 }
 
 void MultiDockModel::removeDock(int dockId) {
@@ -106,7 +114,7 @@ void MultiDockModel::removeDock(int dockId) {
   emit dockRemoved(dockId);
 }
 
-void MultiDockModel::saveLauncherConfigs(int dockId) {
+void MultiDockModel::syncLaunchersConfig(int dockId) {
   const auto& launchersPath = configHelper_.dockLaunchersPath(dockId);
   QDir launchersDir(launchersPath);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
@@ -122,8 +130,6 @@ void MultiDockModel::saveLauncherConfigs(int dockId) {
         .arg(item.name));
     ++launcherId;
   }
-
-  emit dockLaunchersChanged(dockId);
 }
 
 std::vector<LauncherConfig> MultiDockModel::loadDockLaunchers(

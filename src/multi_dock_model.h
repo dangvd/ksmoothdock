@@ -217,7 +217,7 @@ class MultiDockModel : public QObject {
   }
 
   void saveAppearanceConfig() {
-    appearanceConfig_.sync();
+    syncAppearanceConfig();
     emit appearanceChanged();
   }
 
@@ -286,7 +286,8 @@ class MultiDockModel : public QObject {
   }
 
   void saveDockConfig(int dockId) {
-    dockConfig(dockId)->sync();
+    syncDockConfig(dockId);
+    // No need to emit signal here.
   }
 
   std::vector<LauncherConfig> launcherConfigs(int dockId) {
@@ -298,7 +299,10 @@ class MultiDockModel : public QObject {
     std::get<1>(dockConfigs_[dockId]) = launcherConfigs;
   }
 
-  void saveLauncherConfigs(int dockId);
+  void saveLauncherConfigs(int dockId) {
+    syncLaunchersConfig(dockId);
+    emit dockLaunchersChanged(dockId);
+  }
 
  signals:
   void appearanceChanged();
@@ -347,6 +351,16 @@ class MultiDockModel : public QObject {
 
   int addDock(const std::tuple<QString, QString>& configs,
               PanelPosition position, int screen);
+
+  void syncAppearanceConfig() {
+    appearanceConfig_.sync();
+  }
+
+  void syncDockConfig(int dockId) {
+    dockConfig(dockId)->sync();
+  }
+
+  void syncLaunchersConfig(int dockId);
 
   // Helper(s).
   ConfigHelper configHelper_;
