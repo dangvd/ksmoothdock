@@ -61,10 +61,6 @@ MultiDockModel::MultiDockModel(const QString& configDir)
   nextDockId_ = dockId;
 }
 
-MultiDockModel::~MultiDockModel() {
-  appearanceConfig_.sync();
-}
-
 void MultiDockModel::addDock(PanelPosition position, int screen) {
   auto configs = configHelper_.findNextDockConfigs();
   auto dockId = addDock(configs, position, screen);
@@ -74,6 +70,21 @@ void MultiDockModel::addDock(PanelPosition position, int screen) {
   setShowClock(dockId, kDefaultShowClock);
 
   if (dockCount() == 1) {
+    setMinIconSize(kDefaultMinSize);
+    setMaxIconSize(kDefaultMaxSize);
+    QColor color(kDefaultBackgroundColor);
+    color.setAlphaF(kDefaultBackgroundAlpha);
+    setBackgroundColor(color);
+    setShowBorder(kDefaultShowBorder);
+    setBorderColor(QColor(kDefaultBorderColor));
+    setTooltipFontSize(kDefaultTooltipFontSize);
+
+    setApplicationMenuName(kDefaultApplicationMenuName);
+    setApplicationMenuIcon(kDefaultApplicationMenuIcon);
+
+    setUse24HourClock(kDefaultUse24HourClock);
+    setClockFontScaleFactor(kDefaultClockFontScaleFactor);
+
     syncAppearanceConfig();
   }
   syncDockConfig(dockId);

@@ -43,14 +43,19 @@ constexpr float kDefaultBackgroundAlpha = 0.42;
 constexpr char kDefaultBackgroundColor[] = "#638abd";
 constexpr bool kDefaultShowBorder = true;
 constexpr char kDefaultBorderColor[] = "#b1c4de";
-constexpr float kLargeFontScaleFactor = 1.0;
-constexpr float kMediumFontScaleFactor = 0.8;
-constexpr float kSmallFontScaleFactor = 0.6;
+constexpr float kLargeClockFontScaleFactor = 1.0;
+constexpr float kMediumClockFontScaleFactor = 0.8;
+constexpr float kSmallClockFontScaleFactor = 0.6;
 
 constexpr bool kDefaultAutoHide = false;
 constexpr bool kDefaultShowApplicationMenu = true;
 constexpr bool kDefaultShowPager = false;
 constexpr bool kDefaultShowClock = false;
+
+constexpr char kDefaultApplicationMenuName[] = "Applications";
+constexpr char kDefaultApplicationMenuIcon[] = "start-here-kde";
+constexpr bool kDefaultUse24HourClock = true;
+constexpr float kDefaultClockFontScaleFactor = kLargeClockFontScaleFactor;
 
 enum class PanelPosition {Top, Bottom, Left, Right};
 
@@ -75,7 +80,7 @@ class MultiDockModel : public QObject {
 
  public:
   MultiDockModel(const QString& configDir);
-  ~MultiDockModel();
+  ~MultiDockModel() = default;
 
   MultiDockModel(const MultiDockModel&) = delete;
   MultiDockModel& operator=(const MultiDockModel&) = delete;
@@ -164,7 +169,7 @@ class MultiDockModel : public QObject {
   QString applicationMenuName() const {
     return appearanceProperty(ConfigHelper::kApplicationMenuCategory,
                               ConfigHelper::kLabel,
-                              i18n("Applications"));
+                              i18n(kDefaultApplicationMenuName));
   }
 
   void setApplicationMenuName(const QString& value) {
@@ -175,7 +180,7 @@ class MultiDockModel : public QObject {
   QString applicationMenuIcon() const {
     return appearanceProperty(ConfigHelper::kApplicationMenuCategory,
                               ConfigHelper::kIcon,
-                              QString("start-here-kde"));
+                              QString(kDefaultApplicationMenuIcon));
   }
 
   void setApplicationMenuIcon(const QString& value) {
@@ -197,7 +202,7 @@ class MultiDockModel : public QObject {
   bool use24HourClock() const {
     return appearanceProperty(ConfigHelper::kClockCategory,
                               ConfigHelper::kUse24HourClock,
-                              true);
+                              kDefaultUse24HourClock);
   }
 
   void setUse24HourClock(bool value) {
@@ -205,13 +210,13 @@ class MultiDockModel : public QObject {
                           ConfigHelper::kUse24HourClock, value);
   }
 
-  float fontScaleFactor() const {
+  float clockFontScaleFactor() const {
     return appearanceProperty(ConfigHelper::kClockCategory,
                               ConfigHelper::kFontScaleFactor,
-                              kLargeFontScaleFactor);
+                              kDefaultClockFontScaleFactor);
   }
 
-  void setFontScaleFactor(float value) {
+  void setClockFontScaleFactor(float value) {
     setAppearanceProperty(ConfigHelper::kClockCategory,
                           ConfigHelper::kFontScaleFactor, value);
   }

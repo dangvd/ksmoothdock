@@ -117,25 +117,25 @@ void Clock::toggle24HourClock() {
 
 void Clock::setFontScaleFactor(float fontScaleFactor) {
   fontScaleFactor_ = fontScaleFactor;
-  largeFontAction_->setChecked(fontScaleFactor_ > kLargeFontScaleFactor - kDelta);
+  largeFontAction_->setChecked(fontScaleFactor_ > kLargeClockFontScaleFactor - kDelta);
   mediumFontAction_->setChecked(
-      fontScaleFactor_ > kMediumFontScaleFactor - kDelta &&
-      fontScaleFactor_ < kMediumFontScaleFactor + kDelta);
-  smallFontAction_->setChecked(fontScaleFactor_ < kSmallFontScaleFactor + kDelta);
+      fontScaleFactor_ > kMediumClockFontScaleFactor - kDelta &&
+      fontScaleFactor_ < kMediumClockFontScaleFactor + kDelta);
+  smallFontAction_->setChecked(fontScaleFactor_ < kSmallClockFontScaleFactor + kDelta);
 }
 
 void Clock::setLargeFont() {
-  setFontScaleFactor(kLargeFontScaleFactor);
+  setFontScaleFactor(kLargeClockFontScaleFactor);
   saveConfig();
 }
 
 void Clock::setMediumFont() {
-  setFontScaleFactor(kMediumFontScaleFactor);
+  setFontScaleFactor(kMediumClockFontScaleFactor);
   saveConfig();
 }
 
 void Clock::setSmallFont() {
-  setFontScaleFactor(kSmallFontScaleFactor);
+  setFontScaleFactor(kSmallClockFontScaleFactor);
   saveConfig();
 }
 
@@ -167,12 +167,12 @@ void Clock::createMenu() {
 
 void Clock::loadConfig() {
   set24HourClock(model_->use24HourClock());
-  setFontScaleFactor(model_->fontScaleFactor());
+  setFontScaleFactor(model_->clockFontScaleFactor());
 }
 
 void Clock::saveConfig() {
   model_->setUse24HourClock(use24HourClock_);
-  model_->setFontScaleFactor(fontScaleFactor_);
+  model_->setClockFontScaleFactor(fontScaleFactor_);
   model_->saveAppearanceConfig();
 }
 
