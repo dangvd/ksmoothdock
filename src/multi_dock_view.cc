@@ -52,8 +52,8 @@ void MultiDockView::onDockRemoved(int dockId) {
 
 void MultiDockView::loadData() {
   docks_.clear();
-  for (int id = 0; id < model_->dockCount(); ++id) {
-    docks_[id] = std::make_unique<DockPanel>(this, model_, id);
+  for (int dockId = 1; dockId <= model_->dockCount(); ++dockId) {
+    docks_[dockId] = std::make_unique<DockPanel>(this, model_, dockId);
   }
 
   if (docks_.empty()) {

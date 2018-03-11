@@ -284,6 +284,7 @@ void EditLaunchersDialog::saveData() {
                                 listItem->text(), info.iconName, info.command));
   }
   model_->setLauncherConfigs(dockId_, launcherConfigs);
+  model_->saveLauncherConfigs(dockId_);
 }
 
 void EditLaunchersDialog::populateInternalCommands() {
