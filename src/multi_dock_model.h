@@ -312,7 +312,6 @@ class MultiDockModel : public QObject {
  signals:
   void appearanceChanged();
   void dockAdded(int dockId);
-  void dockRemoved(int dockId);
   void dockLaunchersChanged(int dockId);
 
  private:

@@ -122,7 +122,9 @@ void MultiDockModel::cloneDock(int srcDockId, PanelPosition position,
 
 void MultiDockModel::removeDock(int dockId) {
   dockConfigs_.erase(dockId);
-  emit dockRemoved(dockId);
+  QFile::remove(configHelper_.dockConfigPath(dockId));
+  ConfigHelper::removeLaunchersDir(configHelper_.dockLaunchersPath(dockId));
+  // No need to emit a signal here.
 }
 
 void MultiDockModel::syncLaunchersConfig(int dockId) {

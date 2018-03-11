@@ -44,7 +44,6 @@ class MultiDockView : public QObject {
   void exit();
 
   void onDockAdded(int dockId);
-  void onDockRemoved(int dockId);
 
  private:
   void loadData();

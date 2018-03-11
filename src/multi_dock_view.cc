@@ -25,7 +25,6 @@ namespace ksmoothdock {
 MultiDockView::MultiDockView(MultiDockModel* model)
     : model_(model) {
   connect(model_, SIGNAL(dockAdded(int)), this, SLOT(onDockAdded(int)));
-  connect(model_, SIGNAL(dockRemoved(int)), this, SLOT(onDockRemoved(int)));
   loadData();
 }
 
@@ -44,10 +43,6 @@ void MultiDockView::exit() {
 void MultiDockView::onDockAdded(int dockId) {
   docks_[dockId] = std::make_unique<DockPanel>(this, model_, dockId);
   docks_[dockId]->show();
-}
-
-void MultiDockView::onDockRemoved(int dockId) {
-  docks_[dockId]->close();
 }
 
 void MultiDockView::loadData() {
