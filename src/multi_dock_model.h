@@ -47,6 +47,11 @@ constexpr float kLargeFontScaleFactor = 1.0;
 constexpr float kMediumFontScaleFactor = 0.8;
 constexpr float kSmallFontScaleFactor = 0.6;
 
+constexpr bool kDefaultAutoHide = false;
+constexpr bool kDefaultShowApplicationMenu = true;
+constexpr bool kDefaultShowPager = false;
+constexpr bool kDefaultShowClock = false;
+
 enum class PanelPosition {Top, Bottom, Left, Right};
 
 struct LauncherConfig {
@@ -239,7 +244,7 @@ class MultiDockModel : public QObject {
 
   bool autoHide(int dockId) const {
     return dockProperty(dockId, ConfigHelper::kGeneralCategory,
-                        ConfigHelper::kAutoHide, false);
+                        ConfigHelper::kAutoHide, kDefaultAutoHide);
   }
 
   void setAutoHide(int dockId, bool value) {
@@ -250,7 +255,7 @@ class MultiDockModel : public QObject {
   bool showApplicationMenu(int dockId) const {
     return dockProperty(
           dockId, ConfigHelper::kGeneralCategory,
-          ConfigHelper::kShowApplicationMenu, true);
+          ConfigHelper::kShowApplicationMenu, kDefaultShowApplicationMenu);
   }
 
   void setShowApplicationMenu(int dockId, bool value) {
@@ -260,7 +265,8 @@ class MultiDockModel : public QObject {
 
   bool showPager(int dockId) const {
     return dockProperty(
-          dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowPager, false);
+        dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowPager,
+        kDefaultShowPager);
   }
 
   void setShowPager(int dockId, bool value) {
@@ -270,7 +276,8 @@ class MultiDockModel : public QObject {
 
   bool showClock(int dockId) const {
     return dockProperty(
-          dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowClock, false);
+        dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowClock,
+        kDefaultShowClock);
   }
 
   void setShowClock(int dockId, bool value) {
@@ -338,8 +345,8 @@ class MultiDockModel : public QObject {
 
   static std::vector<LauncherConfig> createDefaultLaunchers();
 
-  void addDock(const std::tuple<QString, QString>& configs,
-               PanelPosition position, int screen);
+  int addDock(const std::tuple<QString, QString>& configs,
+              PanelPosition position, int screen);
 
   // Helper(s).
   ConfigHelper configHelper_;

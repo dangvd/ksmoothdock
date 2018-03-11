@@ -66,11 +66,15 @@ MultiDockModel::~MultiDockModel() {
 
 void MultiDockModel::addDock(PanelPosition position, int screen) {
   auto configs = configHelper_.findNextDockConfigs();
-  addDock(configs, position, screen);
+  auto dockId = addDock(configs, position, screen);
+  setAutoHide(dockId, kDefaultAutoHide);
+  setShowApplicationMenu(dockId, kDefaultShowApplicationMenu);
+  setShowPager(dockId, kDefaultShowPager);
+  setShowClock(dockId, kDefaultShowClock);
 }
 
-void MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
-                             PanelPosition position, int screen) {
+int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
+                            PanelPosition position, int screen) {
   // Dock ID starts from 1.
   const auto dockId = dockConfigs_.size() + 1;
   dockConfigs_[dockId] = std::make_tuple(
@@ -78,7 +82,9 @@ void MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
       loadDockLaunchers(std::get<1>(configs)));
   setPanelPosition(dockId, position);
   setScreen(dockId, screen);
+
   emit dockAdded(dockId);
+  return dockId;
 }
 
 void MultiDockModel::cloneDock(int srcDockId, PanelPosition position,
