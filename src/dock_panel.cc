@@ -57,7 +57,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       parent_(parent),
       model_(model),
       dockId_(dockId),
-      autoHide_(false),
+      visibility_(PanelVisibility::AlwaysVisible),
       showPager_(false),
       showClock_(false),
       showBorder_(true),
@@ -442,9 +442,15 @@ void DockPanel::createMenu() {
     }
   }
 
-  autoHideAction_ = menu_.addAction(i18n("Auto &Hide"), this,
-      SLOT(toggleAutoHide()));
-  autoHideAction_->setCheckable(true);
+  QMenu* visibility = menu_.addMenu(i18n("Visibility"));
+  visibilityAlwaysVisibleAction_ = visibility->addAction(
+      i18n("Always &Visible"), this,
+      [this]() { updateVisibility(PanelVisibility::AlwaysVisible); });
+  visibilityAlwaysVisibleAction_->setCheckable(true);
+  visibilityAutoHideAction_ = visibility->addAction(
+      i18n("Auto &Hide"), this,
+      [this]() { updateVisibility(PanelVisibility::AutoHide); });
+  visibilityAutoHideAction_->setCheckable(true);
 
   QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
   applicationMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
@@ -467,12 +473,18 @@ void DockPanel::createMenu() {
   menu_.addAction(i18n("E&xit"), parent_, SLOT(exit()));
 }
 
+void DockPanel::setVisibility(PanelVisibility visibility) {
+  visibility_ = visibility;
+  visibilityAlwaysVisibleAction_->setChecked(
+      visibility_ == PanelVisibility::AlwaysVisible);
+  visibilityAutoHideAction_->setChecked(
+      visibility_ == PanelVisibility::AutoHide);
+}
+
 void DockPanel::loadDockConfig() {
   setPosition(model_->panelPosition(dockId_));
   setScreen(model_->screen(dockId_));
-
-  autoHide_ = model_->autoHide(dockId_);
-  autoHideAction_->setChecked(autoHide_);
+  setVisibility(model_->visibility(dockId_));
 
   showApplicationMenu_ = model_->showApplicationMenu(dockId_);
   applicationMenuAction_->setChecked(showApplicationMenu_);
@@ -488,7 +500,7 @@ void DockPanel::loadDockConfig() {
 void DockPanel::saveDockConfig() {
   model_->setPanelPosition(dockId_, position_);
   model_->setScreen(dockId_, screen_);
-  model_->setAutoHide(dockId_, autoHide_);
+  model_->setVisibility(dockId_, visibility_);
   model_->setShowApplicationMenu(dockId_, showApplicationMenu_);
   model_->setShowPager(dockId_, showPager_);
   model_->setShowClock(dockId_, showClock_);
@@ -574,7 +586,7 @@ void DockPanel::initLayoutVars() {
     for (const auto& item : items_) {
       minWidth_ += (item->getMinWidth() + itemSpacing_);
     }
-    minHeight_ = autoHide_ ? 1 : distance;
+    minHeight_ = autoHide() ? 1 : distance;
     maxWidth_ = minWidth_ + delta;
     maxHeight_ = itemSpacing_ + maxSize_;
   } else {  // Vertical
@@ -582,7 +594,7 @@ void DockPanel::initLayoutVars() {
     for (const auto& item : items_) {
       minHeight_ += (item->getMinHeight() + itemSpacing_);
     }
-    minWidth_ = autoHide_ ? 1 : distance;
+    minWidth_ = autoHide() ? 1 : distance;
     maxHeight_ = minHeight_ + delta;
     maxWidth_ = itemSpacing_ + maxSize_;
   }
@@ -648,12 +660,12 @@ void DockPanel::updateLayout() {
     if (isHorizontal()) {
       endBackgroundWidth_ = minWidth_;
       backgroundWidth_ = startBackgroundWidth_;
-      endBackgroundHeight_ = autoHide_ ? 1 : distance;
+      endBackgroundHeight_ = autoHide() ? 1 : distance;
       backgroundHeight_ = startBackgroundHeight_;
     } else {  // Vertical
       endBackgroundHeight_ = minHeight_;
       backgroundHeight_ = startBackgroundHeight_;
-      endBackgroundWidth_ = autoHide_ ? 1 : distance;
+      endBackgroundWidth_ = autoHide() ? 1 : distance;
       backgroundWidth_ = startBackgroundWidth_;
     }
     currentAnimationStep_ = 0;
@@ -689,10 +701,10 @@ void DockPanel::updateLayout(int x, int y) {
     }
     if (isHorizontal()) {
       startBackgroundWidth_ = minWidth_;
-      startBackgroundHeight_ = autoHide_ ? 1 : distance;
+      startBackgroundHeight_ = autoHide() ? 1 : distance;
     } else {  // Vertical
       startBackgroundHeight_ = minHeight_;
-      startBackgroundWidth_ = autoHide_ ? 1 : distance;
+      startBackgroundWidth_ = autoHide() ? 1 : distance;
     }
   }
 

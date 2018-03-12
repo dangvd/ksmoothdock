@@ -82,8 +82,8 @@ class DockPanelTest: public QObject {
   }
 
   void verifyAutoHide(bool enabled) {
-    QCOMPARE(dock_->autoHide_, enabled);
-    QCOMPARE(dock_->autoHideAction_->isChecked(), enabled);
+    QCOMPARE(dock_->autoHide(), enabled);
+    QCOMPARE(dock_->visibilityAutoHideAction_->isChecked(), enabled);
     if (enabled) {
       QVERIFY(dock_->width() == 1 || dock_->height() == 1);
     }
@@ -139,9 +139,9 @@ void DockPanelTest::setPosition() {
 
 void DockPanelTest::autoHide() {
   verifyAutoHide(false);
-  dock_->autoHideAction_->trigger();
+  dock_->visibilityAutoHideAction_->trigger();
   verifyAutoHide(true);
-  dock_->autoHideAction_->trigger();
+  dock_->visibilityAlwaysVisibleAction_->trigger();
   verifyAutoHide(false);
 }
 

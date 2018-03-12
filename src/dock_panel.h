@@ -105,8 +105,8 @@ class DockPanel : public QWidget {
     saveDockConfig();
   }
 
-  void toggleAutoHide() {
-    autoHide_ = !autoHide_;
+  void updateVisibility(PanelVisibility visibility) {
+    setVisibility(visibility);
     reload();
     saveDockConfig();
   }
@@ -172,6 +172,10 @@ class DockPanel : public QWidget {
 
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
+  bool autoHide() { return visibility_ == PanelVisibility::AutoHide; }
+
+  void setVisibility(PanelVisibility visibility);
+
   int itemCount() { return static_cast<int>(items_.size()); }
 
   void reserveItems(int numLaunchers) {
@@ -230,7 +234,7 @@ class DockPanel : public QWidget {
 
   PanelPosition position_;
   int screen_;  // the screen (as screen index) that the dock is on.
-  bool autoHide_;
+  PanelVisibility visibility_;
   bool showApplicationMenu_;
   bool showPager_;
   bool showClock_;
@@ -269,7 +273,8 @@ class DockPanel : public QWidget {
   QAction* positionBottom_;
   QAction* positionLeft_;
   QAction* positionRight_;
-  QAction* autoHideAction_;
+  QAction* visibilityAlwaysVisibleAction_;
+  QAction* visibilityAutoHideAction_;
   QAction* applicationMenuAction_;
   QAction* applicationMenuSettings_;
   QAction* pagerAction_;
