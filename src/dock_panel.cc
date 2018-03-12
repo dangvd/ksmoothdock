@@ -171,17 +171,6 @@ void DockPanel::setStrutForApplicationMenu() {
   }
 }
 
-void DockPanel::setPosition(PanelPosition position) {
-  position_ = position;
-  orientation_ = (position_ == PanelPosition::Top ||
-      position_ == PanelPosition::Bottom)
-      ? Qt::Horizontal : Qt::Vertical;
-  positionTop_->setChecked(position == PanelPosition::Top);
-  positionBottom_->setChecked(position == PanelPosition::Bottom);
-  positionLeft_->setChecked(position == PanelPosition::Left);
-  positionRight_->setChecked(position == PanelPosition::Right);
-}
-
 void DockPanel::togglePager() {
   showPager_ = !showPager_;
   reload();
@@ -414,16 +403,16 @@ void DockPanel::createMenu() {
 
   QMenu* position = menu_.addMenu(i18n("&Position"));
   positionTop_ = position->addAction(i18n("&Top"), this,
-      SLOT(setPositionTop()));
+      [this]() { updatePosition(PanelPosition::Top); });
   positionTop_->setCheckable(true);
   positionBottom_ = position->addAction(i18n("&Bottom"), this,
-      SLOT(setPositionBottom()));
+      [this]() { updatePosition(PanelPosition::Bottom); });
   positionBottom_->setCheckable(true);
   positionLeft_ = position->addAction(i18n("&Left"), this,
-      SLOT(setPositionLeft()));
+      [this]() { updatePosition(PanelPosition::Left); });
   positionLeft_->setCheckable(true);
   positionRight_ = position->addAction(i18n("&Right"), this,
-      SLOT(setPositionRight()));
+      [this]() { updatePosition(PanelPosition::Right); });
   positionRight_->setCheckable(true);
 
   const int numScreens = QApplication::desktop()->screenCount();
@@ -471,6 +460,17 @@ void DockPanel::createMenu() {
       this, SLOT(about()));
   menu_.addSeparator();
   menu_.addAction(i18n("E&xit"), parent_, SLOT(exit()));
+}
+
+void DockPanel::setPosition(PanelPosition position) {
+  position_ = position;
+  orientation_ = (position_ == PanelPosition::Top ||
+      position_ == PanelPosition::Bottom)
+      ? Qt::Horizontal : Qt::Vertical;
+  positionTop_->setChecked(position == PanelPosition::Top);
+  positionBottom_->setChecked(position == PanelPosition::Bottom);
+  positionLeft_->setChecked(position == PanelPosition::Left);
+  positionRight_->setChecked(position == PanelPosition::Right);
 }
 
 void DockPanel::setVisibility(PanelVisibility visibility) {

@@ -79,28 +79,8 @@ class DockPanel : public QWidget {
   void setStrut();
   void setStrutForApplicationMenu();
 
-  void setPosition(PanelPosition position);
-
-  void setPositionTop() {
-    setPosition(PanelPosition::Top);
-    reload();
-    saveDockConfig();
-  }
-
-  void setPositionBottom() {
-    setPosition(PanelPosition::Bottom);
-    reload();
-    saveDockConfig();
-  }
-
-  void setPositionLeft() {
-    setPosition(PanelPosition::Left);
-    reload();
-    saveDockConfig();
-  }
-
-  void setPositionRight() {
-    setPosition(PanelPosition::Right);
+  void updatePosition(PanelPosition position) {
+    setPosition(position);
     reload();
     saveDockConfig();
   }
@@ -173,6 +153,8 @@ class DockPanel : public QWidget {
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
   bool autoHide() { return visibility_ == PanelVisibility::AutoHide; }
+
+  void setPosition(PanelPosition position);
 
   void setVisibility(PanelVisibility visibility);
 
