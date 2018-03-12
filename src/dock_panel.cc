@@ -157,7 +157,19 @@ void DockPanel::reload() {
 }
 
 void DockPanel::setStrut() {
-  setStrut(isHorizontal() ? minHeight_ : minWidth_);
+  switch(visibility_) {
+    case PanelVisibility::AlwaysVisible:
+      setStrut(isHorizontal() ? minHeight_ : minWidth_);
+      break;
+    case PanelVisibility::AutoHide:  // fall through
+    case PanelVisibility::WindowsCanCover:
+      setStrut(1);
+      break;
+    case PanelVisibility::WindowsGoBelow:  // fall through
+    default:
+      setStrut(0);
+      break;
+  }
 }
 
 void DockPanel::setStrutForApplicationMenu() {
@@ -361,9 +373,16 @@ void DockPanel::mousePressEvent(QMouseEvent* e) {
 
 void DockPanel::enterEvent (QEvent* e) {
   isEntering_ = true;
+  if (windowsCanCover()) {
+    KWindowSystem::setState(winId(), NET::KeepAbove);
+  }
 }
 
 void DockPanel::leaveEvent(QEvent* e) {
+  if (windowsCanCover()) {
+    KWindowSystem::setState(winId(), NET::KeepBelow);
+  }
+
   if (isMinimized_) {
     return;
   }
@@ -440,6 +459,14 @@ void DockPanel::createMenu() {
       i18n("Auto &Hide"), this,
       [this]() { updateVisibility(PanelVisibility::AutoHide); });
   visibilityAutoHideAction_->setCheckable(true);
+  visibilityWindowsCanCoverAction_ = visibility->addAction(
+      i18n("Windows Can &Cover"), this,
+      [this]() { updateVisibility(PanelVisibility::WindowsCanCover); });
+  visibilityWindowsCanCoverAction_->setCheckable(true);
+  visibilityWindowsGoBelowAction_ = visibility->addAction(
+      i18n("Windows Go &Below"), this,
+      [this]() { updateVisibility(PanelVisibility::WindowsGoBelow); });
+  visibilityWindowsGoBelowAction_->setCheckable(true);
 
   QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
   applicationMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
@@ -475,10 +502,27 @@ void DockPanel::setPosition(PanelPosition position) {
 
 void DockPanel::setVisibility(PanelVisibility visibility) {
   visibility_ = visibility;
+  switch(visibility_) {
+    case PanelVisibility::AlwaysVisible:  // fall through
+    case PanelVisibility::AutoHide:  // fall through
+    case PanelVisibility::WindowsGoBelow:
+      KWindowSystem::setState(winId(), NET::KeepAbove);
+      break;
+    case PanelVisibility::WindowsCanCover:
+      KWindowSystem::setState(winId(), NET::KeepBelow);
+      break;
+    default:
+      break;
+  }
+
   visibilityAlwaysVisibleAction_->setChecked(
       visibility_ == PanelVisibility::AlwaysVisible);
   visibilityAutoHideAction_->setChecked(
       visibility_ == PanelVisibility::AutoHide);
+  visibilityWindowsCanCoverAction_->setChecked(
+      visibility_ == PanelVisibility::WindowsCanCover);
+  visibilityWindowsGoBelowAction_->setChecked(
+      visibility_ == PanelVisibility::WindowsGoBelow);
 }
 
 void DockPanel::loadDockConfig() {
