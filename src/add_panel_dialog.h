@@ -33,8 +33,12 @@ class AddPanelDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit AddPanelDialog(MultiDockModel* model);
+  enum class Mode { Add, Clone };
+
+  AddPanelDialog(MultiDockModel* model, int dockId);
   ~AddPanelDialog();
+
+  void setMode(Mode mode);
 
  public slots:
   void accept() override;
@@ -42,7 +46,9 @@ class AddPanelDialog : public QDialog {
  private:
   Ui::AddPanelDialog *ui;
 
+  Mode mode_;
   MultiDockModel* model_;
+  int dockId_;
 
   friend class AddPanelDialogTest;
 };

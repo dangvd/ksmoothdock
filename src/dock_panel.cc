@@ -253,13 +253,13 @@ void DockPanel::showApplicationMenuSettingsDialog() {
 }
 
 void DockPanel::addDock() {
-  AddPanelDialog dialog(model_);
+  AddPanelDialog dialog(model_, dockId_);
   dialog.exec();
 }
 
 void DockPanel::cloneDock() {
-  AddPanelDialog dialog(model_);
-  dialog.setWindowTitle(i18n("Clone Panel"));
+  AddPanelDialog dialog(model_, dockId_);
+  dialog.setMode(AddPanelDialog::Mode::Clone);
   dialog.exec();
 }
 
