@@ -53,7 +53,7 @@ class EditLaunchersDialogTest: public QObject {
 
  private:
   int launcherCount() {
-    return static_cast<int>(model_->launcherConfigs(kDockId).size());
+    return static_cast<int>(model_->dockLauncherConfigs(kDockId).size());
   }
 
   std::unique_ptr<MultiDockModel> model_;

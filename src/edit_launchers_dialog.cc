@@ -262,7 +262,7 @@ void EditLaunchersDialog::resetCommandLists() {
 
 void EditLaunchersDialog::loadData() {
   launchers_->clear();
-  for (const auto& item : model_->launcherConfigs(dockId_)) {
+  for (const auto& item : model_->dockLauncherConfigs(dockId_)) {
     QPixmap icon = KIconLoader::global()->loadIcon(
         item.icon, KIconLoader::NoGroup, kListIconSize);
     QListWidgetItem* listItem = new QListWidgetItem(
@@ -283,8 +283,8 @@ void EditLaunchersDialog::saveData() {
     launcherConfigs.push_back(LauncherConfig(
                                 listItem->text(), info.iconName, info.command));
   }
-  model_->setLauncherConfigs(dockId_, launcherConfigs);
-  model_->saveLauncherConfigs(dockId_);
+  model_->setDockLauncherConfigs(dockId_, launcherConfigs);
+  model_->saveDockLauncherConfigs(dockId_);
 }
 
 void EditLaunchersDialog::populateInternalCommands() {

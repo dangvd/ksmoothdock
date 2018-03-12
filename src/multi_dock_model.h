@@ -98,127 +98,106 @@ class MultiDockModel : public QObject {
   void removeDock(int dockId);
 
   int minIconSize() const {
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kMinimumIconSize,
-          kDefaultMinSize);
+    return appearanceProperty(kGeneralCategory, kMinimumIconSize,
+                              kDefaultMinSize);
   }
 
   void setMinIconSize(int value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kMinimumIconSize,
-                          value);
+    setAppearanceProperty(kGeneralCategory, kMinimumIconSize, value);
   }
 
   int maxIconSize() const {
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kMaximumIconSize,
-          kDefaultMaxSize);
+    return appearanceProperty(kGeneralCategory, kMaximumIconSize,
+                              kDefaultMaxSize);
   }
 
   void setMaxIconSize(int value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kMaximumIconSize, value);
+    setAppearanceProperty(kGeneralCategory, kMaximumIconSize, value);
   }
 
   QColor backgroundColor() const {
     QColor defaultBackgroundColor(kDefaultBackgroundColor);
     defaultBackgroundColor.setAlphaF(kDefaultBackgroundAlpha);
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kBackgroundColor,
-          defaultBackgroundColor);
+    return appearanceProperty(kGeneralCategory, kBackgroundColor,
+                              defaultBackgroundColor);
   }
 
   void setBackgroundColor(const QColor& value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kBackgroundColor, value);
+    setAppearanceProperty(kGeneralCategory, kBackgroundColor, value);
   }
 
   bool showBorder() const {
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kShowBorder,
-          kDefaultShowBorder);
+    return appearanceProperty(kGeneralCategory, kShowBorder,
+                              kDefaultShowBorder);
   }
 
   void setShowBorder(bool value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kShowBorder, value);
+    setAppearanceProperty(kGeneralCategory, kShowBorder, value);
   }
 
   QColor borderColor() const {
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kBorderColor,
-          QColor(kDefaultBorderColor));
+    return appearanceProperty(kGeneralCategory, kBorderColor,
+                              QColor(kDefaultBorderColor));
   }
 
   void setBorderColor(const QColor& value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kBorderColor, value);
+    setAppearanceProperty(kGeneralCategory, kBorderColor, value);
   }
 
   int tooltipFontSize() const {
-    return appearanceProperty(
-          ConfigHelper::kGeneralCategory, ConfigHelper::kTooltipFontSize,
-          kDefaultTooltipFontSize);
+    return appearanceProperty(kGeneralCategory, kTooltipFontSize,
+                              kDefaultTooltipFontSize);
   }
 
   void setTooltipFontSize(int value) {
-    setAppearanceProperty(ConfigHelper::kGeneralCategory,
-                          ConfigHelper::kTooltipFontSize, value);
+    setAppearanceProperty(kGeneralCategory, kTooltipFontSize, value);
   }
 
   QString applicationMenuName() const {
-    return appearanceProperty(ConfigHelper::kApplicationMenuCategory,
-                              ConfigHelper::kLabel,
+    return appearanceProperty(kApplicationMenuCategory, kLabel,
                               i18n(kDefaultApplicationMenuName));
   }
 
   void setApplicationMenuName(const QString& value) {
-    setAppearanceProperty(ConfigHelper::kApplicationMenuCategory,
-                          ConfigHelper::kLabel, value);
+    setAppearanceProperty(kApplicationMenuCategory, kLabel, value);
   }
 
   QString applicationMenuIcon() const {
-    return appearanceProperty(ConfigHelper::kApplicationMenuCategory,
-                              ConfigHelper::kIcon,
+    return appearanceProperty(kApplicationMenuCategory, kIcon,
                               QString(kDefaultApplicationMenuIcon));
   }
 
   void setApplicationMenuIcon(const QString& value) {
-    setAppearanceProperty(ConfigHelper::kApplicationMenuCategory,
-                          ConfigHelper::kIcon, value);
+    setAppearanceProperty(kApplicationMenuCategory, kIcon, value);
   }
 
   QString wallpaper(int desktop) const {
-    return appearanceProperty(ConfigHelper::kPagerCategory,
+    return appearanceProperty(kPagerCategory,
                               ConfigHelper::wallpaperConfigKey(desktop),
                               QString());
   }
 
   void setWallpaper(int desktop, const QString& value) {
-    setAppearanceProperty(ConfigHelper::kPagerCategory,
+    setAppearanceProperty(kPagerCategory,
                           ConfigHelper::wallpaperConfigKey(desktop), value);
   }
 
   bool use24HourClock() const {
-    return appearanceProperty(ConfigHelper::kClockCategory,
-                              ConfigHelper::kUse24HourClock,
+    return appearanceProperty(kClockCategory, kUse24HourClock,
                               kDefaultUse24HourClock);
   }
 
   void setUse24HourClock(bool value) {
-    setAppearanceProperty(ConfigHelper::kClockCategory,
-                          ConfigHelper::kUse24HourClock, value);
+    setAppearanceProperty(kClockCategory, kUse24HourClock, value);
   }
 
   float clockFontScaleFactor() const {
-    return appearanceProperty(ConfigHelper::kClockCategory,
-                              ConfigHelper::kFontScaleFactor,
+    return appearanceProperty(kClockCategory, kFontScaleFactor,
                               kDefaultClockFontScaleFactor);
   }
 
   void setClockFontScaleFactor(float value) {
-    setAppearanceProperty(ConfigHelper::kClockCategory,
-                          ConfigHelper::kFontScaleFactor, value);
+    setAppearanceProperty(kClockCategory, kFontScaleFactor, value);
   }
 
   void saveAppearanceConfig() {
@@ -228,66 +207,56 @@ class MultiDockModel : public QObject {
 
   PanelPosition panelPosition(int dockId) const {
     return static_cast<PanelPosition>(dockProperty(
-        dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kPosition,
+        dockId, kGeneralCategory, kPosition,
         static_cast<int>(PanelPosition::Bottom)));
   }
 
   void setPanelPosition(int dockId, PanelPosition value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kPosition, static_cast<int>(value));
+    setDockProperty(dockId, kGeneralCategory, kPosition,
+                    static_cast<int>(value));
   }
 
   int screen(int dockId) const {
-    return dockProperty(dockId, ConfigHelper::kGeneralCategory,
-                        ConfigHelper::kScreen, 0);
+    return dockProperty(dockId, kGeneralCategory, kScreen, 0);
   }
 
   void setScreen(int dockId, int value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kScreen, value);
+    setDockProperty(dockId, kGeneralCategory, kScreen, value);
   }
 
   bool autoHide(int dockId) const {
-    return dockProperty(dockId, ConfigHelper::kGeneralCategory,
-                        ConfigHelper::kAutoHide, kDefaultAutoHide);
+    return dockProperty(dockId, kGeneralCategory, kAutoHide, kDefaultAutoHide);
   }
 
   void setAutoHide(int dockId, bool value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kAutoHide, value);
+    setDockProperty(dockId, kGeneralCategory, kAutoHide, value);
   }
 
   bool showApplicationMenu(int dockId) const {
-    return dockProperty(
-          dockId, ConfigHelper::kGeneralCategory,
-          ConfigHelper::kShowApplicationMenu, kDefaultShowApplicationMenu);
+    return dockProperty(dockId, kGeneralCategory, kShowApplicationMenu,
+                        kDefaultShowApplicationMenu);
   }
 
   void setShowApplicationMenu(int dockId, bool value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kShowApplicationMenu, value);
+    setDockProperty(dockId, kGeneralCategory, kShowApplicationMenu, value);
   }
 
   bool showPager(int dockId) const {
-    return dockProperty(
-        dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowPager,
-        kDefaultShowPager);
+    return dockProperty(dockId, kGeneralCategory, kShowPager,
+                        kDefaultShowPager);
   }
 
   void setShowPager(int dockId, bool value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kShowPager, value);
+    setDockProperty(dockId, kGeneralCategory, kShowPager, value);
   }
 
   bool showClock(int dockId) const {
-    return dockProperty(
-        dockId, ConfigHelper::kGeneralCategory, ConfigHelper::kShowClock,
-        kDefaultShowClock);
+    return dockProperty(dockId, kGeneralCategory, kShowClock,
+                        kDefaultShowClock);
   }
 
   void setShowClock(int dockId, bool value) {
-    setDockProperty(dockId, ConfigHelper::kGeneralCategory,
-                    ConfigHelper::kShowClock, value);
+    setDockProperty(dockId, kGeneralCategory, kShowClock, value);
   }
 
   void saveDockConfig(int dockId) {
@@ -295,17 +264,21 @@ class MultiDockModel : public QObject {
     // No need to emit signal here.
   }
 
-  std::vector<LauncherConfig> launcherConfigs(int dockId) {
-    return std::get<1>(dockConfigs_[dockId]);
+  QString dockLaunchersPath(int dockId) const {
+    return std::get<2>(dockConfigs_.at(dockId));
   }
 
-  void setLauncherConfigs(int dockId,
-                          const std::vector<LauncherConfig>& launcherConfigs) {
-    std::get<1>(dockConfigs_[dockId]) = launcherConfigs;
+  const std::vector<LauncherConfig> dockLauncherConfigs(int dockId) const {
+    return std::get<3>(dockConfigs_.at(dockId));
   }
 
-  void saveLauncherConfigs(int dockId) {
-    syncLaunchersConfig(dockId);
+  void setDockLauncherConfigs(
+      int dockId, const std::vector<LauncherConfig>& launcherConfigs) {
+    std::get<3>(dockConfigs_[dockId]) = launcherConfigs;
+  }
+
+  void saveDockLauncherConfigs(int dockId) {
+    syncDockLaunchersConfig(dockId);
     emit dockLaunchersChanged(dockId);
   }
 
@@ -315,6 +288,36 @@ class MultiDockModel : public QObject {
   void dockLaunchersChanged(int dockId);
 
  private:
+  // Dock config's categories/properties.
+  static constexpr char kGeneralCategory[] = "General";
+  static constexpr char kAutoHide[] = "autoHide";
+  static constexpr char kPosition[] = "position";
+  static constexpr char kScreen[] = "screen";
+  static constexpr char kShowApplicationMenu[] = "showApplicationMenu";
+  static constexpr char kShowClock[] = "showClock";
+  static constexpr char kShowPager[] = "showPager";
+
+  // Global appearance config's categories/properties.
+
+  // General category.
+  static constexpr char kBackgroundColor[] = "backgroundColor";
+  static constexpr char kBorderColor[] = "borderColor";
+  static constexpr char kMaximumIconSize[] = "maximumIconSize";
+  static constexpr char kMinimumIconSize[] = "minimumIconSize";
+  static constexpr char kShowBorder[] = "showBorder";
+  static constexpr char kTooltipFontSize[] = "tooltipFontSize";
+
+  static constexpr char kApplicationMenuCategory[] = "Application Menu";
+  static constexpr char kIcon[] = "icon";
+  static constexpr char kLabel[] = "label";
+
+  static constexpr char kPagerCategory[] = "Pager";
+  static constexpr char kWallpaper[] = "wallpaper";
+
+  static constexpr char kClockCategory[] = "Clock";
+  static constexpr char kUse24HourClock[] = "use24HourClock";
+  static constexpr char kFontScaleFactor[] = "fontScaleFactor";
+
   template <typename T>
   T appearanceProperty(QString category, QString name, T defaultValue) const {
     KConfigGroup group(&appearanceConfig_, category);
@@ -340,18 +343,24 @@ class MultiDockModel : public QObject {
     group.writeEntry(name, value);
   }
 
+  QString dockConfigPath(int dockId) const {
+    return std::get<0>(dockConfigs_.at(dockId));
+  }
+
   const KConfig* dockConfig(int dockId) const {
-    return std::get<0>(dockConfigs_.at(dockId)).get();
+    return std::get<1>(dockConfigs_.at(dockId)).get();
   }
 
   KConfig* dockConfig(int dockId) {
-    return std::get<0>(dockConfigs_[dockId]).get();
+    return std::get<1>(dockConfigs_[dockId]).get();
   }
 
   static std::vector<LauncherConfig> loadDockLaunchers(
       const QString& dockLaunchersPath);
 
   static std::vector<LauncherConfig> createDefaultLaunchers();
+
+  void loadDocks();
 
   int addDock(const std::tuple<QString, QString>& configs,
               PanelPosition position, int screen);
@@ -364,15 +373,33 @@ class MultiDockModel : public QObject {
     dockConfig(dockId)->sync();
   }
 
-  void syncLaunchersConfig(int dockId);
+  void syncDockLaunchersConfig(int dockId);
+
+  static void copyEntry(const QString& key, const KConfigGroup& sourceGroup,
+                        KConfigGroup* destGroup) {
+    destGroup->writeEntry(key, sourceGroup.readEntry(key));
+  }
+
+  // Converts the old single-dock config to the new multi-dock config if needed.
+  bool convertConfig();
 
   // Helper(s).
   ConfigHelper configHelper_;
 
   // Model data.
+
+  // Appearance config.
   KConfig appearanceConfig_;
+
+  // Dock configs, as map from dockIds to tuples of:
+  // (dock config file path,
+  //  dock config,
+  //  launchers dir path,
+  //  list of launcher configs)
   std::unordered_map<int,
-                     std::tuple<std::unique_ptr<KConfig>,
+                     std::tuple<QString,
+                                std::unique_ptr<KConfig>,
+                                QString,
                                 std::vector<LauncherConfig>>> dockConfigs_;
 
   // ID for the next dock.

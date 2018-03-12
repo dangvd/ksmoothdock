@@ -18,11 +18,37 @@
 
 #include "multi_dock_model.h"
 
+#include <iostream>
+
 #include <KDesktopFile>
+#include <KWindowSystem>
 
 #include "command_utils.h"
 
 namespace ksmoothdock {
+
+constexpr char MultiDockModel::kGeneralCategory[];
+constexpr char MultiDockModel::kAutoHide[];
+constexpr char MultiDockModel::kPosition[];
+constexpr char MultiDockModel::kScreen[];
+constexpr char MultiDockModel::kShowApplicationMenu[];
+constexpr char MultiDockModel::kShowClock[];
+constexpr char MultiDockModel::kShowPager[];
+
+constexpr char MultiDockModel::kBackgroundColor[];
+constexpr char MultiDockModel::kBorderColor[];
+constexpr char MultiDockModel::kMaximumIconSize[];
+constexpr char MultiDockModel::kMinimumIconSize[];
+constexpr char MultiDockModel::kShowBorder[];
+constexpr char MultiDockModel::kTooltipFontSize[];
+constexpr char MultiDockModel::kApplicationMenuCategory[];
+constexpr char MultiDockModel::kIcon[];
+constexpr char MultiDockModel::kLabel[];
+constexpr char MultiDockModel::kPagerCategory[];
+constexpr char MultiDockModel::kWallpaper[];
+constexpr char MultiDockModel::kClockCategory[];
+constexpr char MultiDockModel::kUse24HourClock[];
+constexpr char MultiDockModel::kFontScaleFactor[];
 
 LauncherConfig::LauncherConfig(const QString& desktopFile) {
   KDesktopFile file(desktopFile);
@@ -46,16 +72,23 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     : configHelper_(configDir),
       appearanceConfig_(configHelper_.appearanceConfigPath(),
                         KConfig::SimpleConfig) {
-  if (configHelper_.convertConfig()) {
+  if (convertConfig()) {
     appearanceConfig_.reparseConfiguration();
   }
+  loadDocks();
+}
 
+void MultiDockModel::loadDocks() {
   // Dock ID starts from 1.
   int dockId = 1;
   for (const auto& configs : configHelper_.findAllDockConfigs()) {
+    const auto& configPath = std::get<0>(configs);
+    const auto& launchersPath = std::get<1>(configs);
     dockConfigs_[dockId] = std::make_tuple(
-        std::make_unique<KConfig>(std::get<0>(configs), KConfig::SimpleConfig),
-        loadDockLaunchers(std::get<1>(configs)));
+        configPath,
+        std::make_unique<KConfig>(configPath, KConfig::SimpleConfig),
+        launchersPath,
+        loadDockLaunchers(launchersPath));
     ++dockId;
   }
   nextDockId_ = dockId;
@@ -88,7 +121,7 @@ void MultiDockModel::addDock(PanelPosition position, int screen) {
     syncAppearanceConfig();
   }
   syncDockConfig(dockId);
-  syncLaunchersConfig(dockId);
+  syncDockLaunchersConfig(dockId);
 }
 
 int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
@@ -96,9 +129,13 @@ int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
   // Dock ID starts from 1.
   const auto dockId = nextDockId_;
   ++nextDockId_;
+  const auto& configPath = std::get<0>(configs);
+  const auto& launchersPath = std::get<1>(configs);
   dockConfigs_[dockId] = std::make_tuple(
-      std::make_unique<KConfig>(std::get<0>(configs), KConfig::SimpleConfig),
-      loadDockLaunchers(std::get<1>(configs)));
+      configPath,
+      std::make_unique<KConfig>(configPath, KConfig::SimpleConfig),
+      launchersPath,
+      loadDockLaunchers(launchersPath));
   setPanelPosition(dockId, position);
   setScreen(dockId, screen);
 
@@ -111,24 +148,24 @@ void MultiDockModel::cloneDock(int srcDockId, PanelPosition position,
   auto configs = configHelper_.findNextDockConfigs();
 
   // Clone the dock config and launchers.
-  QFile::copy(configHelper_.dockConfigPath(srcDockId), std::get<0>(configs));
-  ConfigHelper::copyLaunchersDir(configHelper_.dockLaunchersPath(srcDockId),
+  QFile::copy(dockConfigPath(srcDockId), std::get<0>(configs));
+  ConfigHelper::copyLaunchersDir(dockLaunchersPath(srcDockId),
                                  std::get<1>(configs));
 
   auto dockId = addDock(configs, position, screen);
   syncDockConfig(dockId);
-  syncLaunchersConfig(dockId);
+  syncDockLaunchersConfig(dockId);
 }
 
 void MultiDockModel::removeDock(int dockId) {
+  QFile::remove(dockConfigPath(dockId));
+  ConfigHelper::removeLaunchersDir(dockLaunchersPath(dockId));
   dockConfigs_.erase(dockId);
-  QFile::remove(configHelper_.dockConfigPath(dockId));
-  ConfigHelper::removeLaunchersDir(configHelper_.dockLaunchersPath(dockId));
   // No need to emit a signal here.
 }
 
-void MultiDockModel::syncLaunchersConfig(int dockId) {
-  const auto& launchersPath = configHelper_.dockLaunchersPath(dockId);
+void MultiDockModel::syncDockLaunchersConfig(int dockId) {
+  const auto& launchersPath = dockLaunchersPath(dockId);
   QDir launchersDir(launchersPath);
   QStringList files = launchersDir.entryList(QDir::Files, QDir::Name);
   for (int i = 0; i < files.size(); ++i) {
@@ -136,7 +173,7 @@ void MultiDockModel::syncLaunchersConfig(int dockId) {
   }
 
   int launcherId = 1;
-  for (const auto& item : launcherConfigs(dockId)) {
+  for (const auto& item : dockLauncherConfigs(dockId)) {
     item.saveToFile(QString("%1/%2 - %3.desktop")
         .arg(launchersPath)
         .arg(launcherId, 2, 10, QChar('0'))
@@ -185,6 +222,64 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
   }
 
   return std::move(launchers);
+}
+
+bool MultiDockModel::convertConfig() {
+  if (!configHelper_.isSingleDockConfig()) {
+    return false;
+  }
+
+  std::cout << "Converting single-dock config to multi-dock config"
+            << std::endl;
+
+  KConfig singleDockConfig(configHelper_.singleDockConfigPath(),
+                           KConfig::SimpleConfig);
+  KConfig dock1Config(configHelper_.dockConfigPathFromSingleDock(),
+                      KConfig::SimpleConfig);
+
+  KConfigGroup singleDockGeneral(&singleDockConfig, kGeneralCategory);
+  KConfigGroup dock1General(&dock1Config, kGeneralCategory);
+  copyEntry(kAutoHide, singleDockGeneral, &dock1General);
+  copyEntry(kPosition, singleDockGeneral, &dock1General);
+  copyEntry(kScreen, singleDockGeneral, &dock1General);
+  copyEntry(kShowApplicationMenu, singleDockGeneral, &dock1General);
+  copyEntry(kShowPager, singleDockGeneral, &dock1General);
+  copyEntry(kShowClock, singleDockGeneral, &dock1General);
+
+  dock1Config.sync();
+
+  KConfig appearanceConfig(configHelper_.appearanceConfigPath(),
+                           KConfig::SimpleConfig);
+  KConfigGroup appearanceGeneral(&appearanceConfig, kGeneralCategory);
+  copyEntry(kBackgroundColor, singleDockGeneral, &appearanceGeneral);
+  copyEntry(kBorderColor, singleDockGeneral, &appearanceGeneral);
+  copyEntry(kMaximumIconSize, singleDockGeneral, &appearanceGeneral);
+  copyEntry(kMinimumIconSize, singleDockGeneral, &appearanceGeneral);
+  copyEntry(kShowBorder, singleDockGeneral, &appearanceGeneral);
+  copyEntry(kTooltipFontSize, singleDockGeneral, &appearanceGeneral);
+
+  KConfigGroup singleDockAppMenu(&singleDockConfig, kApplicationMenuCategory);
+  KConfigGroup appearanceAppMenu(&appearanceConfig, kApplicationMenuCategory);
+  copyEntry(kIcon, singleDockAppMenu, &appearanceAppMenu);
+  copyEntry(kLabel, singleDockAppMenu, &appearanceAppMenu);
+
+  KConfigGroup singleDockPager(&singleDockConfig, kPagerCategory);
+  KConfigGroup appearancePager(&appearanceConfig, kPagerCategory);
+  const int numDesktops = KWindowSystem::numberOfDesktops();
+  for (int desktop = 1; desktop <= numDesktops; ++desktop) {
+    copyEntry(ConfigHelper::wallpaperConfigKey(desktop), singleDockPager,
+              &appearancePager);
+  }
+
+  KConfigGroup singleDockClock(&singleDockConfig, kClockCategory);
+  KConfigGroup appearanceClock(&appearanceConfig, kClockCategory);
+  copyEntry(kUse24HourClock, singleDockClock, &appearanceClock);
+
+  appearanceConfig.sync();
+
+  configHelper_.renameSingleDockConfigs();
+
+  return true;
 }
 
 }  // namespace ksmoothdock

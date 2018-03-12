@@ -24,8 +24,6 @@
 
 #include <QDir>
 
-#include <KConfigGroup>
-
 namespace ksmoothdock {
 
 // Helper class for working with configurations.
@@ -39,81 +37,13 @@ class ConfigHelper  {
   static constexpr char kSingleDockLaunchers[] = "launchers";
 
   // Individual dock configs.
-
   static constexpr char kConfigPattern[] = "panel_*.conf";
 
-  static constexpr char kGeneralCategory[] = "General";
-  static constexpr char kAutoHide[] = "autoHide";
-  static constexpr char kPosition[] = "position";
-  static constexpr char kScreen[] = "screen";
-  static constexpr char kShowApplicationMenu[] = "showApplicationMenu";
-  static constexpr char kShowClock[] = "showClock";
-  static constexpr char kShowPager[] = "showPager";
-
-  // Global appearance configs.
-
+  // Global appearance config.
   static constexpr char kAppearanceConfig[] = "appearance.conf";
-
-  // General category.
-  static constexpr char kBackgroundColor[] = "backgroundColor";
-  static constexpr char kBorderColor[] = "borderColor";
-  static constexpr char kMaximumIconSize[] = "maximumIconSize";
-  static constexpr char kMinimumIconSize[] = "minimumIconSize";
-  static constexpr char kShowBorder[] = "showBorder";
-  static constexpr char kTooltipFontSize[] = "tooltipFontSize";
-
-  static constexpr char kApplicationMenuCategory[] = "Application Menu";
-  static constexpr char kIcon[] = "icon";
-  static constexpr char kLabel[] = "label";
-
-  static constexpr char kPagerCategory[] = "Pager";
-  static constexpr char kWallpaper[] = "wallpaper";
-
-  static constexpr char kClockCategory[] = "Clock";
-  static constexpr char kUse24HourClock[] = "use24HourClock";
-  static constexpr char kFontScaleFactor[] = "fontScaleFactor";
 
   explicit ConfigHelper(const QString& configDir);
   ~ConfigHelper() = default;
-
-  // Gets the config file path of the old single-dock config.
-  QString singleDockConfigPath() const {
-    return configDir_.filePath(kSingleDockConfig);
-  }
-
-  // Gets the launchers dir path of the old single-dock config.
-  QString singleDockLaunchersPath() const {
-    return configDir_.filePath(kSingleDockLaunchers);
-  }
-
-  // Gets the config file name of a dock.
-  QString dockConfigFile(int dockId) const {
-    return QString("panel_") + QString::number(dockId) + ".conf";
-  }
-
-  // Gets the config file path of a dock.
-  QString dockConfigPath(int dockId) const {
-    return configDir_.filePath(dockConfigFile(dockId));
-  }
-
-  QString dockConfigPath(QString configFile) const {
-    return configDir_.filePath(configFile);
-  }
-
-  static QString dockLaunchersDir(int dockId) {
-    return QString("panel_") + QString::number(dockId) + "_launchers";
-  }
-
-  // Gets the launchers dir path of a dock.
-  QString dockLaunchersPath(int dockId) const {
-    return configDir_.filePath(dockLaunchersDir(dockId));
-  }
-
-  QString getDockLaunchersPathForConfigFile(const QString& configFile) const {
-    QString launchersDir = configFile;
-    launchersDir.replace(".conf", "_launchers");
-    return configDir_.filePath(launchersDir);
-  }
 
   // Gets the appearance config file path.
   QString appearanceConfigPath() const {
@@ -126,13 +56,10 @@ class ConfigHelper  {
 
   // Finds the configs of all existing docks.
   // Returns a list of a tuple of <dock config path, dock launchers path>.
-  std::vector<std::tuple<QString, QString>> findAllDockConfigs();
+  std::vector<std::tuple<QString, QString>> findAllDockConfigs() const;
 
   // Finds the next available configs for a new dock.
-  std::tuple<QString, QString> findNextDockConfigs();
-
-  // Converts the old single-dock config to the new multi-dock config if needed.
-  bool convertConfig();
+  std::tuple<QString, QString> findNextDockConfigs() const;
 
   // Copies a launchers directory.
   static void copyLaunchersDir(const QString& launchersDir,
@@ -141,10 +68,64 @@ class ConfigHelper  {
   // Removes a launchers directory.
   static void removeLaunchersDir(const QString& launchersDir);
 
+  // For conversion from old single-dock config to the new multi-dock config.
+
+  // Whether this is a old version of KSmoothDock using single-dock config.
+  bool isSingleDockConfig() const {
+    return configDir_.exists(kSingleDockConfig) &&
+        !configDir_.exists(kAppearanceConfig);
+  }
+
+  // Gets the config file path of the old single-dock config.
+  QString singleDockConfigPath() const {
+    return configDir_.filePath(kSingleDockConfig);
+  }
+
+  // Gets the launchers dir path of the old single-dock config.
+  QString singleDockLaunchersPath() const {
+    return configDir_.filePath(kSingleDockLaunchers);
+  }
+
+  // Used when conversion from single-dock config to multi-dock config.
+  QString dockConfigPathFromSingleDock() const {
+    return dockConfigPath(1);
+  }
+
+  // Renames single-dock configs. Is meant to be called after conversion to
+  // multi-dock config has been done.
+  void renameSingleDockConfigs() {
+    configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
+    configDir_.rename(kSingleDockLaunchers, dockLaunchersDir(1));
+  }
+
  private:
-  static void copyEntry(const QString& key, const KConfigGroup& sourceGroup,
-                        KConfigGroup* destGroup) {
-    destGroup->writeEntry(key, sourceGroup.readEntry(key));
+  // Gets the config file name of a dock.
+  QString dockConfigFile(int fileId) const {
+    return QString("panel_") + QString::number(fileId) + ".conf";
+  }
+
+  // Gets the config file path of a dock.
+  QString dockConfigPath(int fileId) const {
+    return configDir_.filePath(dockConfigFile(fileId));
+  }
+
+  QString dockConfigPath(QString configFile) const {
+    return configDir_.filePath(configFile);
+  }
+
+  static QString dockLaunchersDir(int fileId) {
+    return QString("panel_") + QString::number(fileId) + "_launchers";
+  }
+
+  // Gets the launchers dir path of a dock.
+  QString dockLaunchersPath(int fileId) const {
+    return configDir_.filePath(dockLaunchersDir(fileId));
+  }
+
+  QString dockLaunchersPathForConfigFile(const QString& configFile) const {
+    QString launchersDir = configFile;
+    launchersDir.replace(".conf", "_launchers");
+    return configDir_.filePath(launchersDir);
   }
 
   QDir configDir_;

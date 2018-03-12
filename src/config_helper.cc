@@ -18,13 +18,8 @@
 
 #include "config_helper.h"
 
-#include <iostream>
-
 #include <QFile>
 #include <QStringList>
-
-#include <KConfig>
-#include <KWindowSystem>
 
 namespace ksmoothdock {
 
@@ -33,29 +28,7 @@ constexpr char ConfigHelper::kSingleDockOldConfig[];
 constexpr char ConfigHelper::kSingleDockLaunchers[];
 
 constexpr char ConfigHelper::kConfigPattern[];
-constexpr char ConfigHelper::kGeneralCategory[];
-constexpr char ConfigHelper::kAutoHide[];
-constexpr char ConfigHelper::kPosition[];
-constexpr char ConfigHelper::kScreen[];
-constexpr char ConfigHelper::kShowApplicationMenu[];
-constexpr char ConfigHelper::kShowClock[];
-constexpr char ConfigHelper::kShowPager[];
-
 constexpr char ConfigHelper::kAppearanceConfig[];
-constexpr char ConfigHelper::kBackgroundColor[];
-constexpr char ConfigHelper::kBorderColor[];
-constexpr char ConfigHelper::kMaximumIconSize[];
-constexpr char ConfigHelper::kMinimumIconSize[];
-constexpr char ConfigHelper::kShowBorder[];
-constexpr char ConfigHelper::kTooltipFontSize[];
-constexpr char ConfigHelper::kApplicationMenuCategory[];
-constexpr char ConfigHelper::kIcon[];
-constexpr char ConfigHelper::kLabel[];
-constexpr char ConfigHelper::kPagerCategory[];
-constexpr char ConfigHelper::kWallpaper[];
-constexpr char ConfigHelper::kClockCategory[];
-constexpr char ConfigHelper::kUse24HourClock[];
-constexpr char ConfigHelper::kFontScaleFactor[];
 
 ConfigHelper::ConfigHelper(const QString& configDir)
     : configDir_{configDir} {
@@ -64,7 +37,8 @@ ConfigHelper::ConfigHelper(const QString& configDir)
   }
 }
 
-std::vector<std::tuple<QString, QString>> ConfigHelper::findAllDockConfigs() {
+std::vector<std::tuple<QString, QString>> ConfigHelper::findAllDockConfigs()
+    const {
   std::vector<std::tuple<QString, QString>> allConfigs;
   QStringList files = configDir_.entryList(
       {kConfigPattern}, QDir::Files, QDir::Name);
@@ -76,75 +50,18 @@ std::vector<std::tuple<QString, QString>> ConfigHelper::findAllDockConfigs() {
     const QString& configFile = files.at(i);
     allConfigs.push_back(std::make_tuple(
         dockConfigPath(configFile),
-        getDockLaunchersPathForConfigFile(configFile)));
+        dockLaunchersPathForConfigFile(configFile)));
   }
   return allConfigs;
 }
 
-std::tuple<QString, QString> ConfigHelper::findNextDockConfigs() {
-  for (int dockId = 1; ; ++dockId) {
-    if (!configDir_.exists(dockConfigFile(dockId))) {
-      return std::make_tuple(dockConfigPath(dockId),
-                             dockLaunchersPath(dockId));
+std::tuple<QString, QString> ConfigHelper::findNextDockConfigs() const {
+  for (int fileId = 1; ; ++fileId) {
+    if (!configDir_.exists(dockConfigFile(fileId))) {
+      return std::make_tuple(dockConfigPath(fileId),
+                             dockLaunchersPath(fileId));
     }
   }
-}
-
-bool ConfigHelper::convertConfig() {
-  if (!configDir_.exists(kSingleDockConfig) ||
-      configDir_.exists(kAppearanceConfig)) {
-    return false;
-  }
-
-  std::cout << "Converting single-dock config to multi-dock config"
-            << std::endl;
-
-  KConfig singleDockConfig(singleDockConfigPath(), KConfig::SimpleConfig);
-  KConfig dock1Config(dockConfigPath(1), KConfig::SimpleConfig);
-
-  KConfigGroup singleDockGeneral(&singleDockConfig, kGeneralCategory);
-  KConfigGroup dock1General(&dock1Config, kGeneralCategory);
-  copyEntry(kAutoHide, singleDockGeneral, &dock1General);
-  copyEntry(kPosition, singleDockGeneral, &dock1General);
-  copyEntry(kScreen, singleDockGeneral, &dock1General);
-  copyEntry(kShowApplicationMenu, singleDockGeneral, &dock1General);
-  copyEntry(kShowPager, singleDockGeneral, &dock1General);
-  copyEntry(kShowClock, singleDockGeneral, &dock1General);
-
-  dock1Config.sync();
-
-  KConfig appearanceConfig(appearanceConfigPath(), KConfig::SimpleConfig);
-  KConfigGroup appearanceGeneral(&appearanceConfig, kGeneralCategory);
-  copyEntry(kBackgroundColor, singleDockGeneral, &appearanceGeneral);
-  copyEntry(kBorderColor, singleDockGeneral, &appearanceGeneral);
-  copyEntry(kMaximumIconSize, singleDockGeneral, &appearanceGeneral);
-  copyEntry(kMinimumIconSize, singleDockGeneral, &appearanceGeneral);
-  copyEntry(kShowBorder, singleDockGeneral, &appearanceGeneral);
-  copyEntry(kTooltipFontSize, singleDockGeneral, &appearanceGeneral);
-
-  KConfigGroup singleDockAppMenu(&singleDockConfig, kApplicationMenuCategory);
-  KConfigGroup appearanceAppMenu(&appearanceConfig, kApplicationMenuCategory);
-  copyEntry(kIcon, singleDockAppMenu, &appearanceAppMenu);
-  copyEntry(kLabel, singleDockAppMenu, &appearanceAppMenu);
-
-  KConfigGroup singleDockPager(&singleDockConfig, kPagerCategory);
-  KConfigGroup appearancePager(&appearanceConfig, kPagerCategory);
-  const int numDesktops = KWindowSystem::numberOfDesktops();
-  for (int desktop = 1; desktop <= numDesktops; ++desktop) {
-    copyEntry(wallpaperConfigKey(desktop), singleDockPager,
-              &appearancePager);
-  }
-
-  KConfigGroup singleDockClock(&singleDockConfig, kClockCategory);
-  KConfigGroup appearanceClock(&appearanceConfig, kClockCategory);
-  copyEntry(kUse24HourClock, singleDockClock, &appearanceClock);
-
-  appearanceConfig.sync();
-
-  configDir_.rename(kSingleDockConfig, kSingleDockOldConfig);
-  configDir_.rename(kSingleDockLaunchers, dockLaunchersDir(1));
-
-  return true;
 }
 
 void ConfigHelper::copyLaunchersDir(const QString& launchersDir,

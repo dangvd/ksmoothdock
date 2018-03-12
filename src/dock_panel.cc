@@ -505,7 +505,7 @@ void DockPanel::loadAppearanceConfig() {
 }
 
 void DockPanel::initLaunchers() {
-  for (const auto& launcherConfig : model_->launcherConfigs(dockId_)) {
+  for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
     items_.push_back(std::make_unique<Launcher>(
         this, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
         maxSize_, launcherConfig.command));
