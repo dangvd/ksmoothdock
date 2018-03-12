@@ -81,6 +81,7 @@ MultiDockModel::MultiDockModel(const QString& configDir)
 void MultiDockModel::loadDocks() {
   // Dock ID starts from 1.
   int dockId = 1;
+  dockConfigs_.clear();
   for (const auto& configs : configHelper_.findAllDockConfigs()) {
     const auto& configPath = std::get<0>(configs);
     const auto& launchersPath = std::get<1>(configs);
