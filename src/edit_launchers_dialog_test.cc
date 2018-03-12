@@ -31,6 +31,8 @@
 namespace ksmoothdock {
 
 constexpr int kDockId = 1;
+constexpr int kScreen = 0;
+constexpr int kDefaultLauncherCount = 7;
 
 class EditLaunchersDialogTest: public QObject {
   Q_OBJECT
@@ -39,6 +41,7 @@ class EditLaunchersDialogTest: public QObject {
   void init() {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
+    model_->addDock(PanelPosition::Bottom, kScreen);
     dialog_ = std::make_unique<EditLaunchersDialog>(model_.get(), kDockId);
   }
 
@@ -66,7 +69,7 @@ void EditLaunchersDialogTest::ok() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 1);
+  QCOMPARE(launcherCount(), kDefaultLauncherCount + 1);
 }
 
 void EditLaunchersDialogTest::apply() {
@@ -75,7 +78,7 @@ void EditLaunchersDialogTest::apply() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 1);
+  QCOMPARE(launcherCount(), kDefaultLauncherCount + 1);
 }
 
 void EditLaunchersDialogTest::cancel() {
@@ -84,7 +87,7 @@ void EditLaunchersDialogTest::cancel() {
                     Qt::LeftButton);
 
   // Verify.
-  QCOMPARE(launcherCount(), 0);
+  QCOMPARE(launcherCount(), kDefaultLauncherCount);
 }
 
 }  // namespace ksmoothdock
