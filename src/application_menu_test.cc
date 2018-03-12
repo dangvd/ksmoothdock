@@ -71,8 +71,8 @@ void ApplicationMenuTest::loadEntries_singleDir() {
              {"Chrome", "Web Browser", "chrome", "chrome", ""},
              "Network");
 
-  ApplicationMenu applicationMenu(
-      nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize, { entryDir.path() });
+  ApplicationMenu applicationMenu(nullptr, model_.get(), Qt::Horizontal,
+                                  kMinSize, kMaxSize, { entryDir.path() });
   applicationMenu.initCategories();
   applicationMenu.loadEntries();
 

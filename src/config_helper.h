@@ -100,7 +100,7 @@ class ConfigHelper  {
 
  private:
   // Gets the config file name of a dock.
-  QString dockConfigFile(int fileId) const {
+  static QString dockConfigFile(int fileId) {
     return QString("panel_") + QString::number(fileId) + ".conf";
   }
 
@@ -129,6 +129,8 @@ class ConfigHelper  {
   }
 
   QDir configDir_;
+
+  friend class MultiDockModelTest;
 };
 
 }  // namespace ksmoothdock
