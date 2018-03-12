@@ -36,6 +36,11 @@
 
 namespace ksmoothdock {
 
+enum class PanelPosition { Top, Bottom, Left, Right };
+
+enum class PanelVisibility { AlwaysVisible, AutoHide, WindowsCanCover,
+                             WindowsGoBelow };
+
 constexpr int kDefaultMinSize = 48;
 constexpr int kDefaultMaxSize = 128;
 constexpr int kDefaultTooltipFontSize = 20;
@@ -47,6 +52,7 @@ constexpr float kLargeClockFontScaleFactor = 1.0;
 constexpr float kMediumClockFontScaleFactor = 0.8;
 constexpr float kSmallClockFontScaleFactor = 0.6;
 
+constexpr PanelVisibility kDefaultVisibility = PanelVisibility::AlwaysVisible;
 constexpr bool kDefaultAutoHide = false;
 constexpr bool kDefaultShowApplicationMenu = true;
 constexpr bool kDefaultShowPager = false;
@@ -56,8 +62,6 @@ constexpr char kDefaultApplicationMenuName[] = "Applications";
 constexpr char kDefaultApplicationMenuIcon[] = "start-here-kde";
 constexpr bool kDefaultUse24HourClock = true;
 constexpr float kDefaultClockFontScaleFactor = kLargeClockFontScaleFactor;
-
-enum class PanelPosition {Top, Bottom, Left, Right};
 
 struct LauncherConfig {
   QString name;
@@ -224,6 +228,22 @@ class MultiDockModel : public QObject {
     setDockProperty(dockId, kGeneralCategory, kScreen, value);
   }
 
+  PanelVisibility visibility(int dockId) const {
+    if (autoHide(dockId)) {  // for backward compatibility.
+      return PanelVisibility::AutoHide;
+    }
+    return static_cast<PanelVisibility>(dockProperty(
+        dockId, kGeneralCategory, kVisibility,
+        static_cast<int>(kDefaultVisibility)));
+  }
+
+  void setVisibility(int dockId, PanelVisibility value) {
+    setDockProperty(dockId, kGeneralCategory, kVisibility,
+                    static_cast<int>(value));
+    // For backward compatibility.
+    setAutoHide(dockId, value == PanelVisibility::AutoHide);
+  }
+
   bool autoHide(int dockId) const {
     return dockProperty(dockId, kGeneralCategory, kAutoHide, kDefaultAutoHide);
   }
@@ -291,6 +311,7 @@ class MultiDockModel : public QObject {
   // Dock config's categories/properties.
   static constexpr char kGeneralCategory[] = "General";
   static constexpr char kAutoHide[] = "autoHide";
+  static constexpr char kVisibility[] = "visibility";
   static constexpr char kPosition[] = "position";
   static constexpr char kScreen[] = "screen";
   static constexpr char kShowApplicationMenu[] = "showApplicationMenu";
