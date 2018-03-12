@@ -49,9 +49,9 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>25</y>
+     <y>20</y>
      <width>71</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
    <property name="minimum">
@@ -81,9 +81,9 @@
    <property name="geometry">
     <rect>
      <x>550</x>
-     <y>25</y>
+     <y>20</y>
      <width>71</width>
-     <height>32</height>
+     <height>36</height>
     </rect>
    </property>
    <property name="minimum">
@@ -113,9 +113,9 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>85</y>
+     <y>80</y>
      <width>71</width>
-     <height>32</height>
+     <height>36</height>
     </rect>
    </property>
    <property name="maximum">
@@ -181,9 +181,9 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>205</y>
+     <y>200</y>
      <width>71</width>
-     <height>32</height>
+     <height>36</height>
     </rect>
    </property>
    <property name="minimum">
