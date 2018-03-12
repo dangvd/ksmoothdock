@@ -54,7 +54,7 @@
      <x>410</x>
      <y>120</y>
      <width>121</width>
-     <height>32</height>
+     <height>38</height>
     </rect>
    </property>
    <property name="text">
@@ -71,7 +71,7 @@
      <x>410</x>
      <y>190</y>
      <width>121</width>
-     <height>32</height>
+     <height>38</height>
     </rect>
    </property>
    <property name="text">
@@ -88,7 +88,7 @@
      <x>410</x>
      <y>260</y>
      <width>121</width>
-     <height>32</height>
+     <height>38</height>
     </rect>
    </property>
    <property name="text">
@@ -116,9 +116,9 @@
    <property name="geometry">
     <rect>
      <x>680</x>
-     <y>25</y>
+     <y>20</y>
      <width>421</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
   </widget>
@@ -139,9 +139,9 @@
    <property name="geometry">
     <rect>
      <x>680</x>
-     <y>105</y>
+     <y>100</y>
      <width>421</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
   </widget>
@@ -151,7 +151,7 @@
      <x>680</x>
      <y>160</y>
      <width>371</width>
-     <height>32</height>
+     <height>38</height>
     </rect>
    </property>
    <property name="text">
@@ -164,7 +164,7 @@
      <x>680</x>
      <y>215</y>
      <width>371</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
   </widget>
@@ -174,7 +174,7 @@
      <x>680</x>
      <y>270</y>
      <width>371</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
   </widget>
@@ -184,7 +184,7 @@
      <x>680</x>
      <y>325</y>
      <width>371</width>
-     <height>31</height>
+     <height>36</height>
     </rect>
    </property>
   </widget>
