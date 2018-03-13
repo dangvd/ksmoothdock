@@ -40,7 +40,7 @@ class DockPanelTest: public QObject {
   void init() {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
-    model_->addDock(PanelPosition::Bottom, kScreen);
+    model_->addDock();
     view_ = std::make_unique<MultiDockView>(model_.get());
     dock_ = std::make_unique<DockPanel>(view_.get(), model_.get(), kDockId);
   }
@@ -89,35 +89,22 @@ class DockPanelTest: public QObject {
     }
   }
 
-  void verifyApplicationMenu(bool enabled) {
+  void verifyApplicationMenu(bool enabled, int itemCount) {
     QCOMPARE(dock_->showApplicationMenu_, enabled);
     QCOMPARE(dock_->applicationMenuAction_->isChecked(), enabled);
-    if (enabled) {
-      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
-    } else {
-      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount);
-    }
+    QCOMPARE(dock_->itemCount(), itemCount);
   }
 
-  void verifyPager(bool enabled) {
+  void verifyPager(bool enabled, int itemCount) {
     QCOMPARE(dock_->showPager_, enabled);
     QCOMPARE(dock_->pagerAction_->isChecked(), enabled);
-    if (enabled) {
-      QCOMPARE(dock_->itemCount(),
-               kDefaultLauncherCount + KWindowSystem::numberOfDesktops() + 1);
-    } else {
-      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
-    }
+    QCOMPARE(dock_->itemCount(), itemCount);
   }
 
-  void verifyClock(bool enabled) {
+  void verifyClock(bool enabled, int itemCount) {
     QCOMPARE(dock_->showClock_, enabled);
     QCOMPARE(dock_->clockAction_->isChecked(), enabled);
-    if (enabled) {
-      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 2);
-    } else {
-      QCOMPARE(dock_->itemCount(), kDefaultLauncherCount + 1);
-    }
+    QCOMPARE(dock_->itemCount(), itemCount);
   }
 
   std::unique_ptr<MultiDockModel> model_;
@@ -146,24 +133,23 @@ void DockPanelTest::autoHide() {
 }
 
 void DockPanelTest::toggleApplicationMenu() {
-  verifyApplicationMenu(true);
+  const int itemCount = dock_->itemCount();
   dock_->applicationMenuAction_->trigger();
-  verifyApplicationMenu(false);
+  verifyApplicationMenu(false, itemCount - 1);
   dock_->applicationMenuAction_->trigger();
-  verifyApplicationMenu(true);
+  verifyApplicationMenu(true, itemCount);
 }
 
 void DockPanelTest::togglePager() {
-  verifyPager(false);
-  // TODO: Test when the pager is enabled.
+  // TODO(dangvd)
 }
 
 void DockPanelTest::toggleClock() {
-  verifyClock(false);
+  const int itemCount = dock_->itemCount();
   dock_->clockAction_->trigger();
-  verifyClock(true);
+  verifyClock(false, itemCount - 1);
   dock_->clockAction_->trigger();
-  verifyClock(false);
+  verifyClock(true, itemCount);
 }
 
 }  // namespace ksmoothdock

@@ -57,7 +57,7 @@ class AddPanelDialogTest: public QObject {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
     if (mode != AddPanelDialog::Mode::Welcome) {
-      model_->addDock(PanelPosition::Bottom, kScreen);
+      model_->addDock();
     }
     int dockId = (mode == AddPanelDialog::Mode::Clone) ? kDockId : 0;
     dialog_ = std::make_unique<AddPanelDialog>(mode, model_.get(), dockId);

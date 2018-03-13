@@ -41,7 +41,7 @@ class EditLaunchersDialogTest: public QObject {
   void init() {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
-    model_->addDock(PanelPosition::Bottom, kScreen);
+    model_->addDock();
     dialog_ = std::make_unique<EditLaunchersDialog>(model_.get(), kDockId);
   }
 

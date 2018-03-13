@@ -96,13 +96,16 @@ void MultiDockModel::loadDocks() {
   nextDockId_ = dockId;
 }
 
-void MultiDockModel::addDock(PanelPosition position, int screen) {
+void MultiDockModel::addDock(PanelPosition position, int screen,
+                             bool showApplicationMenu, bool showPager,
+                             bool showClock) {
   auto configs = configHelper_.findNextDockConfigs();
   auto dockId = addDock(configs, position, screen);
   setVisibility(dockId, kDefaultVisibility);
-  setShowApplicationMenu(dockId, kDefaultShowApplicationMenu);
-  setShowPager(dockId, kDefaultShowPager);
-  setShowClock(dockId, kDefaultShowClock);
+  setShowApplicationMenu(dockId, showApplicationMenu);
+  setShowPager(dockId, showPager);
+  setShowClock(dockId, showClock);
+  emit dockAdded(dockId);
 
   if (dockCount() == 1) {
     setMinIconSize(kDefaultMinSize);
@@ -128,7 +131,6 @@ void MultiDockModel::addDock(PanelPosition position, int screen) {
 
 int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
                             PanelPosition position, int screen) {
-  // Dock ID starts from 1.
   const auto dockId = nextDockId_;
   ++nextDockId_;
   const auto& configPath = std::get<0>(configs);
@@ -141,7 +143,6 @@ int MultiDockModel::addDock(const std::tuple<QString, QString>& configs,
   setPanelPosition(dockId, position);
   setScreen(dockId, screen);
 
-  emit dockAdded(dockId);
   return dockId;
 }
 
@@ -155,6 +156,8 @@ void MultiDockModel::cloneDock(int srcDockId, PanelPosition position,
                                  std::get<1>(configs));
 
   auto dockId = addDock(configs, position, screen);
+  emit dockAdded(dockId);
+
   syncDockConfig(dockId);
   syncDockLaunchersConfig(dockId);
 }

@@ -97,7 +97,8 @@ void AddPanelDialog::accept() {
   if (mode_ == Mode::Clone) {
     model_->cloneDock(dockId_, position, screen);
   } else {
-    model_->addDock(position, screen);
+    model_->addDock(position, screen, ui->showApplicationMenu->isChecked(),
+                    ui->showPager->isChecked(), ui->showClock->isChecked());
   }
 }
 
