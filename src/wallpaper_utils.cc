@@ -30,14 +30,16 @@ QString loadPlasmaWallpaper(const QString& plasmaConfig) {
     return QString("");
   }
 
-  static QRegularExpression regExp("\\[Containments\\]\\[\\d\\]\\[Wallpaper\\]"
-                                   "\\[org.kde.image\\]\\[General\\]");
+  static const QString kConfigGroupPart1 = QString("[Containments][");
+  static const QString kConfigGroupPart2 = QString(
+      "][Wallpaper][org.kde.image][General]");
   QTextStream input(&config);
   QString line;
   bool foundConfigGroup = false;
   while (input.readLineInto(&line)) {
     if (!foundConfigGroup) {
-      if (line.contains(regExp)) {
+      if (line.startsWith(kConfigGroupPart1) &&
+          line.mid(16, 36) == kConfigGroupPart2) {
         foundConfigGroup = true;
       }
     } else {
