@@ -48,7 +48,11 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
   ui->screenLabel->setVisible(isMultiScreen);
   ui->screen->setVisible(isMultiScreen);
 
-  if (mode == Mode::Clone) {
+  if (mode == Mode::Add) {
+    ui->showApplicationMenu->setChecked(false);
+    ui->showPager->setChecked(false);
+    ui->showClock->setChecked(false);
+  } else if (mode == Mode::Clone) {
     ui->componentsLabel->setVisible(false);
     ui->showApplicationMenu->setVisible(false);
     ui->showLaunchers->setVisible(false);
