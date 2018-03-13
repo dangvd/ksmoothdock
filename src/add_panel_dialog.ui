@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>390</height>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>330</y>
+     <y>380</y>
      <width>400</width>
      <height>32</height>
     </rect>
@@ -36,7 +36,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>225</y>
+     <y>275</y>
      <width>210</width>
      <height>23</height>
     </rect>
@@ -49,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>215</y>
+     <y>265</y>
      <width>111</width>
      <height>36</height>
     </rect>
@@ -82,7 +82,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>275</y>
+     <y>325</y>
      <width>210</width>
      <height>23</height>
     </rect>
@@ -95,7 +95,7 @@
    <property name="geometry">
     <rect>
      <x>290</x>
-     <y>265</y>
+     <y>315</y>
      <width>111</width>
      <height>36</height>
     </rect>
@@ -105,7 +105,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>18</y>
+     <y>68</y>
      <width>300</width>
      <height>23</height>
     </rect>
@@ -118,7 +118,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>50</y>
+     <y>100</y>
      <width>300</width>
      <height>29</height>
     </rect>
@@ -137,7 +137,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>90</y>
+     <y>140</y>
      <width>300</width>
      <height>29</height>
     </rect>
@@ -153,7 +153,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>130</y>
+     <y>180</y>
      <width>300</width>
      <height>29</height>
     </rect>
@@ -169,7 +169,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>170</y>
+     <y>220</y>
      <width>300</width>
      <height>29</height>
     </rect>
@@ -179,6 +179,19 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="headerLabel">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>20</y>
+     <width>361</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Please set up your new panel.</string>
    </property>
   </widget>
  </widget>

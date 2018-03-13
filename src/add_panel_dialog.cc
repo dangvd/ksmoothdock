@@ -34,15 +34,15 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
       dockId_(dockId) {
   ui->setupUi(this);
 
-  setWindowTitle((mode_ == Mode::Add)
-                 ? i18n("Add Panel") : (mode_ == Mode::Clone)
-                    ? i18n("Clone Panel") : i18n("Welcome to KSmoothDock!"));
+  // Populate screen list.
 
   const int screenCount = QApplication::desktop()->screenCount();
   for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
   }
   ui->screen->setCurrentIndex(0);
+
+  // Adjust the UI for single/multi-screen.
 
   const bool isSingleScreen = (screenCount == 1);
   if (isSingleScreen) {
@@ -52,6 +52,16 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
     constexpr int kDeltaY = 45;
     ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
     resize(width(), height() - kDeltaY);
+  }
+
+  // Adjust the UI for different modes.
+
+  setWindowTitle((mode_ == Mode::Add)
+                 ? i18n("Add Panel") : (mode_ == Mode::Clone)
+                    ? i18n("Clone Panel") : i18n("Welcome to KSmoothDock!"));
+
+  if (mode == Mode::Welcome) {
+    ui->headerLabel->setText(i18n("Please set up your first panel."));
   }
 
   if (mode == Mode::Add) {
