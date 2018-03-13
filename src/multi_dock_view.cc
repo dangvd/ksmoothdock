@@ -18,7 +18,7 @@
 
 #include "multi_dock_view.h"
 
-#include "welcome_dialog.h"
+#include "add_panel_dialog.h"
 
 namespace ksmoothdock {
 
@@ -52,8 +52,9 @@ void MultiDockView::loadData() {
   }
 
   if (docks_.empty()) {
-    WelcomeDialog welcome(model_);
-    welcome.exec();
+    AddPanelDialog dialog(AddPanelDialog::Mode::Welcome, model_,
+                          0 /* dockId not required */);
+    dialog.exec();
   }
 }
 

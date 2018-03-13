@@ -18,7 +18,7 @@ find_package(KF5 5.7 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
 set(SRCS icon_based_dock_item.cc dock_panel.cc launcher.cc tooltip.cc
-    appearance_settings_dialog.cc welcome_dialog.cc desktop_selector.cc
+    appearance_settings_dialog.cc desktop_selector.cc
     edit_launchers_dialog.cc iconless_dock_item.cc clock.cc calendar.cc
     application_menu.cc application_menu_settings_dialog.cc
     add_panel_dialog.cc config_helper.cc multi_dock_model.cc
@@ -89,10 +89,6 @@ target_link_libraries(application_menu_settings_dialog_test
     Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(application_menu_settings_dialog_test
     application_menu_settings_dialog_test)
-
-add_executable(welcome_dialog_test welcome_dialog_test.cc)
-target_link_libraries(welcome_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
-add_test(welcome_dialog_test welcome_dialog_test)
 
 add_executable(multi_dock_model_test multi_dock_model_test.cc)
 target_link_libraries(multi_dock_model_test Qt5::Test ksmoothdock_lib ${LIBS})

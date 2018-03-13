@@ -26,13 +26,17 @@
 
 namespace ksmoothdock {
 
-AddPanelDialog::AddPanelDialog(MultiDockModel* model, int dockId)
+AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
     : QDialog(nullptr),
       ui(new Ui::AddPanelDialog),
-      mode_(Mode::Add),
+      mode_(mode),
       model_(model),
       dockId_(dockId) {
   ui->setupUi(this);
+
+  setWindowTitle((mode_ == Mode::Add)
+                 ? i18n("Add Panel") : (mode_ == Mode::Clone)
+                    ? i18n("Clone Panel") : i18n("Welcome to KSmoothDock!"));
 
   const int numScreens = QApplication::desktop()->screenCount();
   for (int i = 1; i <= numScreens; ++i) {
@@ -49,20 +53,14 @@ AddPanelDialog::~AddPanelDialog() {
   delete ui;
 }
 
-void AddPanelDialog::setMode(Mode mode) {
-  mode_ = mode;
-  setWindowTitle((mode_ == Mode::Add)
-                 ? i18n("Add Panel") : i18n("Clone Panel"));
-}
-
 void AddPanelDialog::accept() {
   QDialog::accept();
   auto position = static_cast<PanelPosition>(ui->position->currentIndex());
   auto screen = ui->screen->currentIndex();
-  if (mode_ == Mode::Add) {
-    model_->addDock(position, screen);
-  } else {
+  if (mode_ == Mode::Clone) {
     model_->cloneDock(dockId_, position, screen);
+  } else {
+    model_->addDock(position, screen);
   }
 }
 

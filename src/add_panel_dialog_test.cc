@@ -34,13 +34,6 @@ class AddPanelDialogTest: public QObject {
   Q_OBJECT
 
  private slots:
-  void init() {
-    QTemporaryDir configDir;
-    model_ = std::make_unique<MultiDockModel>(configDir.path());
-    model_->addDock(PanelPosition::Bottom, kScreen);
-    dialog_ = std::make_unique<AddPanelDialog>(model_.get(), kDockId);
-  }
-
   // Tests OK button in Add mode.
   void add_ok();
 
@@ -53,35 +46,67 @@ class AddPanelDialogTest: public QObject {
   // Tests Cancel button in Clone mode.
   void clone_cancel();
 
+  // Tests OK button in Welcome mode.
+  void welcome_ok();
+
+  // Tests Cancel button in Welcome mode.
+  void welcome_cancel();
+
  private:
+  void init(AddPanelDialog::Mode mode) {
+    QTemporaryDir configDir;
+    model_ = std::make_unique<MultiDockModel>(configDir.path());
+    if (mode != AddPanelDialog::Mode::Welcome) {
+      model_->addDock(PanelPosition::Bottom, kScreen);
+    }
+    int dockId = (mode == AddPanelDialog::Mode::Clone) ? kDockId : 0;
+    dialog_ = std::make_unique<AddPanelDialog>(mode, model_.get(), dockId);
+  }
+
   std::unique_ptr<MultiDockModel> model_;
   std::unique_ptr<AddPanelDialog> dialog_;
 };
 
 void AddPanelDialogTest::add_ok() {
+  init(AddPanelDialog::Mode::Add);
   QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Ok),
                     Qt::LeftButton);
   QCOMPARE(model_->dockCount(), 2);
 }
 
 void AddPanelDialogTest::add_cancel() {
+  init(AddPanelDialog::Mode::Add);
   QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
   QCOMPARE(model_->dockCount(), 1);
 }
 
 void AddPanelDialogTest::clone_ok() {
-  dialog_->setMode(AddPanelDialog::Mode::Clone);
+  init(AddPanelDialog::Mode::Clone);
   QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Ok),
                     Qt::LeftButton);
   QCOMPARE(model_->dockCount(), 2);
 }
 
 void AddPanelDialogTest::clone_cancel() {
-  dialog_->setMode(AddPanelDialog::Mode::Clone);
+  init(AddPanelDialog::Mode::Clone);
   QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Cancel),
                     Qt::LeftButton);
   QCOMPARE(model_->dockCount(), 1);
+}
+
+void AddPanelDialogTest::welcome_ok() {
+  init(AddPanelDialog::Mode::Welcome);
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Ok),
+                    Qt::LeftButton);
+  QCOMPARE(model_->dockCount(), 1);
+}
+
+void AddPanelDialogTest::welcome_cancel() {
+  init(AddPanelDialog::Mode::Welcome);
+  QTest::mouseClick(dialog_->ui->buttonBox->button(QDialogButtonBox::Cancel),
+                    Qt::LeftButton);
+  QCOMPARE(model_->dockCount(), 0);
 }
 
 }  // namespace ksmoothdock

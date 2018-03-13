@@ -33,12 +33,11 @@ class AddPanelDialog : public QDialog {
   Q_OBJECT
 
  public:
-  enum class Mode { Add, Clone };
+  enum class Mode { Add, Clone, Welcome };
 
-  AddPanelDialog(MultiDockModel* model, int dockId);
+  // Parameter dockId is only needed in Clone mode.
+  AddPanelDialog(Mode mode, MultiDockModel* model, int dockId);
   ~AddPanelDialog();
-
-  void setMode(Mode mode);
 
  public slots:
   void accept() override;
