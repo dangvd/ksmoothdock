@@ -25,11 +25,11 @@
 namespace ksmoothdock {
 
 // Returns the path to Plasma wallpaper's image file, given Plasma config file.
-QString getPlasmaWallpaper(const QString& plasmaConfig);
+QString loadPlasmaWallpaper(const QString& plasmaConfig);
 
 // Returns the path to Plasma wallpaper's image file.
-inline QString getPlasmaWallpaper() {
-  return getPlasmaWallpaper(
+inline QString loadPlasmaWallpaper() {
+  return loadPlasmaWallpaper(
       QDir::homePath() + "/.config/plasma-org.kde.plasma.desktop-appletsrc");
 }
 

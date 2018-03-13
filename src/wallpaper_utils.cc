@@ -24,7 +24,7 @@
 
 namespace ksmoothdock {
 
-QString getPlasmaWallpaper(const QString& plasmaConfig) {
+QString loadPlasmaWallpaper(const QString& plasmaConfig) {
   QFile config(plasmaConfig);
   if (!config.open(QFile::ReadOnly)) {
     return QString("");

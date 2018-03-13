@@ -28,10 +28,10 @@ class WallpaperUtilsTest: public QObject {
   Q_OBJECT
 
  private slots:
-  void testGetPlasmaWallpaper();
+  void testLoadPlasmaWallpaper();
 };
 
-void WallpaperUtilsTest::testGetPlasmaWallpaper() {
+void WallpaperUtilsTest::testLoadPlasmaWallpaper() {
   QTemporaryFile plasmaConfig;
   QVERIFY(plasmaConfig.open());
   QTextStream out(&plasmaConfig);
@@ -40,7 +40,7 @@ void WallpaperUtilsTest::testGetPlasmaWallpaper() {
       << "Image=file:///home/wallpaper.png" << "\n";
   plasmaConfig.close();
 
-  QCOMPARE(getPlasmaWallpaper(plasmaConfig.fileName()),
+  QCOMPARE(loadPlasmaWallpaper(plasmaConfig.fileName()),
            QString("/home/wallpaper.png"));
 }
 

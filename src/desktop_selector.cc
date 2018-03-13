@@ -31,6 +31,7 @@
 #include <KMessageBox>
 
 #include "dock_panel.h"
+#include "wallpaper_utils.h"
 
 namespace ksmoothdock {
 
@@ -84,7 +85,12 @@ void DesktopSelector::loadConfig() {
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpaper_));
   } else {
-    setIconName("user-desktop");
+    wallpaper_ = loadPlasmaWallpaper();
+    if (isWallpaperOk()) {
+      setIconScaled(QPixmap(wallpaper_));
+    } else {
+      setIconName("user-desktop");
+    }
   }
 }
 
