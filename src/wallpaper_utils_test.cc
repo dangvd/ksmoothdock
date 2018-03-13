@@ -16,35 +16,35 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "command_utils.h"
+#include "wallpaper_utils.h"
 
+#include <QTemporaryFile>
 #include <QTest>
+#include <QTextStream>
 
 namespace ksmoothdock {
 
-class CommandUtilsTest: public QObject {
+class WallpaperUtilsTest: public QObject {
   Q_OBJECT
 
  private slots:
-  void testIsCommandDBus();
-
-  void testFilterFieldCodes();
+  void testGetPlasmaWallpaper();
 };
 
-void CommandUtilsTest::testIsCommandDBus() {
-  QVERIFY(!isCommandDBus("konsole"));
-  QVERIFY(isCommandDBus("qdbus org.kde.ksmserver /KSMServer logout 1 0 3"));
-}
+void WallpaperUtilsTest::testGetPlasmaWallpaper() {
+  QTemporaryFile plasmaConfig;
+  QVERIFY(plasmaConfig.open());
+  QTextStream out(&plasmaConfig);
+  out << "[Containments][1][General]" << "\n"
+      << "[Containments][1][Wallpaper][org.kde.image][General]" << "\n"
+      << "Image=file:///home/wallpaper.png" << "\n";
+  plasmaConfig.close();
 
-void CommandUtilsTest::testFilterFieldCodes() {
-  QCOMPARE(filterFieldCodes("konsole"), QString("konsole"));
-  QCOMPARE(filterFieldCodes("google-chrome --new-window"),
-           QString("google-chrome --new-window"));
-  QCOMPARE(filterFieldCodes("dolphin %u"), QString("dolphin"));
-  QCOMPARE(filterFieldCodes("kate -b %U"), QString("kate"));
+  QCOMPARE(getPlasmaWallpaper(plasmaConfig.fileName()),
+           QString("/home/wallpaper.png"));
 }
 
 }  // namespace ksmoothdock
 
-QTEST_MAIN(ksmoothdock::CommandUtilsTest)
-#include "command_utils_test.moc"
+QTEST_MAIN(ksmoothdock::WallpaperUtilsTest)
+#include "wallpaper_utils_test.moc"

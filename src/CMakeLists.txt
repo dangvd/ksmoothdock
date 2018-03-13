@@ -22,7 +22,7 @@ set(SRCS icon_based_dock_item.cc dock_panel.cc launcher.cc tooltip.cc
     edit_launchers_dialog.cc iconless_dock_item.cc clock.cc calendar.cc
     application_menu.cc application_menu_settings_dialog.cc
     add_panel_dialog.cc config_helper.cc multi_dock_model.cc
-    multi_dock_view.cc)
+    multi_dock_view.cc wallpaper_utils.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
@@ -97,3 +97,7 @@ add_test(welcome_dialog_test welcome_dialog_test)
 add_executable(multi_dock_model_test multi_dock_model_test.cc)
 target_link_libraries(multi_dock_model_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(multi_dock_model_test multi_dock_model_test)
+
+add_executable(wallpaper_utils_test wallpaper_utils_test.cc)
+target_link_libraries(wallpaper_utils_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(wallpaper_utils_test wallpaper_utils_test)

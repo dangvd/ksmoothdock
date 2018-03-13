@@ -16,35 +16,23 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "command_utils.h"
+#ifndef KSMOOTHDOCK_WALLPAPER_UTILS_H_
+#define KSMOOTHDOCK_WALLPAPER_UTILS_H_
 
-#include <QTest>
+#include <QDir>
+#include <QString>
 
 namespace ksmoothdock {
 
-class CommandUtilsTest: public QObject {
-  Q_OBJECT
+// Returns the path to Plasma wallpaper's image file, given Plasma config file.
+QString getPlasmaWallpaper(const QString& plasmaConfig);
 
- private slots:
-  void testIsCommandDBus();
-
-  void testFilterFieldCodes();
-};
-
-void CommandUtilsTest::testIsCommandDBus() {
-  QVERIFY(!isCommandDBus("konsole"));
-  QVERIFY(isCommandDBus("qdbus org.kde.ksmserver /KSMServer logout 1 0 3"));
-}
-
-void CommandUtilsTest::testFilterFieldCodes() {
-  QCOMPARE(filterFieldCodes("konsole"), QString("konsole"));
-  QCOMPARE(filterFieldCodes("google-chrome --new-window"),
-           QString("google-chrome --new-window"));
-  QCOMPARE(filterFieldCodes("dolphin %u"), QString("dolphin"));
-  QCOMPARE(filterFieldCodes("kate -b %U"), QString("kate"));
+// Returns the path to Plasma wallpaper's image file.
+inline QString getPlasmaWallpaper() {
+  return getPlasmaWallpaper(
+      QDir::homePath() + "/.config/plasma-org.kde.plasma.desktop-appletsrc");
 }
 
 }  // namespace ksmoothdock
 
-QTEST_MAIN(ksmoothdock::CommandUtilsTest)
-#include "command_utils_test.moc"
+#endif  // KSMOOTHDOCK_WALLPAPER_UTILS_H_

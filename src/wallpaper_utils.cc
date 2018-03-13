@@ -16,35 +16,38 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "command_utils.h"
+#include "wallpaper_utils.h"
 
-#include <QTest>
+#include <QFile>
+#include <QRegularExpression>
+#include <QTextStream>
 
 namespace ksmoothdock {
 
-class CommandUtilsTest: public QObject {
-  Q_OBJECT
+QString getPlasmaWallpaper(const QString& plasmaConfig) {
+  QFile config(plasmaConfig);
+  if (!config.open(QFile::ReadOnly)) {
+    return QString("");
+  }
 
- private slots:
-  void testIsCommandDBus();
+  static QRegularExpression regExp("\\[Containments\\]\\[\\d\\]\\[Wallpaper\\]"
+                                   "\\[org.kde.image\\]\\[General\\]");
+  QTextStream input(&config);
+  QString line;
+  bool foundConfigGroup = false;
+  while (input.readLineInto(&line)) {
+    if (!foundConfigGroup) {
+      if (line.contains(regExp)) {
+        foundConfigGroup = true;
+      }
+    } else {
+      if (line.startsWith("Image=file://")) {
+        return line.mid(13);
+      }
+    }
+  }
 
-  void testFilterFieldCodes();
-};
-
-void CommandUtilsTest::testIsCommandDBus() {
-  QVERIFY(!isCommandDBus("konsole"));
-  QVERIFY(isCommandDBus("qdbus org.kde.ksmserver /KSMServer logout 1 0 3"));
-}
-
-void CommandUtilsTest::testFilterFieldCodes() {
-  QCOMPARE(filterFieldCodes("konsole"), QString("konsole"));
-  QCOMPARE(filterFieldCodes("google-chrome --new-window"),
-           QString("google-chrome --new-window"));
-  QCOMPARE(filterFieldCodes("dolphin %u"), QString("dolphin"));
-  QCOMPARE(filterFieldCodes("kate -b %U"), QString("kate"));
+  return QString("");
 }
 
 }  // namespace ksmoothdock
-
-QTEST_MAIN(ksmoothdock::CommandUtilsTest)
-#include "command_utils_test.moc"
