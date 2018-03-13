@@ -38,13 +38,13 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
                  ? i18n("Add Panel") : (mode_ == Mode::Clone)
                     ? i18n("Clone Panel") : i18n("Welcome to KSmoothDock!"));
 
-  const int numScreens = QApplication::desktop()->screenCount();
-  for (int i = 1; i <= numScreens; ++i) {
+  const int screenCount = QApplication::desktop()->screenCount();
+  for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
   }
   ui->screen->setCurrentIndex(0);
 
-  const bool isSingleScreen = (numScreens == 1);
+  const bool isSingleScreen = (screenCount == 1);
   if (isSingleScreen) {
     ui->screenLabel->setVisible(false);
     ui->screen->setVisible(false);
