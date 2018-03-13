@@ -47,6 +47,23 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
   const bool isMultiScreen = numScreens > 1;
   ui->screenLabel->setVisible(isMultiScreen);
   ui->screen->setVisible(isMultiScreen);
+
+  if (mode == Mode::Clone) {
+    ui->componentsLabel->setVisible(false);
+    ui->showApplicationMenu->setVisible(false);
+    ui->showLaunchers->setVisible(false);
+    ui->showPager->setVisible(false);
+    ui->showClock->setVisible(false);
+
+    constexpr int kDeltaY = 200;
+    ui->positionLabel->move(ui->positionLabel->x(),
+                            ui->positionLabel->y() - kDeltaY);
+    ui->position->move(ui->position->x(), ui->position->y() - kDeltaY);
+    ui->screenLabel->move(ui->screenLabel->x(), ui->screenLabel->y() - kDeltaY);
+    ui->screen->move(ui->screen->x(), ui->screen->y() - kDeltaY);
+    ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
+    resize(width(), height() - kDeltaY);
+  }
 }
 
 AddPanelDialog::~AddPanelDialog() {
