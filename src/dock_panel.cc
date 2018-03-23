@@ -64,6 +64,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       aboutDialog_(KAboutData::applicationData(), this),
       appearanceSettingsDialog_(model),
       editLaunchersDialog_(model, dockId),
+      applicationMenuSettingsDialog_(model),
       wallpaperSettingsDialog_(model),
       isMinimized_(true),
       isResizing_(false),
@@ -247,11 +248,8 @@ void DockPanel::showEditLaunchersDialog() {
 }
 
 void DockPanel::showApplicationMenuSettingsDialog() {
-  ApplicationMenu* applicationMenu =
-      dynamic_cast<ApplicationMenu*>(items_[0].get());
-  if (applicationMenu) {
-    applicationMenu->showSettingsDialog();
-  }
+  applicationMenuSettingsDialog_.reload();
+  applicationMenuSettingsDialog_.open();
 }
 
 void DockPanel::showWallpaperSettingsDialog(int desktop) {

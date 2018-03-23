@@ -107,8 +107,7 @@ ApplicationMenu::ApplicationMenu(
                         minSize, maxSize),
       model_(model),
       entryDirs_(entryDirs),
-      fileWatcher_(entryDirs),
-      settingsDialog_(model) {}
+      fileWatcher_(entryDirs) {}
 
 void ApplicationMenu::init() {
   menu_.setStyle(&style_);
@@ -141,11 +140,6 @@ void ApplicationMenu::reloadMenu() {
   loadEntries();
   menu_.clear();
   buildMenu();
-}
-
-void ApplicationMenu::showSettingsDialog() {
-  settingsDialog_.reload();
-  settingsDialog_.exec();
 }
 
 bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {

@@ -38,8 +38,6 @@
 #include <QString>
 #include <QStringList>
 
-#include "application_menu_settings_dialog.h"
-
 namespace ksmoothdock {
 
 constexpr int kApplicationMenuIconSize = 32;
@@ -137,8 +135,6 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
  public slots:
   void reloadMenu();
 
-  void showSettingsDialog();
-
 protected:
   // Intercepts sub-menus's show events to adjust their position to improve
   // visibility.
@@ -186,8 +182,6 @@ protected:
   ApplicationMenuStyle style_;
 
   QFileSystemWatcher fileWatcher_;
-
-  ApplicationMenuSettingsDialog settingsDialog_;
 
   // Drag support.
 

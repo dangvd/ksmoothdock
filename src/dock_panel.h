@@ -36,6 +36,7 @@
 #include <KAboutApplicationDialog>
 #include <KWindowSystem>
 
+#include "application_menu_settings_dialog.h"
 #include "appearance_settings_dialog.h"
 #include "dock_item.h"
 #include "edit_launchers_dialog.h"
@@ -274,6 +275,7 @@ class DockPanel : public QWidget {
   KAboutApplicationDialog aboutDialog_;
   AppearanceSettingsDialog appearanceSettingsDialog_;
   EditLaunchersDialog editLaunchersDialog_;
+  ApplicationMenuSettingsDialog applicationMenuSettingsDialog_;
   WallpaperSettingsDialog wallpaperSettingsDialog_;
 
   // The tooltip object to show tooltip for the active item.
