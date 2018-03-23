@@ -21,8 +21,9 @@
 
 namespace ksmoothdock {
 
-AppearanceSettingsDialog::AppearanceSettingsDialog(MultiDockModel* model)
-    : QDialog(nullptr),
+AppearanceSettingsDialog::AppearanceSettingsDialog(QWidget* parent,
+                                                   MultiDockModel* model)
+    : QDialog(parent),
       ui(new Ui::AppearanceSettingsDialog),
       model_(model) {
   ui->setupUi(this);

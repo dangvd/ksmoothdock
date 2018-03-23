@@ -35,7 +35,7 @@ class ApplicationMenuSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit ApplicationMenuSettingsDialog(MultiDockModel* model);
+  ApplicationMenuSettingsDialog(QWidget* parent, MultiDockModel* model);
   ~ApplicationMenuSettingsDialog();
 
   void reload() { loadData(); }

@@ -26,8 +26,9 @@
 
 namespace ksmoothdock {
 
-AddPanelDialog::AddPanelDialog(MultiDockModel* model, int dockId)
-    : QDialog(nullptr),
+AddPanelDialog::AddPanelDialog(QWidget* parent, MultiDockModel* model,
+                               int dockId)
+    : QDialog(parent),
       ui(new Ui::AddPanelDialog),
       model_(model),
       dockId_(dockId) {

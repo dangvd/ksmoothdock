@@ -87,8 +87,9 @@ void LauncherList::dropEvent(QDropEvent* event) {
   }
 }
 
-EditLaunchersDialog::EditLaunchersDialog(MultiDockModel* model, int dockId)
-    : QDialog(nullptr),
+EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
+                                         int dockId)
+    : QDialog(parent),
       ui(new Ui::EditLaunchersDialog),
       model_(model),
       dockId_(dockId) {

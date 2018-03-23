@@ -35,7 +35,7 @@ class AppearanceSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit AppearanceSettingsDialog(MultiDockModel* model);
+  AppearanceSettingsDialog(QWidget* parent, MultiDockModel* model);
   ~AppearanceSettingsDialog();
 
   void reload() { loadData(); }

@@ -35,7 +35,7 @@ class WallpaperSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit WallpaperSettingsDialog(MultiDockModel* model);
+  WallpaperSettingsDialog(QWidget* parent, MultiDockModel* model);
   ~WallpaperSettingsDialog();
 
   void setDesktop(int desktop);

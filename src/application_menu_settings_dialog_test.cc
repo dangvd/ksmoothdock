@@ -37,7 +37,8 @@ class ApplicationMenuSettingsDialogTest: public QObject {
     model_->setApplicationMenuName("Applications");
     model_->setApplicationMenuIcon("start-here-kde");
 
-    dialog_ = std::make_unique<ApplicationMenuSettingsDialog>(model_.get());
+    dialog_ = std::make_unique<ApplicationMenuSettingsDialog>(nullptr,
+                                                              model_.get());
   }
 
   // Tests UI initialization.

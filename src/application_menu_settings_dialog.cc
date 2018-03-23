@@ -21,9 +21,9 @@
 
 namespace ksmoothdock {
 
-ApplicationMenuSettingsDialog::ApplicationMenuSettingsDialog(
+ApplicationMenuSettingsDialog::ApplicationMenuSettingsDialog(QWidget* parent,
     MultiDockModel* model)
-    : QDialog(nullptr),
+    : QDialog(parent),
       ui(new Ui::ApplicationMenuSettingsDialog),
       model_(model) {
   ui->setupUi(this);

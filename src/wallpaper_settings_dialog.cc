@@ -31,8 +31,9 @@
 
 namespace ksmoothdock {
 
-WallpaperSettingsDialog::WallpaperSettingsDialog(MultiDockModel* model)
-    : QDialog(nullptr),
+WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
+                                                 MultiDockModel* model)
+    : QDialog(parent),
       ui(new Ui::WallpaperSettingsDialog),
       model_(model) {
   ui->setupUi(this);

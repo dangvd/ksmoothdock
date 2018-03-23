@@ -42,7 +42,8 @@ class EditLaunchersDialogTest: public QObject {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
     model_->addDock();
-    dialog_ = std::make_unique<EditLaunchersDialog>(model_.get(), kDockId);
+    dialog_ = std::make_unique<EditLaunchersDialog>(nullptr, model_.get(),
+                                                    kDockId);
   }
 
   // Tests OK button/logic.

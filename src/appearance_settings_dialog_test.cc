@@ -44,7 +44,7 @@ class AppearanceSettingsDialogTest: public QObject {
     model_->setBorderColor(QColor("white"));
     model_->setTooltipFontSize(20);
 
-    dialog_ = std::make_unique<AppearanceSettingsDialog>(model_.get());
+    dialog_ = std::make_unique<AppearanceSettingsDialog>(nullptr, model_.get());
   }
 
   // Tests UI initialization.

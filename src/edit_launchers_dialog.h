@@ -75,7 +75,7 @@ class EditLaunchersDialog : public QDialog {
   Q_OBJECT
 
  public:
-  EditLaunchersDialog(MultiDockModel* model, int dockId);
+  EditLaunchersDialog(QWidget* parent, MultiDockModel* model, int dockId);
   ~EditLaunchersDialog() = default;
 
   void reload() { loadData(); }
