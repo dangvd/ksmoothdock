@@ -194,6 +194,7 @@ void EditLaunchersDialog::removeSelectedLauncher() {
 
 void EditLaunchersDialog::removeAllLaunchers() {
   launchers_->clear();
+  clearItemDetails();
 }
 
 void EditLaunchersDialog::updateSelectedLauncher() {
@@ -277,6 +278,7 @@ void EditLaunchersDialog::loadData() {
                         LauncherInfo(item.icon, item.command)));
     launchers_->addItem(listItem);
   }
+  launchers_->setCurrentRow(0);
 }
 
 void EditLaunchersDialog::saveData() {
@@ -425,6 +427,11 @@ void EditLaunchersDialog::populateWebCommands() {
         i18n(kItems[i][0]),
         QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
   }
+}
+
+void EditLaunchersDialog::clearItemDetails() {
+  ui->name->clear();
+  ui->command->clear();
 }
 
 }  // namespace ksmoothdock

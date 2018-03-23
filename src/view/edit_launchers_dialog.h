@@ -116,6 +116,8 @@ class EditLaunchersDialog : public QDialog {
   void populateDBusCommands();
   void populateWebCommands();
 
+  void clearItemDetails();
+
   Ui::EditLaunchersDialog *ui;
   LauncherList *launchers_;
   KIconButton *icon_;
