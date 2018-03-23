@@ -25,9 +25,15 @@
 namespace ksmoothdock {
 
 QString loadPlasmaWallpaper(const QString& plasmaConfig) {
+  static QString wallpaper("");
+
+  if (!wallpaper.isEmpty()) {
+    return wallpaper;
+  }
+
   QFile config(plasmaConfig);
   if (!config.open(QFile::ReadOnly)) {
-    return QString("");
+    return wallpaper;
   }
 
   static const QString kConfigGroupPart1 = QString("[Containments][");
@@ -44,12 +50,13 @@ QString loadPlasmaWallpaper(const QString& plasmaConfig) {
       }
     } else {
       if (line.startsWith("Image=file://")) {
-        return line.mid(13);
+        wallpaper = line.mid(13);
+        break;
       }
     }
   }
 
-  return QString("");
+  return wallpaper;
 }
 
 }  // namespace ksmoothdock
