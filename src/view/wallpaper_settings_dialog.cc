@@ -29,6 +29,8 @@
 
 #include <KWindowSystem>
 
+#include <utils/wallpaper_utils.h>
+
 namespace ksmoothdock {
 
 WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
@@ -130,9 +132,8 @@ int WallpaperSettingsDialog::desktop() const {
 
 void WallpaperSettingsDialog::loadData() {
   wallpaper_ = model_->wallpaper(desktop());
-  if (!wallpaper_.isEmpty()) {
-    ui->preview->setPixmap(QPixmap(wallpaper_));
-  }
+  ui->preview->setPixmap(QPixmap(
+      !wallpaper_.isEmpty() ? wallpaper_ : loadPlasmaWallpaper()));
 }
 
 void WallpaperSettingsDialog::saveData() {

@@ -26,7 +26,7 @@ namespace ksmoothdock {
 
 QString loadPlasmaWallpaper(const QString& plasmaConfig) {
   static QString wallpaper("");
-
+  // Use the cache if available.
   if (!wallpaper.isEmpty()) {
     return wallpaper;
   }
