@@ -92,6 +92,7 @@ class EditLaunchersDialog : public QDialog {
 
   void addLauncher();
   void removeSelectedLauncher();
+  void removeAllLaunchers();
   void updateSelectedLauncher();
 
   void openLink(const QString& link);

@@ -51,9 +51,9 @@
   <widget class="QPushButton" name="add">
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>120</y>
-     <width>121</width>
+     <x>400</x>
+     <y>80</y>
+     <width>141</width>
      <height>38</height>
     </rect>
    </property>
@@ -68,9 +68,9 @@
   <widget class="QPushButton" name="remove">
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>190</y>
-     <width>121</width>
+     <x>400</x>
+     <y>150</y>
+     <width>141</width>
      <height>38</height>
     </rect>
    </property>
@@ -85,9 +85,9 @@
   <widget class="QPushButton" name="update">
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>260</y>
-     <width>121</width>
+     <x>400</x>
+     <y>290</y>
+     <width>141</width>
      <height>38</height>
     </rect>
    </property>
@@ -199,6 +199,22 @@
    </property>
    <property name="text">
     <string>Icon</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="removeAll">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>220</y>
+     <width>141</width>
+     <height>38</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Remove All</string>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-delete"/>
    </property>
   </widget>
  </widget>

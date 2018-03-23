@@ -120,6 +120,7 @@ EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
           this, SLOT(openLink(const QString&)));
   connect(ui->add, SIGNAL(clicked()), this, SLOT(addLauncher()));
   connect(ui->remove, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
+  connect(ui->removeAll, SIGNAL(clicked()), this, SLOT(removeAllLaunchers()));
   connect(ui->update, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
   connect(ui->command, SIGNAL(textEdited(const QString&)),
       this, SLOT(resetCommandLists()));
@@ -189,6 +190,10 @@ void EditLaunchersDialog::removeSelectedLauncher() {
   if (item != nullptr) {
     delete item;
   }
+}
+
+void EditLaunchersDialog::removeAllLaunchers() {
+  launchers_->clear();
 }
 
 void EditLaunchersDialog::updateSelectedLauncher() {
