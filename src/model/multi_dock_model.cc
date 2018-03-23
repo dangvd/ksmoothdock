@@ -215,7 +215,7 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
     {"File Manager", "system-file-manager", "dolphin"},
     {"Text Editor", "kate", "kate"},
     {"Web Browser", "internet-web-browser", "firefox"},
-    {"Audio Player", "audio-headphones", "amarok"},
+    {"Multimedia Player", "applications-multimedia", "dragon"},
     {"System Settings", "preferences-system", "systemsettings5"}
   };
 
