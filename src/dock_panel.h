@@ -36,6 +36,7 @@
 #include <KAboutApplicationDialog>
 #include <KWindowSystem>
 
+#include "add_panel_dialog.h"
 #include "application_menu_settings_dialog.h"
 #include "appearance_settings_dialog.h"
 #include "dock_item.h"
@@ -273,6 +274,7 @@ class DockPanel : public QWidget {
   std::vector<QAction*> screenActions_;
 
   KAboutApplicationDialog aboutDialog_;
+  AddPanelDialog addPanelDialog_;
   AppearanceSettingsDialog appearanceSettingsDialog_;
   EditLaunchersDialog editLaunchersDialog_;
   ApplicationMenuSettingsDialog applicationMenuSettingsDialog_;

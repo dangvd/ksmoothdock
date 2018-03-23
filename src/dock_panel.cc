@@ -62,6 +62,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       showClock_(false),
       showBorder_(true),
       aboutDialog_(KAboutData::applicationData(), this),
+      addPanelDialog_(model, dockId),
       appearanceSettingsDialog_(model),
       editLaunchersDialog_(model, dockId),
       applicationMenuSettingsDialog_(model),
@@ -234,17 +235,17 @@ void DockPanel::showOnlineDocumentation() {
 }
 
 void DockPanel::about() {
-  aboutDialog_.exec();
+  aboutDialog_.open();
 }
 
 void DockPanel::showAppearanceSettingsDialog() {
   appearanceSettingsDialog_.reload();
-  appearanceSettingsDialog_.exec();
+  appearanceSettingsDialog_.open();
 }
 
 void DockPanel::showEditLaunchersDialog() {
   editLaunchersDialog_.reload();
-  editLaunchersDialog_.exec();
+  editLaunchersDialog_.open();
 }
 
 void DockPanel::showApplicationMenuSettingsDialog() {
@@ -258,14 +259,13 @@ void DockPanel::showWallpaperSettingsDialog(int desktop) {
 }
 
 void DockPanel::addDock() {
-  AddPanelDialog dialog(AddPanelDialog::Mode::Add, model_,
-                        0 /* dockId not required */);
-  dialog.exec();
+  addPanelDialog_.setMode(AddPanelDialog::Mode::Add);
+  addPanelDialog_.open();
 }
 
 void DockPanel::cloneDock() {
-  AddPanelDialog dialog(AddPanelDialog::Mode::Clone, model_, dockId_);
-  dialog.exec();
+  addPanelDialog_.setMode(AddPanelDialog::Mode::Clone);
+  addPanelDialog_.open();
 }
 
 void DockPanel::removeDock() {

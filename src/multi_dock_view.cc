@@ -52,8 +52,8 @@ void MultiDockView::loadData() {
   }
 
   if (docks_.empty()) {
-    AddPanelDialog dialog(AddPanelDialog::Mode::Welcome, model_,
-                          0 /* dockId not required */);
+    AddPanelDialog dialog(model_, 0 /* dockId not needed */);
+    dialog.setMode(AddPanelDialog::Mode::Welcome);
     dialog.exec();
   }
 }

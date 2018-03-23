@@ -26,10 +26,9 @@
 
 namespace ksmoothdock {
 
-AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
+AddPanelDialog::AddPanelDialog(MultiDockModel* model, int dockId)
     : QDialog(nullptr),
       ui(new Ui::AddPanelDialog),
-      mode_(mode),
       model_(model),
       dockId_(dockId) {
   ui->setupUi(this);
@@ -53,8 +52,14 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
     ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
     resize(width(), height() - kDeltaY);
   }
+}
 
-  // Adjust the UI for different modes.
+AddPanelDialog::~AddPanelDialog() {
+  delete ui;
+}
+
+void AddPanelDialog::setMode(Mode mode) {
+  mode_ = mode;
 
   setWindowTitle((mode_ == Mode::Add)
                  ? i18n("Add Panel") : (mode_ == Mode::Clone)
@@ -84,10 +89,6 @@ AddPanelDialog::AddPanelDialog(Mode mode, MultiDockModel* model, int dockId)
     ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
     resize(width(), height() - kDeltaY);
   }
-}
-
-AddPanelDialog::~AddPanelDialog() {
-  delete ui;
 }
 
 void AddPanelDialog::accept() {

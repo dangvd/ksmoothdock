@@ -60,7 +60,8 @@ class AddPanelDialogTest: public QObject {
       model_->addDock();
     }
     int dockId = (mode == AddPanelDialog::Mode::Clone) ? kDockId : 0;
-    dialog_ = std::make_unique<AddPanelDialog>(mode, model_.get(), dockId);
+    dialog_ = std::make_unique<AddPanelDialog>(model_.get(), dockId);
+    dialog_->setMode(mode);
   }
 
   std::unique_ptr<MultiDockModel> model_;
