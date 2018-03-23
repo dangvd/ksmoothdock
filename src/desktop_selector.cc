@@ -21,8 +21,6 @@
 #include <QApplication>
 #include <QDBusMessage>
 #include <QDesktopWidget>
-#include <QDir>
-#include <QFileDialog>
 #include <QIcon>
 #include <QPainter>
 #include <QPixmap>
@@ -53,7 +51,7 @@ void DesktopSelector::init() {
   loadConfig();
   createMenu();
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
-      this, SLOT(updateWallpaper(int)));
+          this, SLOT(updateWallpaper(int)));
   updateWallpaper(KWindowSystem::currentDesktop());
 }
 
@@ -103,27 +101,6 @@ void DesktopSelector::setIconScaled(const QPixmap& icon) {
   }
 }
 
-void DesktopSelector::changeWallpaper() {
-  const QString& wallpaper = QFileDialog::getOpenFileName(
-      parent_,
-      i18n("Select Wallpaper Image"),
-      QDir::homePath(),
-      i18n("Image Files (*.png *.jpg *.bmp)"));
-  if (wallpaper.isEmpty()) {
-    return;
-  }
-
-  wallpaper_ = wallpaper;
-  setIconScaled(QPixmap(wallpaper_));
-
-  if (isCurrentDesktop()) {
-    setWallpaper(wallpaper_);
-  }
-
-  model_->setWallpaper(desktop_, wallpaper_);
-  model_->saveAppearanceConfig();
-}
-
 void DesktopSelector::updateWallpaper(int currentDesktop) {
   if (currentDesktop == desktop_) {
     setWallpaper(wallpaper_);
@@ -168,8 +145,10 @@ void DesktopSelector::createMenu() {
   menu_.addAction(
       QIcon::fromTheme("preferences-desktop-wallpaper"),
       i18n("Set Wallpaper for Desktop ") + QString::number(desktop_),
-      this,
-      SLOT(changeWallpaper()));
+      parent_,
+      [this] {
+        parent_->showWallpaperSettingsDialog(desktop_);
+      });
 }
 
 }  // namespace ksmoothdock

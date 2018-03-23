@@ -40,6 +40,7 @@
 #include "dock_item.h"
 #include "edit_launchers_dialog.h"
 #include "tooltip.h"
+#include "wallpaper_settings_dialog.h"
 
 namespace ksmoothdock {
 
@@ -132,6 +133,7 @@ class DockPanel : public QWidget {
   void showAppearanceSettingsDialog();
   void showEditLaunchersDialog();
   void showApplicationMenuSettingsDialog();
+  void showWallpaperSettingsDialog(int desktop);
 
   void addDock();
   void cloneDock();
@@ -272,6 +274,7 @@ class DockPanel : public QWidget {
   KAboutApplicationDialog aboutDialog_;
   AppearanceSettingsDialog appearanceSettingsDialog_;
   EditLaunchersDialog editLaunchersDialog_;
+  WallpaperSettingsDialog wallpaperSettingsDialog_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;

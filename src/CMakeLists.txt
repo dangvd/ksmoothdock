@@ -22,7 +22,7 @@ set(SRCS icon_based_dock_item.cc dock_panel.cc launcher.cc tooltip.cc
     edit_launchers_dialog.cc iconless_dock_item.cc clock.cc calendar.cc
     application_menu.cc application_menu_settings_dialog.cc
     add_panel_dialog.cc config_helper.cc multi_dock_model.cc
-    multi_dock_view.cc wallpaper_utils.cc)
+    multi_dock_view.cc wallpaper_utils.cc wallpaper_settings_dialog.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui

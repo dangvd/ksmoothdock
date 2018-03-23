@@ -64,6 +64,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       aboutDialog_(KAboutData::applicationData(), this),
       appearanceSettingsDialog_(model),
       editLaunchersDialog_(model, dockId),
+      wallpaperSettingsDialog_(model),
       isMinimized_(true),
       isResizing_(false),
       isEntering_(false),
@@ -251,6 +252,11 @@ void DockPanel::showApplicationMenuSettingsDialog() {
   if (applicationMenu) {
     applicationMenu->showSettingsDialog();
   }
+}
+
+void DockPanel::showWallpaperSettingsDialog(int desktop) {
+  wallpaperSettingsDialog_.setDesktop(desktop);
+  wallpaperSettingsDialog_.open();
 }
 
 void DockPanel::addDock() {
@@ -579,9 +585,10 @@ void DockPanel::initApplicationMenu() {
 
 void DockPanel::initPager() {
   if (showPager_) {
-    for (int i = 0; i < KWindowSystem::numberOfDesktops(); ++i) {
+    for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
+         ++desktop) {
       auto* item = new DesktopSelector(
-          this, model_, orientation_, minSize_, maxSize_, (i + 1));
+          this, model_, orientation_, minSize_, maxSize_, desktop);
       item->init();
       items_.push_back(std::unique_ptr<DockItem>(item));
     }

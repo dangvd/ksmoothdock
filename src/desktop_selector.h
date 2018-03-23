@@ -54,8 +54,6 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   void setIconScaled(const QPixmap& icon);
 
  public slots:
-  void changeWallpaper();
-
   void updateWallpaper(int currentDesktop);
 
  private:
