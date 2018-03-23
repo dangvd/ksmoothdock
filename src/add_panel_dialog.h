@@ -51,6 +51,8 @@ class AddPanelDialog : public QDialog {
   MultiDockModel* model_;
   int dockId_;
 
+  bool isSingleScreen_;
+
   friend class AddPanelDialogTest;
 };
 

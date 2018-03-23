@@ -31,11 +31,11 @@ AddPanelDialog::AddPanelDialog(QWidget* parent, MultiDockModel* model,
     : QDialog(parent),
       ui(new Ui::AddPanelDialog),
       model_(model),
-      dockId_(dockId) {
+      dockId_(dockId),
+      isSingleScreen_(true) {
   ui->setupUi(this);
 
   // Populate screen list.
-
   const int screenCount = QApplication::desktop()->screenCount();
   for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
@@ -43,15 +43,10 @@ AddPanelDialog::AddPanelDialog(QWidget* parent, MultiDockModel* model,
   ui->screen->setCurrentIndex(0);
 
   // Adjust the UI for single/multi-screen.
-
-  const bool isSingleScreen = (screenCount == 1);
-  if (isSingleScreen) {
+  isSingleScreen_ = (screenCount == 1);
+  if (isSingleScreen_) {
     ui->screenLabel->setVisible(false);
     ui->screen->setVisible(false);
-
-    constexpr int kDeltaY = 45;
-    ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
-    resize(width(), height() - kDeltaY);
   }
 }
 
@@ -66,29 +61,33 @@ void AddPanelDialog::setMode(Mode mode) {
                  ? i18n("Add Panel") : (mode_ == Mode::Clone)
                     ? i18n("Clone Panel") : i18n("Welcome to KSmoothDock!"));
 
-  if (mode == Mode::Welcome) {
-    ui->headerLabel->setText(i18n("Please set up your first panel."));
-  }
+  ui->headerLabel->setText((mode == Mode::Welcome)
+                           ? i18n("Please set up your first panel.")
+                           : i18n("Please set up your new panel."));
 
-  if (mode == Mode::Add) {
-    ui->showApplicationMenu->setChecked(false);
-    ui->showPager->setChecked(false);
-    ui->showClock->setChecked(false);
-  } else if (mode == Mode::Clone) {
-    ui->componentsLabel->setVisible(false);
-    ui->showApplicationMenu->setVisible(false);
-    ui->showLaunchers->setVisible(false);
-    ui->showPager->setVisible(false);
-    ui->showClock->setVisible(false);
+  ui->showApplicationMenu->setChecked(mode == Mode::Welcome);
+  ui->showPager->setChecked(mode == Mode::Welcome);
+  ui->showClock->setChecked(mode == Mode::Welcome);
 
-    constexpr int kDeltaY = 200;
-    ui->positionLabel->move(ui->positionLabel->x(),
-                            ui->positionLabel->y() - kDeltaY);
-    ui->position->move(ui->position->x(), ui->position->y() - kDeltaY);
-    ui->screenLabel->move(ui->screenLabel->x(), ui->screenLabel->y() - kDeltaY);
-    ui->screen->move(ui->screen->x(), ui->screen->y() - kDeltaY);
-    ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kDeltaY);
-    resize(width(), height() - kDeltaY);
+  ui->componentsLabel->setVisible(mode != Mode::Clone);
+  ui->showApplicationMenu->setVisible(mode != Mode::Clone);
+  ui->showLaunchers->setVisible(mode != Mode::Clone);
+  ui->showPager->setVisible(mode != Mode::Clone);
+  ui->showClock->setVisible(mode != Mode::Clone);
+
+  const int deltaY = (mode == Mode::Clone) ? 200 : 0;
+  ui->positionLabel->move(40, 275 - deltaY);
+  ui->position->move(290, 265 - deltaY);
+  ui->screenLabel->move(40, 325 - deltaY);
+  ui->screen->move(290, 315 - deltaY);
+  ui->buttonBox->move(20, 380 - deltaY);
+  resize(440, 440 - deltaY);
+
+  // Adjust the UI for single/multi-screen.
+  if (isSingleScreen_) {
+    constexpr int kScreenDeltaY = 45;
+    ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() - kScreenDeltaY);
+    resize(width(), height() - kScreenDeltaY);
   }
 }
 
