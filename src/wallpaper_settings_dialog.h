@@ -48,6 +48,8 @@ class WallpaperSettingsDialog : public QDialog {
 
   void updatePreviewSize();
 
+  void onDesktopChanged(int desktop);
+
  private:
   static constexpr int kMaxPreviewWidth = 800;
   static constexpr int kMaxPreviewHeight = 500;

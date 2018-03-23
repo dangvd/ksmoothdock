@@ -61,6 +61,8 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(MultiDockModel* model)
     ui->screen->setVisible(false);
   }
 
+  connect(ui->desktop, SIGNAL(currentIndexChanged(int)),
+          this, SLOT(onDesktopChanged(int)));
   connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseWallpaper()));
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
@@ -113,6 +115,10 @@ void WallpaperSettingsDialog::updatePreviewSize() {
   ui->preview->setGeometry(x, y, w, h);
 }
 
+void WallpaperSettingsDialog::onDesktopChanged(int desktop) {
+  loadData();
+}
+
 int WallpaperSettingsDialog::screen() const {
   return ui->screen->currentIndex();
 }
@@ -129,8 +135,10 @@ void WallpaperSettingsDialog::loadData() {
 }
 
 void WallpaperSettingsDialog::saveData() {
-  model_->setWallpaper(desktop(), wallpaper_);
-  model_->saveAppearanceConfig();
+  if (!wallpaper_.isEmpty()) {
+    model_->setWallpaper(desktop(), wallpaper_);
+    model_->saveAppearanceConfig();
+  }
 }
 
 }  // namespace ksmoothdock
