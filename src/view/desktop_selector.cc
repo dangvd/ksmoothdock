@@ -29,7 +29,7 @@
 #include <KMessageBox>
 
 #include "dock_panel.h"
-#include "wallpaper_utils.h"
+#include <utils/wallpaper_utils.h>
 
 namespace ksmoothdock {
 

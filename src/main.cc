@@ -23,8 +23,8 @@
 #include <KDBusService>
 #include <KLocalizedString>
 
-#include "multi_dock_model.h"
-#include "multi_dock_view.h"
+#include <model/multi_dock_model.h>
+#include <view/multi_dock_view.h>
 
 int main(int argc, char** argv) {
   QApplication app(argc, argv);

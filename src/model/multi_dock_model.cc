@@ -23,7 +23,7 @@
 #include <KDesktopFile>
 #include <KWindowSystem>
 
-#include "command_utils.h"
+#include <utils/command_utils.h>
 
 namespace ksmoothdock {
 

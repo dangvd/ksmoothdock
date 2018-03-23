@@ -29,8 +29,8 @@
 #include <KIconLoader>
 #include <KLocalizedString>
 
-#include "command_utils.h"
 #include "launcher.h"
+#include <utils/command_utils.h>
 
 namespace ksmoothdock {
 

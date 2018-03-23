@@ -29,7 +29,7 @@
 
 #include <KWindowSystem>
 
-#include "multi_dock_model.h"
+#include <model/multi_dock_model.h>
 
 namespace ksmoothdock {
 

@@ -16,61 +16,48 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_
-#define KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_
+#ifndef KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_
+#define KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_
 
-#include <QAbstractButton>
 #include <QDialog>
-#include <QString>
 
-#include "multi_dock_model.h"
+#include <KColorButton>
+
+#include <model/multi_dock_model.h>
 
 namespace Ui {
-  class WallpaperSettingsDialog;
+  class AppearanceSettingsDialog;
 }
 
 namespace ksmoothdock {
 
-class WallpaperSettingsDialog : public QDialog {
+class AppearanceSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  WallpaperSettingsDialog(QWidget* parent, MultiDockModel* model);
-  ~WallpaperSettingsDialog();
+  AppearanceSettingsDialog(QWidget* parent, MultiDockModel* model);
+  ~AppearanceSettingsDialog();
 
-  void setDesktop(int desktop);
+  void reload() { loadData(); }
 
  public slots:
   void accept() override;
   void buttonClicked(QAbstractButton* button);
 
-  void browseWallpaper();
-
-  void updatePreviewSize();
-
-  void onDesktopChanged(int desktop);
-
  private:
-  static constexpr int kMaxPreviewWidth = 800;
-  static constexpr int kMaxPreviewHeight = 500;
-
-  // Gets screen (0-based).
-  int screen() const;
-
-  // Gets desktop (1-based).
-  int desktop() const;
-
   void loadData();
+  void resetData();
   void saveData();
 
-  Ui::WallpaperSettingsDialog *ui;
+  Ui::AppearanceSettingsDialog *ui;
+  KColorButton* backgroundColor_;
+  KColorButton* borderColor_;
 
   MultiDockModel* model_;
 
-  // Path to wallpaper file.
-  QString wallpaper_;
+  friend class AppearanceSettingsDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-#endif // KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_
+#endif  // KSMOOTHDOCK_APPEARANCE_SETTINGS_DIALOG_H_

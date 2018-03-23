@@ -20,7 +20,7 @@
 #define KSMOOTHDOCK_APPLICATION_MENU_H_
 
 #include "icon_based_dock_item.h"
-#include "multi_dock_model.h"
+#include <model/multi_dock_model.h>
 
 #include <list>
 #include <string>

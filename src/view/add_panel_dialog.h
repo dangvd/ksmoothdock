@@ -16,45 +16,46 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_MULTI_DOCK_VIEW_H_
-#define KSMOOTHDOCK_MULTI_DOCK_VIEW_H_
+#ifndef KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
+#define KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
 
-#include <memory>
-#include <unordered_map>
+#include <QDialog>
 
-#include <QObject>
+#include <model/multi_dock_model.h>
 
-#include "dock_panel.h"
-#include "multi_dock_model.h"
+namespace Ui {
+  class AddPanelDialog;
+}
 
 namespace ksmoothdock {
 
-// The view.
-class MultiDockView : public QObject {
+class AddPanelDialog : public QDialog {
   Q_OBJECT
 
  public:
-  // No pointer ownership.
-  MultiDockView(MultiDockModel* model);
-  ~MultiDockView() = default;
+  enum class Mode { Add, Clone, Welcome };
 
-  void show();
+  // Parameter dockId is only needed in Clone mode.
+  AddPanelDialog(QWidget* parent, MultiDockModel* model, int dockId);
+  ~AddPanelDialog();
+
+  void setMode(Mode mode);
 
  public slots:
-  void exit();
-
-  void onDockAdded(int dockId);
+  void accept() override;
 
  private:
-  void loadData();
+  Ui::AddPanelDialog *ui;
 
-  // Creates a default dock if none exists.
-  void createDefaultDock();
+  Mode mode_;
+  MultiDockModel* model_;
+  int dockId_;
 
-  MultiDockModel* model_;  // No ownership.
-  std::unordered_map<int, std::unique_ptr<DockPanel>> docks_;
+  bool isSingleScreen_;
+
+  friend class AddPanelDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-#endif // KSMOOTHDOCK_MULTI_DOCK_VIEW_H_
+#endif  // KSMOOTHDOCK_ADD_PANEL_DIALOG_H_

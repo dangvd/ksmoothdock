@@ -16,46 +16,46 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
-#define KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
+#ifndef KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
+#define KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
 
 #include <QDialog>
 
-#include "multi_dock_model.h"
+#include <KIconButton>
+
+#include <model/multi_dock_model.h>
 
 namespace Ui {
-  class AddPanelDialog;
+  class ApplicationMenuSettingsDialog;
 }
 
 namespace ksmoothdock {
 
-class AddPanelDialog : public QDialog {
+class ApplicationMenuSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  enum class Mode { Add, Clone, Welcome };
+  ApplicationMenuSettingsDialog(QWidget* parent, MultiDockModel* model);
+  ~ApplicationMenuSettingsDialog();
 
-  // Parameter dockId is only needed in Clone mode.
-  AddPanelDialog(QWidget* parent, MultiDockModel* model, int dockId);
-  ~AddPanelDialog();
-
-  void setMode(Mode mode);
+  void reload() { loadData(); }
 
  public slots:
   void accept() override;
+  void buttonClicked(QAbstractButton* button);
 
  private:
-  Ui::AddPanelDialog *ui;
+  void loadData();
+  void saveData();
 
-  Mode mode_;
+  Ui::ApplicationMenuSettingsDialog *ui;
+  KIconButton* icon_;
+
   MultiDockModel* model_;
-  int dockId_;
 
-  bool isSingleScreen_;
-
-  friend class AddPanelDialogTest;
+  friend class ApplicationMenuSettingsDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_ADD_PANEL_DIALOG_H_
+#endif  // KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_

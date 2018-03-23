@@ -32,7 +32,7 @@
 #include <KIconButton>
 #include <KIconLoader>
 
-#include "multi_dock_model.h"
+#include <model/multi_dock_model.h>
 
 namespace Ui {
   class EditLaunchersDialog;

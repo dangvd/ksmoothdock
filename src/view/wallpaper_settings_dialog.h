@@ -16,46 +16,61 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
-#define KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
+#ifndef KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_
+#define KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_
 
+#include <QAbstractButton>
 #include <QDialog>
+#include <QString>
 
-#include <KIconButton>
-
-#include "multi_dock_model.h"
+#include <model/multi_dock_model.h>
 
 namespace Ui {
-  class ApplicationMenuSettingsDialog;
+  class WallpaperSettingsDialog;
 }
 
 namespace ksmoothdock {
 
-class ApplicationMenuSettingsDialog : public QDialog {
+class WallpaperSettingsDialog : public QDialog {
   Q_OBJECT
 
  public:
-  ApplicationMenuSettingsDialog(QWidget* parent, MultiDockModel* model);
-  ~ApplicationMenuSettingsDialog();
+  WallpaperSettingsDialog(QWidget* parent, MultiDockModel* model);
+  ~WallpaperSettingsDialog();
 
-  void reload() { loadData(); }
+  void setDesktop(int desktop);
 
  public slots:
   void accept() override;
   void buttonClicked(QAbstractButton* button);
 
+  void browseWallpaper();
+
+  void updatePreviewSize();
+
+  void onDesktopChanged(int desktop);
+
  private:
+  static constexpr int kMaxPreviewWidth = 800;
+  static constexpr int kMaxPreviewHeight = 500;
+
+  // Gets screen (0-based).
+  int screen() const;
+
+  // Gets desktop (1-based).
+  int desktop() const;
+
   void loadData();
   void saveData();
 
-  Ui::ApplicationMenuSettingsDialog *ui;
-  KIconButton* icon_;
+  Ui::WallpaperSettingsDialog *ui;
 
   MultiDockModel* model_;
 
-  friend class ApplicationMenuSettingsDialogTest;
+  // Path to wallpaper file.
+  QString wallpaper_;
 };
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_APPLICATION_MENU_SETTINGS_DIALOG_H_
+#endif // KSMOOTHDOCK_WALLPAPER_SETTINGS_DIALOG_H_

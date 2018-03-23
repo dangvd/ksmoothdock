@@ -27,7 +27,7 @@
 #include <QString>
 
 #include "calendar.h"
-#include "multi_dock_model.h"
+#include <model/multi_dock_model.h>
 
 namespace ksmoothdock {
 

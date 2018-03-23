@@ -17,12 +17,25 @@ find_package(Qt5 5.6 REQUIRED COMPONENTS DBus Gui Test Widgets)
 find_package(KF5 5.7 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
-set(SRCS icon_based_dock_item.cc dock_panel.cc launcher.cc tooltip.cc
-    appearance_settings_dialog.cc desktop_selector.cc
-    edit_launchers_dialog.cc iconless_dock_item.cc clock.cc calendar.cc
-    application_menu.cc application_menu_settings_dialog.cc
-    add_panel_dialog.cc config_helper.cc multi_dock_model.cc
-    multi_dock_view.cc wallpaper_utils.cc wallpaper_settings_dialog.cc)
+set(SRCS
+    model/config_helper.cc
+    model/multi_dock_model.cc
+    view/add_panel_dialog.cc
+    view/appearance_settings_dialog.cc
+    view/application_menu_settings_dialog.cc
+    view/application_menu.cc
+    view/calendar.cc
+    view/clock.cc
+    view/desktop_selector.cc
+    view/dock_panel.cc
+    view/edit_launchers_dialog.cc
+    view/icon_based_dock_item.cc
+    view/iconless_dock_item.cc
+    view/launcher.cc
+    view/multi_dock_view.cc
+    view/tooltip.cc
+    view/wallpaper_settings_dialog.cc
+    utils/wallpaper_utils.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
@@ -53,47 +66,47 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND}
 enable_testing()
 
 add_executable(appearance_settings_dialog_test
-    appearance_settings_dialog_test.cc)
+    view/appearance_settings_dialog_test.cc)
 target_link_libraries(appearance_settings_dialog_test
     Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(appearance_settings_dialog_test appearance_settings_dialog_test)
 
-add_executable(desktop_selector_test desktop_selector_test.cc)
+add_executable(desktop_selector_test view/desktop_selector_test.cc)
 target_link_libraries(desktop_selector_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(desktop_selector_test desktop_selector_test)
 
-add_executable(edit_launchers_dialog_test edit_launchers_dialog_test.cc)
+add_executable(edit_launchers_dialog_test view/edit_launchers_dialog_test.cc)
 target_link_libraries(edit_launchers_dialog_test Qt5::Test ksmoothdock_lib
     ${LIBS})
 add_test(edit_launchers_dialog_test edit_launchers_dialog_test)
 
-add_executable(dock_panel_test dock_panel_test.cc)
+add_executable(dock_panel_test view/dock_panel_test.cc)
 target_link_libraries(dock_panel_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(dock_panel_test dock_panel_test)
 
-add_executable(command_utils_test command_utils_test.cc)
+add_executable(command_utils_test utils/command_utils_test.cc)
 target_link_libraries(command_utils_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(command_utils_test command_utils_test)
 
-add_executable(application_menu_test application_menu_test.cc)
+add_executable(application_menu_test view/application_menu_test.cc)
 target_link_libraries(application_menu_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(application_menu_test application_menu_test)
 
-add_executable(add_panel_dialog_test add_panel_dialog_test.cc)
+add_executable(add_panel_dialog_test view/add_panel_dialog_test.cc)
 target_link_libraries(add_panel_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(add_panel_dialog_test add_panel_dialog_test)
 
 add_executable(application_menu_settings_dialog_test
-    application_menu_settings_dialog_test.cc)
+    view/application_menu_settings_dialog_test.cc)
 target_link_libraries(application_menu_settings_dialog_test
     Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(application_menu_settings_dialog_test
     application_menu_settings_dialog_test)
 
-add_executable(multi_dock_model_test multi_dock_model_test.cc)
+add_executable(multi_dock_model_test model/multi_dock_model_test.cc)
 target_link_libraries(multi_dock_model_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(multi_dock_model_test multi_dock_model_test)
 
-add_executable(wallpaper_utils_test wallpaper_utils_test.cc)
+add_executable(wallpaper_utils_test utils/wallpaper_utils_test.cc)
 target_link_libraries(wallpaper_utils_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(wallpaper_utils_test wallpaper_utils_test)

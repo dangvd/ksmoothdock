@@ -43,10 +43,10 @@
 #include "add_panel_dialog.h"
 #include "application_menu.h"
 #include "clock.h"
-#include "command_utils.h"
 #include "desktop_selector.h"
 #include "launcher.h"
 #include "multi_dock_view.h"
+#include <utils/command_utils.h>
 
 namespace ksmoothdock {
 

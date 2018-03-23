@@ -32,9 +32,9 @@
 #include <KLocalizedString>
 #include <KWindowSystem>
 
-#include "command_utils.h"
 #include "dock_panel.h"
 #include "launcher.h"
+#include <utils/command_utils.h>
 
 namespace ksmoothdock {
 
