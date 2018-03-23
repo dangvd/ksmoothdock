@@ -235,37 +235,37 @@ void DockPanel::showOnlineDocumentation() {
 }
 
 void DockPanel::about() {
-  aboutDialog_.open();
+  aboutDialog_.show();
 }
 
 void DockPanel::showAppearanceSettingsDialog() {
   appearanceSettingsDialog_.reload();
-  appearanceSettingsDialog_.open();
+  appearanceSettingsDialog_.show();
 }
 
 void DockPanel::showEditLaunchersDialog() {
   editLaunchersDialog_.reload();
-  editLaunchersDialog_.open();
+  editLaunchersDialog_.show();
 }
 
 void DockPanel::showApplicationMenuSettingsDialog() {
   applicationMenuSettingsDialog_.reload();
-  applicationMenuSettingsDialog_.open();
+  applicationMenuSettingsDialog_.show();
 }
 
 void DockPanel::showWallpaperSettingsDialog(int desktop) {
   wallpaperSettingsDialog_.setDesktop(desktop);
-  wallpaperSettingsDialog_.open();
+  wallpaperSettingsDialog_.show();
 }
 
 void DockPanel::addDock() {
   addPanelDialog_.setMode(AddPanelDialog::Mode::Add);
-  addPanelDialog_.open();
+  addPanelDialog_.show();
 }
 
 void DockPanel::cloneDock() {
   addPanelDialog_.setMode(AddPanelDialog::Mode::Clone);
-  addPanelDialog_.open();
+  addPanelDialog_.show();
 }
 
 void DockPanel::removeDock() {
