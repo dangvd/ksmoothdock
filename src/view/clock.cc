@@ -23,9 +23,7 @@
 #include <QColor>
 #include <QDate>
 #include <QFont>
-#include <QFontMetrics>
 #include <QIcon>
-#include <QRect>
 #include <QTime>
 #include <QTimer>
 
@@ -33,6 +31,7 @@
 
 #include "dock_panel.h"
 #include "launcher.h"
+#include <utils/font_utils.h>
 
 namespace ksmoothdock {
 
@@ -58,15 +57,8 @@ void Clock::draw(QPainter *painter) const {
   // The reference time used to calculate the font size.
   const QString referenceTime = QTime(8, 8).toString(timeFormat_);
 
-  QFont font;
-  QFontMetrics metrics(font);
-  const QRect& rect = metrics.tightBoundingRect(referenceTime);
-  // Scale the font size according to the size of the dock.
-  font.setPointSize(std::min(
-      font.pointSize() * getWidth() / rect.width(),
-      font.pointSize() * getHeight() / rect.height()));
-  font.setPointSize(static_cast<int>(font.pointSize() * fontScaleFactor_));
-  painter->setFont(font);
+  painter->setFont(adjustFontSize(getWidth(), getHeight(), referenceTime,
+                                  fontScaleFactor_));
   painter->setRenderHint(QPainter::TextAntialiasing);
 
   if (size_ > minSize_) {
