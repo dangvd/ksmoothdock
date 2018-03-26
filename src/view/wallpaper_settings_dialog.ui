@@ -37,7 +37,7 @@
     <rect>
      <x>40</x>
      <y>90</y>
-     <width>231</width>
+     <width>221</width>
      <height>36</height>
     </rect>
    </property>
@@ -50,7 +50,7 @@
     <rect>
      <x>170</x>
      <y>20</y>
-     <width>101</width>
+     <width>91</width>
      <height>36</height>
     </rect>
    </property>
@@ -60,7 +60,7 @@
     <rect>
      <x>40</x>
      <y>30</y>
-     <width>76</width>
+     <width>111</width>
      <height>23</height>
     </rect>
    </property>
@@ -68,45 +68,12 @@
     <string>Desktop</string>
    </property>
   </widget>
-  <widget class="QLabel" name="positioningLabel">
-   <property name="geometry">
-    <rect>
-     <x>460</x>
-     <y>100</y>
-     <width>121</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Positioning</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="positioning">
-   <property name="geometry">
-    <rect>
-     <x>640</x>
-     <y>90</y>
-     <width>221</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>Scaled</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Centered</string>
-    </property>
-   </item>
-  </widget>
   <widget class="QLabel" name="screenLabel">
    <property name="geometry">
     <rect>
-     <x>460</x>
+     <x>520</x>
      <y>30</y>
-     <width>76</width>
+     <width>101</width>
      <height>23</height>
     </rect>
    </property>
@@ -161,7 +128,7 @@
     <rect>
      <x>40</x>
      <y>150</y>
-     <width>76</width>
+     <width>131</width>
      <height>23</height>
     </rect>
    </property>
