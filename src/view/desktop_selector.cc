@@ -62,12 +62,13 @@ void DesktopSelector::draw(QPainter* painter) const {
     IconBasedDockItem::draw(painter);
   } else {
     // Draw rectangles with desktop numbers if no custom wallpapers set.
+
     const auto bgColor = model_->backgroundColor();
     const QColor fillColor = bgColor.lighter();
     painter->fillRect(left_, top_, getWidth(), getHeight(), QBrush(fillColor));
 
     painter->setFont(adjustFontSize(getWidth(), getHeight(),
-                                    "0",  // reference string
+                                    "0" /* reference string */,
                                     0.5 /* scale factor */));
     painter->setRenderHint(QPainter::TextAntialiasing);
     painter->setPen(Qt::white);
@@ -98,13 +99,6 @@ void DesktopSelector::loadConfig() {
   wallpaper_ = model_->wallpaper(desktop_);
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpaper_));
-  } else {
-    wallpaper_ = loadPlasmaWallpaper();
-    if (isWallpaperOk()) {
-      setIconScaled(QPixmap(wallpaper_));
-    } else {
-      setIconName("user-desktop");
-    }
   }
 }
 

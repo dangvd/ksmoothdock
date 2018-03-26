@@ -105,7 +105,3 @@ add_test(application_menu_settings_dialog_test
 add_executable(multi_dock_model_test model/multi_dock_model_test.cc)
 target_link_libraries(multi_dock_model_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(multi_dock_model_test multi_dock_model_test)
-
-add_executable(wallpaper_utils_test utils/wallpaper_utils_test.cc)
-target_link_libraries(wallpaper_utils_test Qt5::Test ksmoothdock_lib ${LIBS})
-add_test(wallpaper_utils_test wallpaper_utils_test)

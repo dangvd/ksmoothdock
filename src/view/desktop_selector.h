@@ -46,6 +46,14 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   virtual ~DesktopSelector() {}
 
+  int getWidthForSize(int size) const override {
+    return isHorizontal() ? (size * desktopWidth_ / desktopHeight_) : size;
+  }
+
+  int getHeightForSize(int size) const override {
+    return isHorizontal() ? size : (size * desktopHeight_ / desktopWidth_);
+  }
+
   void draw(QPainter* painter) const override;
   void mousePressEvent(QMouseEvent* e) override;
   void loadConfig() override;
