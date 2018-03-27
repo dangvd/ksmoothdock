@@ -69,6 +69,10 @@ class WallpaperSettingsDialog : public QDialog {
 
   // Path to wallpaper file.
   QString wallpaper_;
+
+  // Remember the current directory of the session when opening the file dialog
+  // for browsing wallpapers.
+  QString currentDir_;
 };
 
 }  // namespace ksmoothdock

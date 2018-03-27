@@ -25,6 +25,7 @@
 #include <QDesktopWidget>
 #include <QDir>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QPixmap>
 
 #include <KWindowSystem>
@@ -35,7 +36,8 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
                                                  MultiDockModel* model)
     : QDialog(parent),
       ui(new Ui::WallpaperSettingsDialog),
-      model_(model) {
+      model_(model),
+      currentDir_(QDir::homePath()) {
   ui->setupUi(this);
 
   // Populate desktop list.
@@ -94,7 +96,7 @@ void WallpaperSettingsDialog::browseWallpaper() {
   const QString& wallpaper = QFileDialog::getOpenFileName(
         nullptr,
         i18n("Select Wallpaper Image"),
-        QDir::homePath(),
+        currentDir_,
         i18n("Image Files (*.png *.jpg *.bmp)"));
   if (wallpaper.isEmpty()) {
     return;
@@ -102,6 +104,7 @@ void WallpaperSettingsDialog::browseWallpaper() {
 
   wallpaper_ = wallpaper;
   ui->preview->setPixmap(QPixmap(wallpaper_));
+  currentDir_ = QFileInfo(wallpaper_).dir().absolutePath();
 }
 
 void WallpaperSettingsDialog::updatePreviewSize() {
