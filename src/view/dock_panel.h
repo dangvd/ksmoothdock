@@ -73,6 +73,13 @@ class DockPanel : public QWidget {
   // Reloads the items and updates the dock.
   void reload();
 
+  void onCurrentDesktopChanged() {
+    // This is to fix the bug that if launched from Plasma desktop (Run),
+    // when the current desktop has changed, docks on the right side won't
+    // show.
+    resize(width(), height());
+  }
+
   void onDockLaunchersChanged(int dockId) {
     if (dockId_ == dockId) {
       reload();
