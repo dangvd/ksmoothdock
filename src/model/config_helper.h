@@ -50,8 +50,10 @@ class ConfigHelper  {
     return configDir_.filePath(kAppearanceConfig);
   }
 
-  static QString wallpaperConfigKey(int desktop) {
-    return QString("wallpaper") + QString::number(desktop);
+  static QString wallpaperConfigKey(int desktop, int screen) {
+    // Screen is 0-based.
+    return QString("wallpaper") + QString::number(desktop) +
+        ((screen == 0) ? "" : (QString("_") + QString::number(screen + 1)));
   }
 
   // Finds the configs of all existing docks.

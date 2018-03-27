@@ -180,15 +180,16 @@ class MultiDockModel : public QObject {
     setAppearanceProperty(kApplicationMenuCategory, kIcon, value);
   }
 
-  QString wallpaper(int desktop) const {
+  QString wallpaper(int desktop, int screen) const {
     return appearanceProperty(kPagerCategory,
-                              ConfigHelper::wallpaperConfigKey(desktop),
+                              ConfigHelper::wallpaperConfigKey(desktop, screen),
                               QString());
   }
 
-  void setWallpaper(int desktop, const QString& value) {
+  void setWallpaper(int desktop, int screen, const QString& value) {
     setAppearanceProperty(kPagerCategory,
-                          ConfigHelper::wallpaperConfigKey(desktop), value);
+                          ConfigHelper::wallpaperConfigKey(desktop, screen),
+                          value);
   }
 
   bool use24HourClock() const {

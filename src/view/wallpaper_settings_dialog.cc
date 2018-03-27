@@ -51,24 +51,26 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
 
   const int screenCount = QApplication::desktop()->screenCount();
   for (int i = 1; i <= screenCount; ++i) {
-    ui->screen->addItem(QString("Screen ") + QString::number(i));
+    ui->screen->addItem(QString::number(i));
   }
   ui->screen->setCurrentIndex(0);
   updatePreviewSize();
 
   // Adjust the UI for single/multi-screen.
 
-  const bool isSingleScreen = (screenCount == 1);
-  if (isSingleScreen) {
-    ui->screenLabel->setVisible(false);
-    ui->screen->setVisible(false);
-  }
+  const bool isMultiScreen = (screenCount > 1);
+  ui->screenLabel->setVisible(isMultiScreen);
+  ui->screen->setVisible(isMultiScreen);
 
   connect(ui->desktop, SIGNAL(currentIndexChanged(int)),
-          this, SLOT(onDesktopChanged(int)));
+          this, SLOT(reload()));
   connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseWallpaper()));
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
+  if (isMultiScreen) {
+    connect(ui->screen, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(reload()));
+  }
 }
 
 WallpaperSettingsDialog::~WallpaperSettingsDialog() {
@@ -119,7 +121,7 @@ void WallpaperSettingsDialog::updatePreviewSize() {
   ui->preview->setGeometry(x, y, w, h);
 }
 
-void WallpaperSettingsDialog::onDesktopChanged(int desktop) {
+void WallpaperSettingsDialog::reload() {
   loadData();
 }
 
@@ -132,13 +134,14 @@ int WallpaperSettingsDialog::desktop() const {
 }
 
 void WallpaperSettingsDialog::loadData() {
-  wallpaper_ = model_->wallpaper(desktop());
+  wallpaper_ = model_->wallpaper(desktop(), screen());
   ui->preview->setPixmap(QPixmap(wallpaper_));
 }
 
 void WallpaperSettingsDialog::saveData() {
-  if (!wallpaper_.isEmpty() && (wallpaper_ != model_->wallpaper(desktop()))) {
-    model_->setWallpaper(desktop(), wallpaper_);
+  if (!wallpaper_.isEmpty() &&
+      (wallpaper_ != model_->wallpaper(desktop(), screen()))) {
+    model_->setWallpaper(desktop(), screen(), wallpaper_);
     model_->saveAppearanceConfig();
   }
 }

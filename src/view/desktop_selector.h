@@ -21,6 +21,8 @@
 
 #include "icon_based_dock_item.h"
 
+#include <memory>
+
 #include <QDBusInterface>
 #include <QFile>
 #include <QMenu>
@@ -40,7 +42,7 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
  public:
   DesktopSelector(DockPanel* parent, MultiDockModel* model,
                   Qt::Orientation orientation, int minSize, int maxSize,
-                  int desktop);
+                  int desktop, int screen);
 
   void init();
 
@@ -70,10 +72,11 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   }
 
   bool isWallpaperOk() const {
-    return !wallpaper_.isEmpty() && QFile::exists(wallpaper_);
+    return !wallpapers_[screen_].isEmpty() &&
+        QFile::exists(wallpapers_[screen_]);
   }
 
-  void setWallpaper(const QString& wallpaper);
+  void setPlasmaWallpapers();
 
   void createMenu();
 
@@ -81,10 +84,16 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   // The desktop that this desktop selector manages, 1-based.
   int desktop_;
+  // The screen that the parent panel is on, 0-based.
+  // We need this to show the correct image icon. However, we still need to
+  // manage all wallpapers (for all screens) so that we can update the
+  // desktop wallpapers when the current desktop has changed.
+  int screen_;
   KConfig* config_;
 
-  // The path to the wallpaper image file.
-  QString wallpaper_;
+  const int screenCount_;
+  // The path to the wallpaper image files (one for each screen).
+  std::unique_ptr<QString[]> wallpapers_;
 
   // Context (right-click) menu.
   QMenu menu_;

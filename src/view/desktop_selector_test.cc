@@ -36,7 +36,8 @@ class DesktopSelectorTest: public QObject {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
     desktopSelector_.reset(new DesktopSelector(
-        nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize, 1));
+        nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
+        1 /* desktop */, 0 /* screen */));
   }
 
   // Tests that the icon is scaled to screen's width/height ratio if needed.

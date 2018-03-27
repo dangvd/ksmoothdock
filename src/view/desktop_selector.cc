@@ -37,12 +37,15 @@ namespace ksmoothdock {
 
 DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
                                  Qt::Orientation orientation, int minSize,
-                                 int maxSize, int desktop)
+                                 int maxSize, int desktop, int screen)
     : IconBasedDockItem(parent, 
           i18n("Desktop ") + QString::number(desktop),
           orientation, "" /* no icon yet */, minSize, maxSize),
       model_(model),
       desktop_(desktop),
+      screen_(screen),
+      screenCount_(QApplication::desktop()->screenCount()),
+      wallpapers_(std::make_unique<QString[]>(screenCount_)),
       plasmaShellDBus_("org.kde.plasmashell",
                        "/PlasmaShell",
                        "org.kde.PlasmaShell"),
@@ -96,9 +99,11 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
 }
 
 void DesktopSelector::loadConfig() {
-  wallpaper_ = model_->wallpaper(desktop_);
+  for (int screen = 0; screen < screenCount_; ++screen) {
+    wallpapers_[screen] = model_->wallpaper(desktop_, screen);
+  }
   if (isWallpaperOk()) {
-    setIconScaled(QPixmap(wallpaper_));
+    setIconScaled(QPixmap(wallpapers_[screen_]));
   }
 }
 
@@ -113,41 +118,45 @@ void DesktopSelector::setIconScaled(const QPixmap& icon) {
 
 void DesktopSelector::updateWallpaper(int currentDesktop) {
   if (currentDesktop == desktop_) {
-    setWallpaper(wallpaper_);
+    setPlasmaWallpapers();
     parent_->update();
   }
 }
 
-void DesktopSelector::setWallpaper(const QString& wallpaper) {
+void DesktopSelector::setPlasmaWallpapers() {
   if (!plasmaShellDBus_.isValid()) {  // Not running in KDE Plasma 5.
     return;
   }
 
-  if (wallpaper.isEmpty()) {
-    return;
-  }
+  for (int screen = 0; screen < screenCount_; ++screen) {
+    const auto& wallpaper = wallpapers_[screen];
 
-  if (!QFile::exists(wallpaper)) {
-    KMessageBox::error(
-        nullptr,
-        i18n("Failed to load wallpaper from: ") + wallpaper);
-    return;
-  }
+    if (wallpaper.isEmpty()) {
+      continue;
+    }
 
-  const QDBusMessage response = plasmaShellDBus_.call(
-      "evaluateScript",
-      "var allDesktops = desktops();"
-      "for (i=0;i<allDesktops.length;i++) {"
-      "d = allDesktops[i];"
-      "d.wallpaperPlugin ='org.kde.image';"
-      "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
-      "d.writeConfig('Image','file://"
-      + wallpaper + "')}");
-  if (response.type() == QDBusMessage::ErrorMessage) {
-    KMessageBox::error(
-        nullptr,
-        i18n("Failed to update wallpaper. Please make sure Plasma desktop "
-             "widgets are unlocked in order to set wallpaper."));
+    if (!QFile::exists(wallpaper)) {
+      KMessageBox::error(
+          nullptr,
+          i18n("Failed to load wallpaper from: ") + wallpaper);
+      return;
+    }
+
+    const QDBusMessage response = plasmaShellDBus_.call(
+        "evaluateScript",
+        "var allDesktops = desktops();"
+        "d = allDesktops[" + QString::number(screen) + "];" +
+        "d.wallpaperPlugin ='org.kde.image';"
+        "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
+        "d.writeConfig('Image','file://"
+        + wallpaper + "')");
+    if (response.type() == QDBusMessage::ErrorMessage) {
+      KMessageBox::error(
+          nullptr,
+          i18n("Failed to update wallpaper. Please make sure Plasma desktop "
+              "widgets are unlocked in order to set wallpaper."));
+      return;
+    }
   }
 }
 

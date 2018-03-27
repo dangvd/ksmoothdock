@@ -586,7 +586,7 @@ void DockPanel::initPager() {
     for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
          ++desktop) {
       auto* item = new DesktopSelector(
-          this, model_, orientation_, minSize_, maxSize_, desktop);
+          this, model_, orientation_, minSize_, maxSize_, desktop, screen_);
       item->init();
       items_.push_back(std::unique_ptr<DockItem>(item));
     }

@@ -272,8 +272,8 @@ bool MultiDockModel::convertConfig() {
   KConfigGroup appearancePager(&appearanceConfig, kPagerCategory);
   const int numDesktops = KWindowSystem::numberOfDesktops();
   for (int desktop = 1; desktop <= numDesktops; ++desktop) {
-    copyEntry(ConfigHelper::wallpaperConfigKey(desktop), singleDockPager,
-              &appearancePager);
+    copyEntry(ConfigHelper::wallpaperConfigKey(desktop, 0 /* screen */),
+              singleDockPager, &appearancePager);
   }
 
   KConfigGroup singleDockClock(&singleDockConfig, kClockCategory);
