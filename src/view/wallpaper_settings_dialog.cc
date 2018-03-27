@@ -137,7 +137,7 @@ void WallpaperSettingsDialog::loadData() {
 }
 
 void WallpaperSettingsDialog::saveData() {
-  if (!wallpaper_.isEmpty()) {
+  if (!wallpaper_.isEmpty() && (wallpaper_ != model_->wallpaper(desktop()))) {
     model_->setWallpaper(desktop(), wallpaper_);
     model_->saveAppearanceConfig();
   }
