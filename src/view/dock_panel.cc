@@ -71,12 +71,12 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       isResizing_(false),
       isEntering_(false),
       isLeaving_(false),
-      isAnimationActive_(false) {
+      isAnimationActive_(false),
+      animationTimer_(std::make_unique<QTimer>(this)) {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
   setMouseTracking(true);
-  animationTimer_.reset(new QTimer(this));
   createMenu();
   loadDockConfig();
   loadAppearanceConfig();
