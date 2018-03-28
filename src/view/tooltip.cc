@@ -24,6 +24,8 @@
 #include <KWindowSystem>
 #include <netwm_def.h>
 
+#include <utils/draw_utils.h>
+
 namespace ksmoothdock {
 
 const int Tooltip::kPadding;
@@ -77,21 +79,9 @@ void Tooltip::paintEvent(QPaintEvent* e) {
   painter.setRenderHint(QPainter::TextAntialiasing);
   QFontMetrics metrics(font_);
   const int kDeltaY = metrics.height() / 2;
-
-  // Draws the bounding shadow.
-  painter.setPen(backgroundColor_);
   painter.setFont(font_);
-
-  for (int i = -2; i <= 2; ++i) {
-    for (int j = -2; j <= 2; ++j) {
-      painter.drawText(kPadding + i, kPadding + kDeltaY + j, text_);
-    }
-  }
-
-  // Now draws the normal text.
-  painter.setPen(fontColor_);
-  painter.setFont(font_);
-  painter.drawText(kPadding, kPadding + kDeltaY, text_);
+  drawBorderedText(kPadding, kPadding + kDeltaY, text_, 2 /* borderWidth */,
+                   backgroundColor_, fontColor_, &painter);
 }
 
 }  // namespace ksmoothdock

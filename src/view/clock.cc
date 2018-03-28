@@ -31,6 +31,7 @@
 
 #include "dock_panel.h"
 #include "launcher.h"
+#include <utils/draw_utils.h>
 #include <utils/font_utils.h>
 
 namespace ksmoothdock {
@@ -62,18 +63,13 @@ void Clock::draw(QPainter *painter) const {
   painter->setRenderHint(QPainter::TextAntialiasing);
 
   if (size_ > minSize_) {
-    painter->setPen(Qt::black);
-    for (int i = -2; i <= 2; ++i) {
-      for (int j = -2; j <= 2; ++j) {
-        painter->drawText(left_ + i, top_ + j, getWidth(), getHeight(),
-                          Qt::AlignCenter, time);
-      }
-    }
+    drawBorderedText(left_, top_, getWidth(), getHeight(), Qt::AlignCenter,
+                     time, 2 /* borderWidth */, Qt::black, Qt::white, painter);
+  } else {
+    painter->setPen(Qt::white);
+    painter->drawText(left_, top_, getWidth(), getHeight(), Qt::AlignCenter,
+                      time);
   }
-
-  painter->setPen(Qt::white);
-  painter->drawText(left_, top_, getWidth(), getHeight(), Qt::AlignCenter,
-                    time);
 }
 
 void Clock::mousePressEvent(QMouseEvent *e) {
