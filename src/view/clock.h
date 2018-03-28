@@ -50,9 +50,6 @@ class Clock : public QObject, public IconlessDockItem {
 
   void setDateAndTime();
 
-  void set24HourClock(bool enabled);
-  void toggle24HourClock();
-
   void setFontScaleFactor(float fontScaleFactor);
   void setLargeFont();
   void setMediumFont();
@@ -62,17 +59,19 @@ class Clock : public QObject, public IconlessDockItem {
   static constexpr float kWhRatio = 2.8;
   static constexpr float kDelta = 0.01;
 
+  float fontScaleFactor() {
+    return largeFontAction_->isChecked()
+        ? kLargeClockFontScaleFactor
+        : mediumFontAction_->isChecked() ? kMediumClockFontScaleFactor
+                                         : kSmallClockFontScaleFactor;
+  }
+
   // Creates the context menu.
   void createMenu();
 
   void saveConfig();
 
   MultiDockModel* model_;
-
-  bool use24HourClock_;
-  float fontScaleFactor_;
-
-  QString timeFormat_;
 
   Calendar calendar_;
 

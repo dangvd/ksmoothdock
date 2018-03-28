@@ -113,7 +113,7 @@ void DesktopSelector::loadConfig() {
 
 void DesktopSelector::saveConfig() {
   model_->setShowDesktopNumber(showDesktopNumberAction_->isChecked());
-  model_->saveAppearanceConfig();
+  model_->saveAppearanceConfig(true /* repaintOnly */);
 }
 
 void DesktopSelector::setIconScaled(const QPixmap& icon) {

@@ -92,6 +92,7 @@ void DockPanel::init() {
       this, SLOT(updatePager()));
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
           this, SLOT(onCurrentDesktopChanged()));
+  connect(model_, SIGNAL(appearanceOutdated()), this, SLOT(update()));
   connect(model_, SIGNAL(appearanceChanged()), this, SLOT(reload()));
   connect(model_, SIGNAL(dockLaunchersChanged(int)),
           this, SLOT(onDockLaunchersChanged(int)));

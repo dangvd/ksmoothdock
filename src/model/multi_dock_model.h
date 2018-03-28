@@ -220,9 +220,13 @@ class MultiDockModel : public QObject {
     setAppearanceProperty(kClockCategory, kFontScaleFactor, value);
   }
 
-  void saveAppearanceConfig() {
+  void saveAppearanceConfig(bool repaintOnly = false) {
     syncAppearanceConfig();
-    emit appearanceChanged();
+    if (repaintOnly) {
+      emit appearanceOutdated();
+    } else {
+      emit appearanceChanged();
+    }
   }
 
   PanelPosition panelPosition(int dockId) const {
@@ -319,6 +323,9 @@ class MultiDockModel : public QObject {
   }
 
  signals:
+  // Minor appearance changes that require view update.
+  void appearanceOutdated();
+  // Major appearance changes that require view reload.
   void appearanceChanged();
   void dockAdded(int dockId);
   void dockLaunchersChanged(int dockId);
