@@ -37,37 +37,36 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
     : QDialog(parent),
       ui(new Ui::WallpaperSettingsDialog),
       model_(model),
-      currentDir_(QDir::homePath()) {
+      currentDir_(QDir::homePath()),
+      multiScreen_(false) {
   ui->setupUi(this);
 
   // Populate desktop list.
-
   for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
        ++desktop) {
     ui->desktop->addItem(QString::number(desktop));
   }
 
   // Populate screen list.
-
   const int screenCount = QApplication::desktop()->screenCount();
   for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
   }
   ui->screen->setCurrentIndex(0);
-  updatePreviewSize();
 
   // Adjust the UI for single/multi-screen.
+  multiScreen_ = (screenCount > 1);
+  ui->screenLabel->setVisible(multiScreen_);
+  ui->screen->setVisible(multiScreen_);
 
-  const bool isMultiScreen = (screenCount > 1);
-  ui->screenLabel->setVisible(isMultiScreen);
-  ui->screen->setVisible(isMultiScreen);
+  adjustUiForScreen();
 
   connect(ui->desktop, SIGNAL(currentIndexChanged(int)),
           this, SLOT(reload()));
   connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseWallpaper()));
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
-  if (isMultiScreen) {
+  if (multiScreen_) {
     connect(ui->screen, SIGNAL(currentIndexChanged(int)),
             this, SLOT(reload()));
   }
@@ -77,8 +76,12 @@ WallpaperSettingsDialog::~WallpaperSettingsDialog() {
   delete ui;
 }
 
-void WallpaperSettingsDialog::setDesktop(int desktop) {
+void WallpaperSettingsDialog::setFor(int desktop, int screen) {
   ui->desktop->setCurrentIndex(desktop - 1);
+  if (multiScreen_) {
+    ui->screen->setCurrentIndex(screen);
+    adjustUiForScreen();
+  }
   loadData();
 }
 
@@ -109,19 +112,23 @@ void WallpaperSettingsDialog::browseWallpaper() {
   currentDir_ = QFileInfo(wallpaper_).dir().absolutePath();
 }
 
-void WallpaperSettingsDialog::updatePreviewSize() {
+void WallpaperSettingsDialog::adjustUiForScreen() {
   const auto screenGeometry = QApplication::desktop()->screenGeometry(screen());
-  const auto scale = std::min(
-      static_cast<float>(kMaxPreviewWidth) / screenGeometry.width(),
-      static_cast<float>(kMaxPreviewHeight) / screenGeometry.height());
-  const auto w = static_cast<int>(scale * screenGeometry.width());
-  const auto h = static_cast<int>(scale * screenGeometry.height());
-  const auto x = (ui->previewHolder->width() - w) / 2;
-  const auto y = (ui->previewHolder->height() - h) / 2;
-  ui->preview->setGeometry(x, y, w, h);
+  const int w = ui->preview->width();
+  const int h = w * screenGeometry.height() / screenGeometry.width();
+  const int delta = h - ui->preview->height();
+  ui->preview->resize(w, h);
+  ui->previewHolder->resize(ui->previewHolder->width(),
+                            ui->previewHolder->height() + delta);
+  ui->buttonBox->resize(ui->buttonBox->width(),
+                        ui->buttonBox->height() + delta);
+  resize(width(), height() + delta);
 }
 
 void WallpaperSettingsDialog::reload() {
+  if (multiScreen_) {
+    adjustUiForScreen();
+  }
   loadData();
 }
 

@@ -38,7 +38,7 @@ class WallpaperSettingsDialog : public QDialog {
   WallpaperSettingsDialog(QWidget* parent, MultiDockModel* model);
   ~WallpaperSettingsDialog();
 
-  void setDesktop(int desktop);
+  void setFor(int desktop, int screen);
 
  public slots:
   void accept() override;
@@ -46,14 +46,11 @@ class WallpaperSettingsDialog : public QDialog {
 
   void browseWallpaper();
 
-  void updatePreviewSize();
+  void adjustUiForScreen();
 
   void reload();
 
  private:
-  static constexpr int kMaxPreviewWidth = 800;
-  static constexpr int kMaxPreviewHeight = 500;
-
   // Gets screen (0-based).
   int screen() const;
 
@@ -73,6 +70,8 @@ class WallpaperSettingsDialog : public QDialog {
   // Remember the current directory of the session when opening the file dialog
   // for browsing wallpapers.
   QString currentDir_;
+
+  bool multiScreen_;
 };
 
 }  // namespace ksmoothdock

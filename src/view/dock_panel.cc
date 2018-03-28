@@ -253,7 +253,7 @@ void DockPanel::showApplicationMenuSettingsDialog() {
 }
 
 void DockPanel::showWallpaperSettingsDialog(int desktop) {
-  wallpaperSettingsDialog_.setDesktop(desktop);
+  wallpaperSettingsDialog_.setFor(desktop, screen_);
   wallpaperSettingsDialog_.show();
 }
 
