@@ -54,8 +54,8 @@ DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
       desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
 
 void DesktopSelector::init() {
-  loadConfig();
   createMenu();
+  loadConfig();
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
           this, SLOT(updateWallpaper(int)));
   updateWallpaper(KWindowSystem::currentDesktop());
@@ -107,6 +107,13 @@ void DesktopSelector::loadConfig() {
   if (isWallpaperOk()) {
     setIconScaled(QPixmap(wallpapers_[screen_]));
   }
+
+  showDesktopNumberAction_->setChecked(model_->showDesktopNumber());
+}
+
+void DesktopSelector::saveConfig() {
+  model_->setShowDesktopNumber(showDesktopNumberAction_->isChecked());
+  model_->saveAppearanceConfig();
 }
 
 void DesktopSelector::setIconScaled(const QPixmap& icon) {
@@ -170,6 +177,12 @@ void DesktopSelector::createMenu() {
       [this] {
         parent_->showWallpaperSettingsDialog(desktop_);
       });
+  showDesktopNumberAction_ = menu_.addAction(
+      i18n("Show Desktop Number"), this,
+      [this] {
+        saveConfig();
+      });
+  showDesktopNumberAction_->setCheckable(true);
 }
 
 }  // namespace ksmoothdock

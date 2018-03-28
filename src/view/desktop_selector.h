@@ -23,6 +23,7 @@
 
 #include <memory>
 
+#include <QAction>
 #include <QDBusInterface>
 #include <QFile>
 #include <QMenu>
@@ -80,6 +81,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   void createMenu();
 
+  void saveConfig();
+
   MultiDockModel* model_;
 
   // The desktop that this desktop selector manages, 1-based.
@@ -97,6 +100,8 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
 
   // Context (right-click) menu.
   QMenu menu_;
+
+  QAction* showDesktopNumberAction_;
 
   QDBusInterface plasmaShellDBus_;
 

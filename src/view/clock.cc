@@ -105,11 +105,13 @@ void Clock::toggle24HourClock() {
 
 void Clock::setFontScaleFactor(float fontScaleFactor) {
   fontScaleFactor_ = fontScaleFactor;
-  largeFontAction_->setChecked(fontScaleFactor_ > kLargeClockFontScaleFactor - kDelta);
+  largeFontAction_->setChecked(
+      fontScaleFactor_ > kLargeClockFontScaleFactor - kDelta);
   mediumFontAction_->setChecked(
       fontScaleFactor_ > kMediumClockFontScaleFactor - kDelta &&
       fontScaleFactor_ < kMediumClockFontScaleFactor + kDelta);
-  smallFontAction_->setChecked(fontScaleFactor_ < kSmallClockFontScaleFactor + kDelta);
+  smallFontAction_->setChecked(
+      fontScaleFactor_ < kSmallClockFontScaleFactor + kDelta);
 }
 
 void Clock::setLargeFont() {
@@ -140,16 +142,16 @@ void Clock::createMenu() {
 
   QMenu* fontSize = menu_.addMenu(i18n("Font Size"));
   largeFontAction_ = fontSize->addAction(i18n("Large Font"),
-                                                  this,
-                                                  SLOT(setLargeFont()));
+                                         this,
+                                         SLOT(setLargeFont()));
   largeFontAction_->setCheckable(true);
   mediumFontAction_ = fontSize->addAction(i18n("Medium Font"),
-                                                  this,
-                                                  SLOT(setMediumFont()));
+                                          this,
+                                          SLOT(setMediumFont()));
   mediumFontAction_->setCheckable(true);
   smallFontAction_ = fontSize->addAction(i18n("Small Font"),
-                                                  this,
-                                                  SLOT(setSmallFont()));
+                                         this,
+                                         SLOT(setSmallFont()));
   smallFontAction_->setCheckable(true);
 }
 
