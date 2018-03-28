@@ -47,6 +47,7 @@ constexpr char MultiDockModel::kIcon[];
 constexpr char MultiDockModel::kLabel[];
 constexpr char MultiDockModel::kPagerCategory[];
 constexpr char MultiDockModel::kWallpaper[];
+constexpr char MultiDockModel::kShowDesktopNumber[];
 constexpr char MultiDockModel::kClockCategory[];
 constexpr char MultiDockModel::kUse24HourClock[];
 constexpr char MultiDockModel::kFontScaleFactor[];

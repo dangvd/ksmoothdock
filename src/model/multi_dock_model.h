@@ -60,6 +60,7 @@ constexpr bool kDefaultShowClock = false;
 
 constexpr char kDefaultApplicationMenuName[] = "Applications";
 constexpr char kDefaultApplicationMenuIcon[] = "start-here-kde";
+constexpr bool kDefaultShowDesktopNumber = true;
 constexpr bool kDefaultUse24HourClock = true;
 constexpr float kDefaultClockFontScaleFactor = kLargeClockFontScaleFactor;
 
@@ -190,6 +191,15 @@ class MultiDockModel : public QObject {
     setAppearanceProperty(kPagerCategory,
                           ConfigHelper::wallpaperConfigKey(desktop, screen),
                           value);
+  }
+
+  bool showDesktopNumber() const {
+    return appearanceProperty(kPagerCategory, kShowDesktopNumber,
+                              kDefaultShowDesktopNumber);
+  }
+
+  void setShowDesktopNumber(bool value) {
+    setAppearanceProperty(kPagerCategory, kShowDesktopNumber, value);
   }
 
   bool use24HourClock() const {
@@ -340,6 +350,7 @@ class MultiDockModel : public QObject {
 
   static constexpr char kPagerCategory[] = "Pager";
   static constexpr char kWallpaper[] = "wallpaper";
+  static constexpr char kShowDesktopNumber[] = "showDesktopNumber";
 
   static constexpr char kClockCategory[] = "Clock";
   static constexpr char kUse24HourClock[] = "use24HourClock";

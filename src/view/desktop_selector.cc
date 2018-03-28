@@ -31,6 +31,7 @@
 #include <KMessageBox>
 
 #include "dock_panel.h"
+#include <utils/draw_utils.h>
 #include <utils/font_utils.h>
 
 namespace ksmoothdock {
@@ -65,18 +66,19 @@ void DesktopSelector::draw(QPainter* painter) const {
     IconBasedDockItem::draw(painter);
   } else {
     // Draw rectangles with desktop numbers if no custom wallpapers set.
-
     const auto bgColor = model_->backgroundColor();
     const QColor fillColor = bgColor.lighter();
     painter->fillRect(left_, top_, getWidth(), getHeight(), QBrush(fillColor));
+  }
 
+  if (model_->showDesktopNumber()) {
     painter->setFont(adjustFontSize(getWidth(), getHeight(),
                                     "0" /* reference string */,
                                     0.5 /* scale factor */));
     painter->setRenderHint(QPainter::TextAntialiasing);
-    painter->setPen(Qt::white);
-    painter->drawText(left_, top_, getWidth(), getHeight(),Qt::AlignCenter,
-                      QString::number(desktop_));
+    drawBorderedText(left_, top_, getWidth(), getHeight(), Qt::AlignCenter,
+                     QString::number(desktop_), 1 /* borderWidth */, Qt::black,
+                     Qt::white, painter);
   }
 
   // Only draw the border for the current desktop if dock has border.
