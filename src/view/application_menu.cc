@@ -107,9 +107,7 @@ ApplicationMenu::ApplicationMenu(
                         minSize, maxSize),
       model_(model),
       entryDirs_(entryDirs),
-      fileWatcher_(entryDirs) {}
-
-void ApplicationMenu::init() {
+      fileWatcher_(entryDirs) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
 

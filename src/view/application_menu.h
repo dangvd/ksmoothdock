@@ -123,9 +123,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
           "/usr/share/applications",
           "/usr/share/applications/kde4",
           QDir::homePath() + "/.local/share/applications"});
-  virtual ~ApplicationMenu() {}
-
-  void init();
+  virtual ~ApplicationMenu() = default;
 
   void mousePressEvent(QMouseEvent* e) override;
   void loadConfig() override;

@@ -159,8 +159,6 @@ class DockPanel : public QWidget {
   // The space between the tooltip and the dock.
   static const int kTooltipSpacing = 10;
 
-  void init();
-
   bool isHorizontal() { return orientation_ == Qt::Horizontal; }
 
   bool autoHide() { return visibility_ == PanelVisibility::AutoHide; }

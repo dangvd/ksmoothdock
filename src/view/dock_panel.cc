@@ -72,10 +72,6 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       isEntering_(false),
       isLeaving_(false),
       isAnimationActive_(false) {
-  init();
-}
-
-void DockPanel::init() {
   setAttribute(Qt::WA_TranslucentBackground);
   KWindowSystem::setType(winId(), NET::Dock);
   KWindowSystem::setOnAllDesktops(winId(), true);
@@ -577,10 +573,8 @@ void DockPanel::initLaunchers() {
 
 void DockPanel::initApplicationMenu() {
   if (showApplicationMenu_) {
-    auto* item = new ApplicationMenu(
-        this, model_, orientation_, minSize_, maxSize_);
-    item->init();
-    items_.push_back(std::unique_ptr<DockItem>(item));
+    items_.push_back(std::make_unique<ApplicationMenu>(
+        this, model_, orientation_, minSize_, maxSize_));
   }
 }
 
@@ -588,18 +582,16 @@ void DockPanel::initPager() {
   if (showPager_) {
     for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
          ++desktop) {
-      auto* item = new DesktopSelector(
-          this, model_, orientation_, minSize_, maxSize_, desktop, screen_);
-      item->init();
-      items_.push_back(std::unique_ptr<DockItem>(item));
+      items_.push_back(std::make_unique<DesktopSelector>(
+          this, model_, orientation_, minSize_, maxSize_, desktop, screen_));
     }
   }
 }
 
 void DockPanel::initClock() {
   if (showClock_) {
-    items_.push_back(std::unique_ptr<DockItem>(new Clock(
-        this, model_, orientation_, minSize_, maxSize_)));
+    items_.push_back(std::make_unique<Clock>(
+        this, model_, orientation_, minSize_, maxSize_));
   }
 }
 

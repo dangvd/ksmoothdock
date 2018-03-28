@@ -45,9 +45,7 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
                   Qt::Orientation orientation, int minSize, int maxSize,
                   int desktop, int screen);
 
-  void init();
-
-  virtual ~DesktopSelector() {}
+  virtual ~DesktopSelector() = default;
 
   int getWidthForSize(int size) const override {
     return isHorizontal() ? (size * desktopWidth_ / desktopHeight_) : size;

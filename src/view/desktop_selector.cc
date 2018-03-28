@@ -51,9 +51,7 @@ DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
                        "/PlasmaShell",
                        "org.kde.PlasmaShell"),
       desktopWidth_(QApplication::desktop()->screenGeometry().width()),
-      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {}
-
-void DesktopSelector::init() {
+      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {
   createMenu();
   loadConfig();
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
