@@ -19,6 +19,7 @@
 #include "desktop_selector.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
 
 #include <QApplication>

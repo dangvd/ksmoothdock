@@ -19,6 +19,8 @@
 #include "dock_panel.h"
 
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <utility>
 
@@ -761,9 +763,9 @@ void DockPanel::updateLayout(int x, int y) {
   for (int i = 0; i < itemCount(); ++i) {
     int delta;
     if (isHorizontal()) {
-      delta = abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
+      delta = std::abs(items_[i]->minCenter_ - x + (width() - minWidth_) / 2);
     } else {  // Vertical
-      delta = abs(items_[i]->minCenter_ - y + (height() - minHeight_) / 2);
+      delta = std::abs(items_[i]->minCenter_ - y + (height() - minHeight_) / 2);
     }
     if (delta < parabolicMaxX_) {
       if (first_update_index == -1) {

@@ -20,6 +20,7 @@
 #include "ui_appearance_settings_dialog.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
 
 #include <QPushButton>
@@ -62,7 +63,7 @@ class AppearanceSettingsDialogTest: public QObject {
  private:
   static bool compareDouble(double x, double y) {
     static constexpr double kDelta = 0.01;
-    return std::fabs(x - y) < kDelta;
+    return std::abs(x - y) < kDelta;
   }
 
   std::unique_ptr<MultiDockModel> model_;
