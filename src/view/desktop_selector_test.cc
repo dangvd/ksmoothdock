@@ -24,9 +24,18 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QTemporaryDir>
+#include <QTemporaryFile>
 #include <QTest>
 
+#include "multi_dock_view.h"
+
 namespace ksmoothdock {
+
+constexpr int kDockId = 1;
+constexpr int kDesktop = 1;
+constexpr int kScreen = 0;
+constexpr int kMinSize = 64;
+constexpr int kMaxSize = 64;
 
 class DesktopSelectorTest: public QObject {
   Q_OBJECT
@@ -35,31 +44,35 @@ class DesktopSelectorTest: public QObject {
   void init() {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
-    desktopSelector_.reset(new DesktopSelector(
-        nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
-        1 /* desktop */, 0 /* screen */));
+    model_->addDock();
+    view_ = std::make_unique<MultiDockView>(model_.get());
+    dock_ = std::make_unique<DockPanel>(view_.get(), model_.get(), kDockId);
   }
 
   // Tests that the icon is scaled to screen's width/height ratio if needed.
   void setIconScaled();
 
  private:
-  static const int kMinSize = 64;
-  static const int kMaxSize = 64;
-
   std::unique_ptr<MultiDockModel> model_;
-  std::unique_ptr<DesktopSelector> desktopSelector_;
+  std::unique_ptr<MultiDockView> view_;
+  std::unique_ptr<DockPanel> dock_;
 };
-const int DesktopSelectorTest::kMinSize;
-const int DesktopSelectorTest::kMaxSize;
 
 void DesktopSelectorTest::setIconScaled() {
-  desktopSelector_->setIconScaled(QPixmap(100, 100));
-  QCOMPARE(desktopSelector_->getIcon(kMinSize).height(), kMinSize);
+  QTemporaryFile iconFile;
+  QVERIFY(iconFile.open());
+  QPixmap icon(100, 100);
+  icon.save(iconFile.fileName(), "PNG");
+  model_->setWallpaper(kDesktop, kScreen, iconFile.fileName());
+
+  DesktopSelector desktopSelector(dock_.get(), model_.get(), Qt::Horizontal,
+                                  kMinSize, kMaxSize, kDesktop, kScreen);
+
+  QCOMPARE(desktopSelector.getIcon(kMinSize).height(), kMinSize);
   const int desktopWidth = QApplication::desktop()->screenGeometry().width();
   const int desktopHeight = QApplication::desktop()->screenGeometry().height();
   // Gives room to rounding difference.
-  QVERIFY(std::abs(desktopSelector_->getIcon(kMinSize).width() -
+  QVERIFY(std::abs(desktopSelector.getIcon(kMinSize).width() -
                    desktopWidth * kMinSize / desktopHeight) <= 1);
 }
 
