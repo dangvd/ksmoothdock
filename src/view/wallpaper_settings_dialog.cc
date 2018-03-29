@@ -120,8 +120,7 @@ void WallpaperSettingsDialog::adjustUiForScreen() {
   ui->preview->resize(w, h);
   ui->previewHolder->resize(ui->previewHolder->width(),
                             ui->previewHolder->height() + delta);
-  ui->buttonBox->resize(ui->buttonBox->width(),
-                        ui->buttonBox->height() + delta);
+  ui->buttonBox->move(ui->buttonBox->x(), ui->buttonBox->y() + delta);
   resize(width(), height() + delta);
 }
 
