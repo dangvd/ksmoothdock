@@ -94,6 +94,8 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
       KWindowSystem::setCurrentDesktop(desktop_);
     }
   } else if (e->button() == Qt::RightButton) {
+    // In case other DesktopSelectors have changed the config.
+    showDesktopNumberAction_->setChecked(model_->showDesktopNumber());
     menu_.popup(e->globalPos());
   }
 }

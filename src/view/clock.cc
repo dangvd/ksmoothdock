@@ -77,8 +77,8 @@ void Clock::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
     calendar_.toggleCalendar();
   } else if (e->button() == Qt::RightButton) {
-    // In case other docks have changed this.
-    setFontScaleFactor(model_->clockFontScaleFactor());
+    // In case other docks have changed the config.
+    loadConfig();
     menu_.popup(e->globalPos());
   }
 }
