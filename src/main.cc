@@ -18,6 +18,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QIcon>
 
 #include <KAboutData>
 #include <KDBusService>
@@ -40,6 +41,7 @@ int main(int argc, char** argv) {
       "",
       "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
+  QApplication::setWindowIcon(QIcon::fromTheme("user-desktop"));
 
   ksmoothdock::MultiDockModel model(QDir::homePath() + "/.ksmoothdock");
   ksmoothdock::MultiDockView view(&model);
