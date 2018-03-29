@@ -322,6 +322,9 @@ class MultiDockModel : public QObject {
     emit dockLaunchersChanged(dockId);
   }
 
+  // Whether any dock has a pager.
+  bool hasPager();
+
  signals:
   // Minor appearance changes that require view update.
   void appearanceOutdated();

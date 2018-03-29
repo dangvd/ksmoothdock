@@ -18,13 +18,18 @@
 
 #include "multi_dock_view.h"
 
+#include <KWindowSystem>
+
 #include "add_panel_dialog.h"
 
 namespace ksmoothdock {
 
 MultiDockView::MultiDockView(MultiDockModel* model)
-    : model_(model) {
+    : model_(model),
+      wallpaperHelper_(model) {
   connect(model_, SIGNAL(dockAdded(int)), this, SLOT(onDockAdded(int)));
+  connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
+          &wallpaperHelper_, SLOT(setPlasmaWallpapers(int)));
   loadData();
 }
 
@@ -32,6 +37,7 @@ void MultiDockView::show() {
   for (const auto& dock : docks_) {
     dock.second->show();
   }
+  wallpaperHelper_.setPlasmaWallpapers(KWindowSystem::currentDesktop());
 }
 
 void MultiDockView::exit() {

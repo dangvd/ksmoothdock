@@ -24,8 +24,6 @@
 #include <memory>
 
 #include <QAction>
-#include <QDBusInterface>
-#include <QFile>
 #include <QMenu>
 #include <QObject>
 #include <QString>
@@ -62,20 +60,10 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   // Sets the icon but scales the pixmap to the screen's width/height ratio.
   void setIconScaled(const QPixmap& icon);
 
- public slots:
-  void updateWallpaper(int currentDesktop);
-
  private:
   bool isCurrentDesktop() const {
     return KWindowSystem::currentDesktop() == desktop_;
   }
-
-  bool isWallpaperOk() const {
-    return !wallpapers_[screen_].isEmpty() &&
-        QFile::exists(wallpapers_[screen_]);
-  }
-
-  void setPlasmaWallpapers();
 
   void createMenu();
 
@@ -86,25 +74,18 @@ class DesktopSelector : public QObject, public IconBasedDockItem {
   // The desktop that this desktop selector manages, 1-based.
   int desktop_;
   // The screen that the parent panel is on, 0-based.
-  // We need this to show the correct image icon. However, we still need to
-  // manage all wallpapers (for all screens) so that we can update the
-  // desktop wallpapers when the current desktop has changed.
   int screen_;
   KConfig* config_;
-
-  const int screenCount_;
-  // The path to the wallpaper image files (one for each screen).
-  std::unique_ptr<QString[]> wallpapers_;
 
   // Context (right-click) menu.
   QMenu menu_;
 
   QAction* showDesktopNumberAction_;
 
-  QDBusInterface plasmaShellDBus_;
-
   int desktopWidth_;
   int desktopHeight_;
+
+  bool hasCustomWallpaper_;
 };
 
 }  // namespace ksmoothdock

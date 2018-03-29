@@ -26,6 +26,7 @@
 
 #include "dock_panel.h"
 #include <model/multi_dock_model.h>
+#include <utils/wallpaper_helper.h>
 
 namespace ksmoothdock {
 
@@ -35,7 +36,7 @@ class MultiDockView : public QObject {
 
  public:
   // No pointer ownership.
-  MultiDockView(MultiDockModel* model);
+  explicit MultiDockView(MultiDockModel* model);
   ~MultiDockView() = default;
 
   void show();
@@ -53,6 +54,7 @@ class MultiDockView : public QObject {
 
   MultiDockModel* model_;  // No ownership.
   std::unordered_map<int, std::unique_ptr<DockPanel>> docks_;
+  WallpaperHelper wallpaperHelper_;
 };
 
 }  // namespace ksmoothdock

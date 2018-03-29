@@ -170,6 +170,15 @@ void MultiDockModel::removeDock(int dockId) {
   // No need to emit a signal here.
 }
 
+bool MultiDockModel::hasPager() {
+  for (const auto& dock : dockConfigs_) {
+    if (showPager(dock.first)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void MultiDockModel::syncDockLaunchersConfig(int dockId) {
   const auto& launchersPath = dockLaunchersPath(dockId);
   QDir launchersDir(launchersPath);

@@ -78,6 +78,9 @@ class DockPanel : public QWidget {
     // when the current desktop has changed, docks on the right side won't
     // show.
     resize(width(), height());
+    // We also need to repaint anyway to update the border around the current
+    // desktop if pager is on.
+    update();
   }
 
   void onDockLaunchersChanged(int dockId) {

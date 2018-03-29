@@ -34,7 +34,8 @@ set(SRCS
     view/launcher.cc
     view/multi_dock_view.cc
     view/tooltip.cc
-    view/wallpaper_settings_dialog.cc)
+    view/wallpaper_settings_dialog.cc
+    utils/wallpaper_helper.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui

@@ -21,14 +21,14 @@
 #include <QApplication>
 #include <QBrush>
 #include <QColor>
-#include <QDBusMessage>
 #include <QDesktopWidget>
+#include <QFile>
 #include <QIcon>
 #include <QPainter>
 #include <QPixmap>
 
 #include <KLocalizedString>
-#include <KMessageBox>
+#include <KWindowSystem>
 
 #include "dock_panel.h"
 #include <utils/draw_utils.h>
@@ -45,22 +45,15 @@ DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
       model_(model),
       desktop_(desktop),
       screen_(screen),
-      screenCount_(QApplication::desktop()->screenCount()),
-      wallpapers_(std::make_unique<QString[]>(screenCount_)),
-      plasmaShellDBus_("org.kde.plasmashell",
-                       "/PlasmaShell",
-                       "org.kde.PlasmaShell"),
       desktopWidth_(QApplication::desktop()->screenGeometry().width()),
-      desktopHeight_(QApplication::desktop()->screenGeometry().height()) {
+      desktopHeight_(QApplication::desktop()->screenGeometry().height()),
+      hasCustomWallpaper_(false) {
   createMenu();
   loadConfig();
-  connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
-          this, SLOT(updateWallpaper(int)));
-  updateWallpaper(KWindowSystem::currentDesktop());
 }
 
 void DesktopSelector::draw(QPainter* painter) const {
-  if (isWallpaperOk()) {
+  if (hasCustomWallpaper_) {
     IconBasedDockItem::draw(painter);
   } else {
     // Draw rectangles with desktop numbers if no custom wallpapers set.
@@ -101,11 +94,10 @@ void DesktopSelector::mousePressEvent(QMouseEvent* e) {
 }
 
 void DesktopSelector::loadConfig() {
-  for (int screen = 0; screen < screenCount_; ++screen) {
-    wallpapers_[screen] = model_->wallpaper(desktop_, screen);
-  }
-  if (isWallpaperOk()) {
-    setIconScaled(QPixmap(wallpapers_[screen_]));
+  const auto& wallpaper = model_->wallpaper(desktop_, screen_);
+  if (!wallpaper.isEmpty() && QFile::exists(wallpaper)) {
+    setIconScaled(QPixmap(wallpaper));
+    hasCustomWallpaper_ = true;
   }
 
   showDesktopNumberAction_->setChecked(model_->showDesktopNumber());
@@ -122,50 +114,6 @@ void DesktopSelector::setIconScaled(const QPixmap& icon) {
     setIcon(scaledIcon);
   } else {
     setIcon(icon);
-  }
-}
-
-void DesktopSelector::updateWallpaper(int currentDesktop) {
-  if (currentDesktop == desktop_) {
-    setPlasmaWallpapers();
-    parent_->update();
-  }
-}
-
-void DesktopSelector::setPlasmaWallpapers() {
-  if (!plasmaShellDBus_.isValid()) {  // Not running in KDE Plasma 5.
-    return;
-  }
-
-  for (int screen = 0; screen < screenCount_; ++screen) {
-    const auto& wallpaper = wallpapers_[screen];
-
-    if (wallpaper.isEmpty()) {
-      continue;
-    }
-
-    if (!QFile::exists(wallpaper)) {
-      KMessageBox::error(
-          nullptr,
-          i18n("Failed to load wallpaper from: ") + wallpaper);
-      return;
-    }
-
-    const QDBusMessage response = plasmaShellDBus_.call(
-        "evaluateScript",
-        "var allDesktops = desktops();"
-        "d = allDesktops[" + QString::number(screen) + "];" +
-        "d.wallpaperPlugin ='org.kde.image';"
-        "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
-        "d.writeConfig('Image','file://"
-        + wallpaper + "')");
-    if (response.type() == QDBusMessage::ErrorMessage) {
-      KMessageBox::error(
-          nullptr,
-          i18n("Failed to update wallpaper. Please make sure Plasma desktop "
-              "widgets are unlocked in order to set wallpaper."));
-      return;
-    }
   }
 }
 
