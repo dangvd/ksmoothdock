@@ -60,6 +60,7 @@ constexpr bool kDefaultShowClock = false;
 
 constexpr char kDefaultApplicationMenuName[] = "Applications";
 constexpr char kDefaultApplicationMenuIcon[] = "start-here-kde";
+constexpr bool kDefaultApplicationMenuStrut = true;
 constexpr bool kDefaultShowDesktopNumber = true;
 constexpr bool kDefaultUse24HourClock = true;
 constexpr float kDefaultClockFontScaleFactor = kLargeClockFontScaleFactor;
@@ -179,6 +180,15 @@ class MultiDockModel : public QObject {
 
   void setApplicationMenuIcon(const QString& value) {
     setAppearanceProperty(kApplicationMenuCategory, kIcon, value);
+  }
+
+  bool applicationMenuStrut() const {
+    return appearanceProperty(kApplicationMenuCategory, kStrut,
+                              kDefaultApplicationMenuStrut);
+  }
+
+  void setApplicationMenuStrut(bool value) {
+    setAppearanceProperty(kApplicationMenuCategory, kStrut, value);
   }
 
   QString wallpaper(int desktop, int screen) const {
@@ -357,6 +367,7 @@ class MultiDockModel : public QObject {
   static constexpr char kApplicationMenuCategory[] = "Application Menu";
   static constexpr char kIcon[] = "icon";
   static constexpr char kLabel[] = "label";
+  static constexpr char kStrut[] = "strut";
 
   static constexpr char kPagerCategory[] = "Pager";
   static constexpr char kWallpaper[] = "wallpaper";

@@ -45,6 +45,7 @@ constexpr char MultiDockModel::kTooltipFontSize[];
 constexpr char MultiDockModel::kApplicationMenuCategory[];
 constexpr char MultiDockModel::kIcon[];
 constexpr char MultiDockModel::kLabel[];
+constexpr char MultiDockModel::kStrut[];
 constexpr char MultiDockModel::kPagerCategory[];
 constexpr char MultiDockModel::kWallpaper[];
 constexpr char MultiDockModel::kShowDesktopNumber[];

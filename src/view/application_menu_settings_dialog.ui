@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>270</height>
+    <height>310</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>200</y>
+     <y>250</y>
      <width>420</width>
      <height>32</height>
     </rect>
@@ -37,7 +37,7 @@
     <rect>
      <x>40</x>
      <y>30</y>
-     <width>70</width>
+     <width>91</width>
      <height>23</height>
     </rect>
    </property>
@@ -60,12 +60,25 @@
     <rect>
      <x>40</x>
      <y>110</y>
-     <width>72</width>
+     <width>91</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
     <string>Icon</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="strut">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>190</y>
+     <width>421</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reserve screen space when showing</string>
    </property>
   </widget>
  </widget>

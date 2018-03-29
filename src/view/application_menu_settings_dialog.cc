@@ -55,11 +55,13 @@ void ApplicationMenuSettingsDialog::buttonClicked(QAbstractButton *button) {
 void ApplicationMenuSettingsDialog::loadData() {
   ui->name->setText(model_->applicationMenuName());
   icon_->setIcon(model_->applicationMenuIcon());
+  ui->strut->setChecked(model_->applicationMenuStrut());
 }
 
 void ApplicationMenuSettingsDialog::saveData() {
   model_->setApplicationMenuName(ui->name->text());
   model_->setApplicationMenuIcon(icon_->icon());
+  model_->setApplicationMenuStrut(ui->strut->isChecked());
   model_->saveAppearanceConfig();
 }
 

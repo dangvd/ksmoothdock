@@ -177,7 +177,7 @@ void DockPanel::setStrut() {
 void DockPanel::setStrutForApplicationMenu() {
   ApplicationMenu* applicationMenu = dynamic_cast<ApplicationMenu*>(
       items_[0].get());
-  if (applicationMenu) {
+  if (applicationMenu && model_->applicationMenuStrut()) {
     QSize menuSize = applicationMenu->getMenuSize();
     // For vertical positions, we reserve some space for the sub-menu as well.
     setStrut(isHorizontal() ? minHeight_ + menuSize.height()
