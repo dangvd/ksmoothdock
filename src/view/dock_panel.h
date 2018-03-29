@@ -213,8 +213,6 @@ class DockPanel : public QWidget {
 
   void showWaitCursor();
 
-  void showPagerInfoDialog();
-
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
 

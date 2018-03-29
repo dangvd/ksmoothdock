@@ -189,7 +189,6 @@ void DockPanel::togglePager() {
   showPager_ = !showPager_;
   reload();
   saveDockConfig();
-  showPagerInfoDialog();
 }
 
 void DockPanel::setScreen(int screen) {
@@ -951,19 +950,6 @@ void DockPanel::showTooltip(int i) {
 void DockPanel::showWaitCursor() {
   setCursor(QCursor(Qt::WaitCursor));
   QTimer::singleShot(1000 /* msecs */, this, SLOT(resetCursor()));
-}
-
-void DockPanel::showPagerInfoDialog() {
-  if (showPager_) {
-    KMessageBox::information(
-        nullptr,
-        i18n("The pager supports setting different wallpapers for different "
-             "desktops. Simply right-click on a desktop icon to set "
-             "the wallpaper for that desktop.\nNote: This requires Plasma "
-             "desktop widgets to stay unlocked."),
-        i18n("Information"),
-        "showPagerInfo");
-  }
 }
 
 int DockPanel::parabolic(int x) {
