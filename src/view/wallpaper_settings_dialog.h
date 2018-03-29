@@ -41,6 +41,8 @@ class WallpaperSettingsDialog : public QDialog {
   void setFor(int desktop, int screen);
 
  public slots:
+  void populateDesktopList();
+
   void accept() override;
   void buttonClicked(QAbstractButton* button);
 

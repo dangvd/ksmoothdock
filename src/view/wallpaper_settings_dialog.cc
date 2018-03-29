@@ -41,11 +41,7 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
       multiScreen_(false) {
   ui->setupUi(this);
 
-  // Populate desktop list.
-  for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
-       ++desktop) {
-    ui->desktop->addItem(QString::number(desktop));
-  }
+  populateDesktopList();
 
   // Populate screen list.
   const int screenCount = QApplication::desktop()->screenCount();
@@ -66,6 +62,9 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
   connect(ui->browse, SIGNAL(clicked()), this, SLOT(browseWallpaper()));
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
+  connect(KWindowSystem::self(), SIGNAL(numberOfDesktopsChanged(int)),
+      this, SLOT(populateDesktopList()));
+
   if (multiScreen_) {
     connect(ui->screen, SIGNAL(currentIndexChanged(int)),
             this, SLOT(reload()));
@@ -83,6 +82,14 @@ void WallpaperSettingsDialog::setFor(int desktop, int screen) {
     adjustUiForScreen();
   }
   loadData();
+}
+
+void WallpaperSettingsDialog::populateDesktopList() {
+  ui->desktop->clear();
+  for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
+       ++desktop) {
+    ui->desktop->addItem(QString::number(desktop));
+  }
 }
 
 void WallpaperSettingsDialog::accept() {
