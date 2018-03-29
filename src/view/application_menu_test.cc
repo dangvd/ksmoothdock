@@ -23,7 +23,14 @@
 #include <QTemporaryDir>
 #include <QTest>
 
+#include "multi_dock_view.h"
+
 namespace ksmoothdock {
+
+constexpr int kDockId = 1;
+constexpr int kMinSize = 64;
+constexpr int kMaxSize = 64;
+constexpr int kNumCategories = 11;
 
 class ApplicationMenuTest: public QObject {
   Q_OBJECT
@@ -32,15 +39,15 @@ class ApplicationMenuTest: public QObject {
   void init() {
     QTemporaryDir configDir;
     model_ = std::make_unique<MultiDockModel>(configDir.path());
+    model_->addDock();
+    view_ = std::make_unique<MultiDockView>(model_.get());
+    dock_ = std::make_unique<DockPanel>(view_.get(), model_.get(), kDockId);
   }
 
   void loadEntries_singleDir();
   void loadEntries_multipleDirs();
 
  private:
-  static constexpr int kMinSize = 64;
-  static constexpr int kMaxSize = 64;
-  static const int kNumCategories = 11;
 
   void writeEntry(const QString& filename, const ApplicationEntry& entry,
                   const QString& categories,
@@ -61,8 +68,9 @@ class ApplicationMenuTest: public QObject {
   }
 
   std::unique_ptr<MultiDockModel> model_;
+  std::unique_ptr<MultiDockView> view_;
+  std::unique_ptr<DockPanel> dock_;
 };
-const int ApplicationMenuTest::kNumCategories;
 
 void ApplicationMenuTest::loadEntries_singleDir() {
   QTemporaryDir entryDir;
@@ -71,10 +79,8 @@ void ApplicationMenuTest::loadEntries_singleDir() {
              {"Chrome", "Web Browser", "chrome", "chrome", ""},
              "Network");
 
-  ApplicationMenu applicationMenu(nullptr, model_.get(), Qt::Horizontal,
+  ApplicationMenu applicationMenu(dock_.get(), model_.get(), Qt::Horizontal,
                                   kMinSize, kMaxSize, { entryDir.path() });
-  applicationMenu.initCategories();
-  applicationMenu.loadEntries();
 
   QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
            kNumCategories);
@@ -124,13 +130,10 @@ void ApplicationMenuTest::loadEntries_multipleDirs() {
              "Network",
              {{"Hidden", "true"}});
 
-
   ApplicationMenu applicationMenu(
-      nullptr, model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
+      dock_.get(), model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
       { entryDir1.path(), entryDir1.path() + "/dir-not-exist", entryDir2.path(),
         entryDir3.path() });
-  applicationMenu.initCategories();
-  applicationMenu.loadEntries();
 
   QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
            kNumCategories);
