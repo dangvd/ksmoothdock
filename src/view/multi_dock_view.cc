@@ -28,8 +28,10 @@ MultiDockView::MultiDockView(MultiDockModel* model)
     : model_(model),
       wallpaperHelper_(model) {
   connect(model_, SIGNAL(dockAdded(int)), this, SLOT(onDockAdded(int)));
+  connect(model_, SIGNAL(wallpaperChanged(int)), &wallpaperHelper_,
+          SLOT(setPlasmaWallpaper(int)));
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
-          &wallpaperHelper_, SLOT(setPlasmaWallpapers(int)));
+          &wallpaperHelper_, SLOT(setPlasmaWallpapers()));
   loadData();
 }
 
@@ -37,7 +39,7 @@ void MultiDockView::show() {
   for (const auto& dock : docks_) {
     dock.second->show();
   }
-  wallpaperHelper_.setPlasmaWallpapers(KWindowSystem::currentDesktop());
+  wallpaperHelper_.setPlasmaWallpapers();
 }
 
 void MultiDockView::exit() {

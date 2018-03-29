@@ -24,6 +24,7 @@
 #include <QFile>
 
 #include <KMessageBox>
+#include <KWindowSystem>
 
 namespace ksmoothdock {
 
@@ -33,7 +34,7 @@ WallpaperHelper::WallpaperHelper(MultiDockModel* model)
                        "/PlasmaShell",
                        "org.kde.PlasmaShell") {}
 
-void WallpaperHelper::setPlasmaWallpapers(int desktop) {
+void WallpaperHelper::setPlasmaWallpapers() {
   if (!plasmaShellDBus_.isValid()) {  // Not running in KDE Plasma 5.
     return;
   }
@@ -44,33 +45,54 @@ void WallpaperHelper::setPlasmaWallpapers(int desktop) {
 
   for (int screen = 0; screen < QApplication::desktop()->screenCount();
        ++screen) {
-    const auto& wallpaper = model_->wallpaper(desktop, screen);
-    if (wallpaper.isEmpty()) {
-      continue;
-    }
-
-    if (!QFile::exists(wallpaper)) {
-      KMessageBox::error(nullptr,
-                         i18n("Failed to load wallpaper from: ") + wallpaper);
-      return;
-    }
-
-    const QDBusMessage response = plasmaShellDBus_.call(
-        "evaluateScript",
-        "var allDesktops = desktops();"
-        "d = allDesktops[" + QString::number(screen) + "];" +
-        "d.wallpaperPlugin ='org.kde.image';"
-        "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
-        "d.writeConfig('Image','file://"
-        + wallpaper + "')");
-    if (response.type() == QDBusMessage::ErrorMessage) {
-      KMessageBox::error(
-          nullptr,
-          i18n("Failed to update wallpaper. Please make sure Plasma desktop "
-               "widgets are unlocked in order to set wallpaper."));
+    if (!doSetPlasmaWallpaper(screen)) {
       return;
     }
   }
+}
+
+void WallpaperHelper::setPlasmaWallpaper(int screen) {
+  if (!plasmaShellDBus_.isValid()) {  // Not running in KDE Plasma 5.
+    return;
+  }
+
+  if (!model_->hasPager()) {
+    return;
+  }
+
+  doSetPlasmaWallpaper(screen);
+}
+
+bool WallpaperHelper::doSetPlasmaWallpaper(int screen) {
+  const auto& wallpaper = model_->wallpaper(KWindowSystem::currentDesktop(),
+                                            screen);
+  if (wallpaper.isEmpty()) {
+    return true;  // nothing to do here.
+  }
+
+  if (!QFile::exists(wallpaper)) {
+    KMessageBox::error(nullptr,
+                       i18n("Failed to load wallpaper from: ") + wallpaper);
+    return false;
+  }
+
+  const QDBusMessage response = plasmaShellDBus_.call(
+      "evaluateScript",
+      "var allDesktops = desktops();"
+      "d = allDesktops[" + QString::number(screen) + "];" +
+      "d.wallpaperPlugin ='org.kde.image';"
+      "d.currentConfigGroup = Array('Wallpaper', 'org.kde.image','General');"
+      "d.writeConfig('Image','file://"
+      + wallpaper + "')");
+  if (response.type() == QDBusMessage::ErrorMessage) {
+    KMessageBox::error(
+        nullptr,
+        i18n("Failed to update wallpaper. Please make sure Plasma desktop "
+             "widgets are unlocked in order to set wallpaper."));
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace ksmoothdock

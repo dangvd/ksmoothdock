@@ -203,6 +203,12 @@ class MultiDockModel : public QObject {
                           value);
   }
 
+  // Notifies that the wallpaper for the current desktop for the specified
+  // screen has been changed.
+  void notifyWallpaperChanged(int screen) {
+    emit wallpaperChanged(screen);
+  }
+
   bool showDesktopNumber() const {
     return appearanceProperty(kPagerCategory, kShowDesktopNumber,
                               kDefaultShowDesktopNumber);
@@ -342,6 +348,9 @@ class MultiDockModel : public QObject {
   void appearanceChanged();
   void dockAdded(int dockId);
   void dockLaunchersChanged(int dockId);
+  // Wallpaper for the current desktop for screen <screen> has been changed.
+  // Will require calling Plasma D-Bus to update the wallpaper.
+  void wallpaperChanged(int screen);
 
  private:
   // Dock config's categories/properties.

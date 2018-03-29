@@ -156,6 +156,9 @@ void WallpaperSettingsDialog::saveData() {
       (wallpaper_ != model_->wallpaper(desktop(), screen()))) {
     model_->setWallpaper(desktop(), screen(), wallpaper_);
     model_->saveAppearanceConfig();
+    if (desktop() == KWindowSystem::currentDesktop()) {
+      model_->notifyWallpaperChanged(screen());
+    }
   }
 }
 

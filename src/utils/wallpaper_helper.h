@@ -35,9 +35,15 @@ class WallpaperHelper : public QObject {
   ~WallpaperHelper() = default;
 
  public slots:
-  void setPlasmaWallpapers(int desktop);
+  // Sets wallpapers for the current desktop for all screens.
+  void setPlasmaWallpapers();
+
+  // Sets the wallpaper for the current desktop for the specified screen only.
+  void setPlasmaWallpaper(int screen);
 
  private:
+  bool doSetPlasmaWallpaper(int screen);
+
   MultiDockModel* model_;
 
   QDBusInterface plasmaShellDBus_;
