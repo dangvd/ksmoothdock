@@ -72,8 +72,8 @@ void DesktopSelector::draw(QPainter* painter) const {
                      Qt::white, painter);
   }
 
-  // Only draw the border for the current desktop if dock has border.
-  if (isCurrentDesktop() && parent_->showBorder()) {
+  // Draw the border for the current desktop.
+  if (isCurrentDesktop()) {
     painter->setPen(parent_->borderColor());
     painter->drawRect(left_ - 1, top_ - 1, getWidth() + 1, getHeight() + 1);
   }
