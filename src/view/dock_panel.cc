@@ -50,6 +50,7 @@
 #include "multi_dock_view.h"
 #include "task.h"
 #include <utils/command_utils.h>
+#include <utils/task_utils.h>
 
 namespace ksmoothdock {
 
@@ -593,7 +594,7 @@ void DockPanel::initPager() {
 
 void DockPanel::initTasks() {
   if (model_->showTasks(dockId_)) {
-    for (const auto& task : model_->tasks()) {
+    for (const auto& task : loadTasks(screen_)) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
           task.wId));

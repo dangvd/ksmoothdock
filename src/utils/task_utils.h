@@ -16,8 +16,10 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_TASK_INFO_H_
-#define KSMOOTHDOCK_TASK_INFO_H_
+#ifndef KSMOOTHDOCK_TASK_UTILS_H_
+#define KSMOOTHDOCK_TASK_UTILS_H_
+
+#include <vector>
 
 #include <QString>
 #include <QPixmap>
@@ -28,12 +30,17 @@ struct TaskInfo {
   WId wId;
   QString name;
   QPixmap icon;
-  int desktop;
 
-  TaskInfo(WId wId2, const QString& name2, const QPixmap& icon2, int desktop2)
-      : wId(wId2), name(name2), icon(icon2), desktop(desktop2) {}
+  TaskInfo(WId wId2, const QString& name2, const QPixmap& icon2)
+      : wId(wId2), name(name2), icon(icon2) {}
 };
+
+// Loads running tasks.
+std::vector<TaskInfo> loadTasks(int screen);
+
+// Gets the screen that a task is running on.
+int getScreen(WId wId);
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_TASK_INFO_H_
+#endif  // KSMOOTHDOCK_TASK_UTILS_H_

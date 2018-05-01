@@ -33,7 +33,6 @@
 #include <KLocalizedString>
 
 #include "config_helper.h"
-#include "task_info.h"
 
 namespace ksmoothdock {
 
@@ -309,7 +308,7 @@ class MultiDockModel : public QObject {
 
   bool showTasks(int dockId) const {
     // TODO(dangvd)
-    return dockId == 1;
+    return panelPosition(dockId) == PanelPosition::Bottom;
   }
 
   bool showClock(int dockId) const {
@@ -346,10 +345,6 @@ class MultiDockModel : public QObject {
 
   // Whether any dock has a pager.
   bool hasPager();
-
-  const std::vector<TaskInfo> tasks() const { return tasks_; }
-
-  void notifyAppearanceOutdated() { emit appearanceOutdated(); }
 
  signals:
   // Minor appearance changes that require view update.
@@ -458,8 +453,6 @@ class MultiDockModel : public QObject {
     destGroup->writeEntry(key, sourceGroup.readEntry(key));
   }
 
-  void loadTasks();
-
   // Converts the old single-dock config to the new multi-dock config if needed.
   bool convertConfig();
 
@@ -481,9 +474,6 @@ class MultiDockModel : public QObject {
                                 std::unique_ptr<KConfig>,
                                 QString,
                                 std::vector<LauncherConfig>>> dockConfigs_;
-
-  // List of running tasks.
-  std::vector<TaskInfo> tasks_;
 
   // ID for the next dock.
   int nextDockId_;

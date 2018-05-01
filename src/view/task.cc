@@ -50,7 +50,6 @@ void Task::mousePressEvent(QMouseEvent *e) {
     } else {
       KWindowSystem::forceActiveWindow(wId_);
     }
-    model_->notifyAppearanceOutdated();
   }
 }
 
