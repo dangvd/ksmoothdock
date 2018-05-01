@@ -92,6 +92,12 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       this, SLOT(updatePager()));
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
           this, SLOT(onCurrentDesktopChanged()));
+  connect(KWindowSystem::self(), SIGNAL(windowAdded(WId)),
+          this, SLOT(onWindowAdded(WId)));
+  connect(KWindowSystem::self(), SIGNAL(windowRemoved(WId)),
+          this, SLOT(onWindowRemoved(WId)));
+  connect(KWindowSystem::self(), SIGNAL(windowChanged(WId)),
+          this, SLOT(onWindowChanged(WId)));
   connect(model_, SIGNAL(appearanceOutdated()), this, SLOT(update()));
   connect(model_, SIGNAL(appearanceChanged()), this, SLOT(reload()));
   connect(model_, SIGNAL(dockLaunchersChanged(int)),
@@ -160,6 +166,28 @@ void DockPanel::reload() {
   items_.clear();
   initUi();
   update();
+}
+
+void DockPanel::onCurrentDesktopChanged() {
+  if (showTaskManager()) {
+    // Reload tasks.
+    int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
+        model_->dockLauncherConfigs(dockId_).size() +
+        (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
+    items_.resize(itemsToKeep);
+    initTasks();
+    initClock();
+    initLayoutVars();
+    updateLayout();
+  } else {
+    // This is to fix the bug that if launched from Plasma desktop (Run),
+    // when the current desktop has changed, docks on the right side won't
+    // show.
+    resize(width(), height());
+    // We also need to repaint anyway to update the border around the current
+    // desktop if pager is on.
+    update();
+  }
 }
 
 void DockPanel::setStrut() {
@@ -288,6 +316,54 @@ void DockPanel::removeDock() {
         "confirmRemoveDock") == KMessageBox::Yes) {
     close();
     model_->removeDock(dockId_);
+  }
+}
+
+void DockPanel::onWindowAdded(WId wId) {
+  // TODO
+  if (showTaskManager() && isValidTask(wId, screen_)) {
+    auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                     [](const auto& item) {
+      return dynamic_cast<Task*>(item.get()) != nullptr ||
+          dynamic_cast<Clock*>(item.get()) != nullptr; });
+    const auto task = getTaskInfo(wId);
+    items_.insert(taskPosition, std::make_unique<Task>(
+        this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+        task.wId));
+    initLayoutVars();
+    updateLayout();
+  }
+}
+
+void DockPanel::onWindowRemoved(WId wId) {
+  // TODO
+  if (showTaskManager()) {
+    auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                     [wId](const auto& item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      return task != nullptr && task->wId() == wId; });
+    if (taskPosition != items_.end()) {
+      items_.erase(taskPosition);
+      initLayoutVars();
+      updateLayout();
+    }
+  }
+}
+
+void DockPanel::onWindowChanged(WId wId) {
+  // TODO
+  if (showTaskManager() && isValidTask(wId, screen_)) {
+    auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                     [wId](const auto& item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      return task != nullptr && task->wId() == wId; });
+    if (taskPosition != items_.end()) {
+      auto* task = dynamic_cast<Task*>(taskPosition->get());
+      const auto taskInfo = getTaskInfo(wId);
+      task->setLabel(taskInfo.name);
+      task->setIcon(taskInfo.icon);
+      update();
+    }
   }
 }
 
@@ -593,7 +669,7 @@ void DockPanel::initPager() {
 }
 
 void DockPanel::initTasks() {
-  if (model_->showTasks(dockId_)) {
+  if (showTaskManager()) {
     for (const auto& task : loadTasks(screen_)) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,

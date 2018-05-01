@@ -73,15 +73,7 @@ class DockPanel : public QWidget {
   // Reloads the items and updates the dock.
   void reload();
 
-  void onCurrentDesktopChanged() {
-    // This is to fix the bug that if launched from Plasma desktop (Run),
-    // when the current desktop has changed, docks on the right side won't
-    // show.
-    resize(width(), height());
-    // We also need to repaint anyway to update the border around the current
-    // desktop if pager is on.
-    update();
-  }
+  void onCurrentDesktopChanged();
 
   void onDockLaunchersChanged(int dockId) {
     if (dockId_ == dockId) {
@@ -151,6 +143,10 @@ class DockPanel : public QWidget {
   void cloneDock();
   void removeDock();
 
+  void onWindowAdded(WId wId);
+  void onWindowRemoved(WId wId);
+  void onWindowChanged(WId wId);
+
  protected:
   virtual void paintEvent(QPaintEvent* e) override;
   virtual void mouseMoveEvent(QMouseEvent* e) override;
@@ -181,6 +177,8 @@ class DockPanel : public QWidget {
     const int numClockIcons = showClock_ ? 1 : 0;
     items_.reserve(numLaunchers + numPagerIcons + numClockIcons);
   }
+
+  bool showTaskManager() { return model_->showTasks(dockId_); }
 
   void initUi();
 

@@ -33,10 +33,17 @@ struct TaskInfo {
 
   TaskInfo(WId wId2, const QString& name2, const QPixmap& icon2)
       : wId(wId2), name(name2), icon(icon2) {}
+  TaskInfo(const TaskInfo& taskInfo) = default;
+  TaskInfo& operator=(const TaskInfo& taskInfo) = default;
 };
 
 // Loads running tasks.
 std::vector<TaskInfo> loadTasks(int screen);
+
+// Whether the task is valid for showing on the task manager on specific screen.
+bool isValidTask(WId wId, int screen);
+
+TaskInfo getTaskInfo(WId wId);
 
 // Gets the screen that a task is running on.
 int getScreen(WId wId);

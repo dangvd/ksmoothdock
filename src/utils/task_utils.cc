@@ -28,33 +28,44 @@ namespace ksmoothdock {
 std::vector<TaskInfo> loadTasks(int screen) {
   std::vector<TaskInfo> tasks;
   for (const auto wId : KWindowSystem::windows()) {
-    if (KWindowSystem::hasWId(wId)) {
-      KWindowInfo info(wId, NET::WMVisibleName | NET::WMDesktop | NET::WMState |
-                       NET::WMWindowType);
-      const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
-      if (windowType == NET::Dock || windowType == NET::Desktop) {
-        continue;
-      }
-
-      const auto state = info.state();
-      if (state == NET::SkipTaskbar) {
-        continue;
-      }
-
-      if (!info.isOnCurrentDesktop()) {
-        continue;
-      }
-
-      if (getScreen(wId) != screen) {
-        continue;
-      }
-
-      tasks.push_back(TaskInfo(wId, info.visibleName(),
-                               KWindowSystem::icon(wId)));
+    if (isValidTask(wId, screen)) {
+      tasks.push_back(getTaskInfo(wId));
     }
   }
 
   return std::move(tasks);
+}
+
+bool isValidTask(WId wId, int screen) {
+  if (!KWindowSystem::hasWId(wId)) {
+    return false;
+  }
+
+  KWindowInfo info(wId, NET::WMDesktop | NET::WMState | NET::WMWindowType);
+  const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
+  if (windowType == NET::Dock || windowType == NET::Desktop) {
+    return false;
+  }
+
+  const auto state = info.state();
+  if (state == NET::SkipTaskbar) {
+    return false;
+  }
+
+  if (!info.isOnCurrentDesktop()) {
+    return false;
+  }
+
+  if (getScreen(wId) != screen) {
+    return false;
+  }
+
+  return true;
+}
+
+TaskInfo getTaskInfo(WId wId) {
+  KWindowInfo info(wId, NET::WMVisibleName);
+  return TaskInfo(wId, info.visibleName(), KWindowSystem::icon(wId));
 }
 
 int getScreen(WId wId) {
