@@ -48,6 +48,7 @@
 #include "desktop_selector.h"
 #include "launcher.h"
 #include "multi_dock_view.h"
+#include "task.h"
 #include <utils/command_utils.h>
 
 namespace ksmoothdock {
@@ -400,6 +401,7 @@ void DockPanel::initUi() {
   initApplicationMenu();
   initLaunchers();
   initPager();
+  initTasks();
   initClock();
   initLayoutVars();
   updateLayout();
@@ -585,6 +587,16 @@ void DockPanel::initPager() {
          ++desktop) {
       items_.push_back(std::make_unique<DesktopSelector>(
           this, model_, orientation_, minSize_, maxSize_, desktop, screen_));
+    }
+  }
+}
+
+void DockPanel::initTasks() {
+  if (model_->showTasks(dockId_)) {
+    for (const auto& task : model_->tasks()) {
+      items_.push_back(std::make_unique<Task>(
+          this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+          task.wId));
     }
   }
 }

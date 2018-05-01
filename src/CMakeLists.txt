@@ -33,6 +33,7 @@ set(SRCS
     view/iconless_dock_item.cc
     view/launcher.cc
     view/multi_dock_view.cc
+    view/task.cc
     view/tooltip.cc
     view/wallpaper_settings_dialog.cc
     utils/wallpaper_helper.cc)

@@ -79,6 +79,7 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     appearanceConfig_.reparseConfiguration();
   }
   loadDocks();
+  loadTasks();
 }
 
 void MultiDockModel::loadDocks() {
@@ -238,6 +239,29 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
   }
 
   return std::move(launchers);
+}
+
+void MultiDockModel::loadTasks() {
+  tasks_.clear();
+  for (const auto wId : KWindowSystem::windows()) {
+    if (KWindowSystem::hasWId(wId)) {
+      KWindowInfo info(wId, NET::WMVisibleName | NET::WMDesktop | NET::WMState |
+                       NET::WMWindowType);
+      const auto windowType = info.windowType(NET::DockMask |
+                                              NET::DesktopMask);
+      if (windowType == NET::Dock || windowType == NET::Desktop) {
+        continue;
+      }
+
+      const auto state = info.state();
+      if (state == NET::SkipTaskbar) {
+        continue;
+      }
+
+      tasks_.push_back(TaskInfo(wId, info.visibleName(),
+                                KWindowSystem::icon(wId), info.desktop()));
+    }
+  }
 }
 
 bool MultiDockModel::convertConfig() {

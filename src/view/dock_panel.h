@@ -193,6 +193,7 @@ class DockPanel : public QWidget {
   void initLaunchers();
   void initApplicationMenu();
   void initPager();
+  void initTasks();
   void initClock();
 
   void initLayoutVars();
