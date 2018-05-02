@@ -39,12 +39,12 @@ void Task::draw(QPainter *painter) const {
     painter->setRenderHint(QPainter::Antialiasing);
     QPainterPath path;
     path.addRoundedRect(
-        QRect(left_ - 4, top_ - 4, getWidth() + 8, getHeight() + 8), size_ / 8,
-              size_ / 8);
+        QRect(left_ - 5, top_ - 5, getWidth() + 10, getHeight() + 10),
+              size_ / 8, size_ / 8);
     painter->fillPath(path, QBrush(fillColor));
     painter->setRenderHint(QPainter::Antialiasing, false);
   } else {
-    painter->fillRect(left_, top_ + getHeight() + 2, getWidth(), 2,
+    painter->fillRect(left_, top_ + getHeight() + 3, getWidth(), 2,
                       QBrush(model_->borderColor()));
   }
 
