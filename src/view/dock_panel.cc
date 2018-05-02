@@ -332,10 +332,10 @@ void DockPanel::onWindowAdded(WId wId) {
     }
 
     // Now inserts it.
-    taskPosition = std::find_if(items_.begin(), items_.end(),
-                                [](const auto& item) {
-      return dynamic_cast<Task*>(item.get()) != nullptr ||
-          dynamic_cast<Clock*>(item.get()) != nullptr; });
+    taskPosition = items_.end();
+    if (showClock_) {
+      --taskPosition;
+    }
     const auto task = getTaskInfo(wId);
     items_.insert(taskPosition, std::make_unique<Task>(
         this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
