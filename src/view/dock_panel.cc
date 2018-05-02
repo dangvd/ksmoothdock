@@ -322,8 +322,18 @@ void DockPanel::removeDock() {
 void DockPanel::onWindowAdded(WId wId) {
   // TODO
   if (showTaskManager() && isValidTask(wId, screen_)) {
+    // Check if the task already exists in the list.
     auto taskPosition = std::find_if(items_.begin(), items_.end(),
-                                     [](const auto& item) {
+                                     [wId](const auto& item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      return task != nullptr && task->wId() == wId; });
+    if (taskPosition != items_.end()) {
+      return;
+    }
+
+    // Now inserts it.
+    taskPosition = std::find_if(items_.begin(), items_.end(),
+                                [](const auto& item) {
       return dynamic_cast<Task*>(item.get()) != nullptr ||
           dynamic_cast<Clock*>(item.get()) != nullptr; });
     const auto task = getTaskInfo(wId);
