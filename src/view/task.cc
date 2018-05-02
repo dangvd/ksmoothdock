@@ -18,6 +18,9 @@
 
 #include "task.h"
 
+#include <QPainterPath>
+#include <QRect>
+
 namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
@@ -33,8 +36,13 @@ void Task::draw(QPainter *painter) const {
   if (active()) {
     auto fillColor = model_->backgroundColor().lighter();
     fillColor.setAlphaF(0.42);
-    painter->fillRect(left_ - 4, top_ - 4, getWidth() + 8, getHeight() + 8,
-                      QBrush(fillColor));
+    painter->setRenderHint(QPainter::Antialiasing);
+    QPainterPath path;
+    path.addRoundedRect(
+        QRect(left_ - 4, top_ - 4, getWidth() + 8, getHeight() + 8), size_ / 8,
+              size_ / 8);
+    painter->fillPath(path, QBrush(fillColor));
+    painter->setRenderHint(QPainter::Antialiasing, false);
   } else {
     painter->fillRect(left_, top_ + getHeight() + 2, getWidth(), 2,
                       QBrush(model_->borderColor()));
