@@ -204,8 +204,9 @@ class DockPanel : public QWidget {
   // Updates width, height, items's size and position given the mouse position.
   void updateLayout(int x, int y);
 
-  // Resize dynamically, i.e. without intefering with the zooming.
-  void resize();
+  // Resizes the task manager part of the panel. This needs to not interfere
+  // with the zooming.
+  void resizeTaskManager();
 
   void setStrut(int width);
 

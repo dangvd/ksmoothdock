@@ -334,7 +334,7 @@ void DockPanel::onWindowAdded(WId wId) {
     items_.insert(taskPosition, std::make_unique<Task>(
         this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
         task.wId));
-    resize();
+    resizeTaskManager();
   }
 }
 
@@ -347,7 +347,7 @@ void DockPanel::onWindowRemoved(WId wId) {
       return task != nullptr && task->wId() == wId; });
     if (taskPosition != items_.end()) {
       items_.erase(taskPosition);
-      resize();
+      resizeTaskManager();
     }
   }
 }
@@ -677,7 +677,7 @@ void DockPanel::reloadTasks() {
   items_.resize(itemsToKeep);
   initTasks();
   initClock();
-  resize();
+  resizeTaskManager();
 }
 
 void DockPanel::initClock() {
@@ -942,7 +942,7 @@ void DockPanel::updateLayout(int x, int y) {
   update();
 }
 
-void DockPanel::resize() {
+void DockPanel::resizeTaskManager() {
   if (isMinimized_) {
     initLayoutVars();
     updateLayout();
