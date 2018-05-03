@@ -72,8 +72,10 @@ bool isValidTask(WId wId, int screen) {
 }
 
 TaskInfo getTaskInfo(WId wId) {
+  static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName);
-  return TaskInfo(wId, info.visibleName(), KWindowSystem::icon(wId));
+  return TaskInfo(wId, info.visibleName(),
+                  KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize));
 }
 
 int getScreen(WId wId) {
