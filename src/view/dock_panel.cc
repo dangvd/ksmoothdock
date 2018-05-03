@@ -170,15 +170,7 @@ void DockPanel::reload() {
 
 void DockPanel::onCurrentDesktopChanged() {
   if (showTaskManager()) {
-    // Reload tasks.
-    int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
-        model_->dockLauncherConfigs(dockId_).size() +
-        (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
-    items_.resize(itemsToKeep);
-    initTasks();
-    initClock();
-    initLayoutVars();
-    updateLayout();
+    reloadTasks();
   } else {
     // This is to fix the bug that if launched from Plasma desktop (Run),
     // when the current desktop has changed, docks on the right side won't
@@ -362,18 +354,8 @@ void DockPanel::onWindowRemoved(WId wId) {
 
 void DockPanel::onWindowChanged(WId wId) {
   // TODO
-  if (showTaskManager() && isValidTask(wId, screen_)) {
-    auto taskPosition = std::find_if(items_.begin(), items_.end(),
-                                     [wId](const auto& item) {
-      const auto* task = dynamic_cast<Task*>(item.get());
-      return task != nullptr && task->wId() == wId; });
-    if (taskPosition != items_.end()) {
-      auto* task = dynamic_cast<Task*>(taskPosition->get());
-      const auto taskInfo = getTaskInfo(wId);
-      task->setLabel(taskInfo.name);
-      task->setIcon(taskInfo.icon);
-      update();
-    }
+  if (showTaskManager() && wId != winId() && isValidTask(wId)) {
+    reloadTasks();
   }
 }
 
@@ -686,6 +668,17 @@ void DockPanel::initTasks() {
           task.wId));
     }
   }
+}
+
+void DockPanel::reloadTasks() {
+  int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
+      model_->dockLauncherConfigs(dockId_).size() +
+      (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
+  items_.resize(itemsToKeep);
+  initTasks();
+  initClock();
+  initLayoutVars();
+  updateLayout();
 }
 
 void DockPanel::initClock() {

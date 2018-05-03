@@ -40,6 +40,9 @@ struct TaskInfo {
 // Loads running tasks.
 std::vector<TaskInfo> loadTasks(int screen);
 
+// Whether the task is valid for showing on the task manager.
+bool isValidTask(WId wId);
+
 // Whether the task is valid for showing on the task manager on specific screen.
 bool isValidTask(WId wId, int screen);
 

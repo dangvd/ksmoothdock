@@ -36,7 +36,7 @@ std::vector<TaskInfo> loadTasks(int screen) {
   return std::move(tasks);
 }
 
-bool isValidTask(WId wId, int screen) {
+bool isValidTask(WId wId) {
   if (!KWindowSystem::hasWId(wId)) {
     return false;
   }
@@ -53,6 +53,14 @@ bool isValidTask(WId wId, int screen) {
   }
 
   if (!info.isOnCurrentDesktop()) {
+    return false;
+  }
+
+  return true;
+}
+
+bool isValidTask(WId wId, int screen) {
+  if (!isValidTask(wId)) {
     return false;
   }
 
