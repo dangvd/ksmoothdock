@@ -121,7 +121,9 @@ void DockPanel::resize(int w, int h) {
     x = screenGeometry_.width() - w;
     y = (screenGeometry_.height() - h) / 2;
   }
-  move(x + screenGeometry_.x(), y + screenGeometry_.y());
+  if (isMinimized_) {
+    move(x + screenGeometry_.x(), y + screenGeometry_.y());
+  }
   if (w == minWidth_ && h == minHeight_) {
     minX_ = x + screenGeometry_.x();
     minY_ = y + screenGeometry_.y();
@@ -332,8 +334,7 @@ void DockPanel::onWindowAdded(WId wId) {
     items_.insert(taskPosition, std::make_unique<Task>(
         this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
         task.wId));
-    initLayoutVars();
-    updateLayout();
+    resize();
   }
 }
 
@@ -346,8 +347,7 @@ void DockPanel::onWindowRemoved(WId wId) {
       return task != nullptr && task->wId() == wId; });
     if (taskPosition != items_.end()) {
       items_.erase(taskPosition);
-      initLayoutVars();
-      updateLayout();
+      resize();
     }
   }
 }
@@ -677,8 +677,7 @@ void DockPanel::reloadTasks() {
   items_.resize(itemsToKeep);
   initTasks();
   initClock();
-  initLayoutVars();
-  updateLayout();
+  resize();
 }
 
 void DockPanel::initClock() {
@@ -778,14 +777,16 @@ void DockPanel::updateLayout() {
     for (const auto& item : items_) {
       item->endSize_ = item->size_;
       if (isHorizontal()) {
-        item->endLeft_ = item->left_ + (maxWidth_ - minWidth_) / 2;
+        item->endLeft_ = item->left_ + (screenGeometry_.width() - minWidth_) / 2
+            - x();
         if (position_ == PanelPosition::Top) {
           item->endTop_ = item->top_ + minHeight_ - distance;
         } else {  // Bottom
           item->endTop_ = item->top_ + (maxHeight_ - minHeight_);
         }
       } else {  // Vertical
-        item->endTop_ = item->top_ + (maxHeight_ - minHeight_) / 2;
+        item->endTop_ = item->top_ + (screenGeometry_.height() - minHeight_) / 2
+            - y();
         if (position_ == PanelPosition::Left) {
           item->endLeft_ = item->left_ + minWidth_ - distance;
         } else {  // Right
@@ -809,8 +810,8 @@ void DockPanel::updateLayout() {
     isAnimationActive_ = true;
     animationTimer_->start(32 - animationSpeed_);
   } else {
-    resize(minWidth_, minHeight_);
     isMinimized_ = true;
+    resize(minWidth_, minHeight_);
     update();
   }
 }
@@ -885,6 +886,7 @@ void DockPanel::updateLayout(int x, int y) {
       }
     }
   }
+  /*
   for (int i = itemCount() - 1; i >= last_update_index + 1; --i) {
     if (isHorizontal()) {
       items_[i]->left_ = (i == itemCount() - 1)
@@ -907,6 +909,7 @@ void DockPanel::updateLayout(int x, int y) {
       }
     }
   }
+  */
 
   if (isEntering_) {
     for (const auto& item : items_) {
@@ -931,10 +934,78 @@ void DockPanel::updateLayout(int x, int y) {
     isAnimationActive_ = true;
     isEntering_ = false;
     animationTimer_->start(32 - animationSpeed_);
+  } else {
+    mouseX_ = x;
+    mouseY_ = y;
   }
 
   resize(maxWidth_, maxHeight_);
   isMinimized_ = false;
+  update();
+}
+
+void DockPanel::resize() {
+  if (isMinimized_) {
+    initLayoutVars();
+    updateLayout();
+    return;
+  }
+
+  const int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
+      model_->dockLauncherConfigs(dockId_).size() +
+      (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
+  int left = 0;
+  int top = 0;
+  for (int i = 0; i < itemCount(); ++i) {
+    if (isHorizontal()) {
+      left = (i == 0) ? itemSpacing_ / 2
+          : left + items_[i - 1]->getMinWidth() + itemSpacing_;
+      if (i >= itemsToKeep) {
+        items_[i]->minCenter_ = left + items_[i]->getMinWidth() / 2;
+      }
+    } else {  // Vertical
+      top = (i == 0) ? itemSpacing_ / 2
+          : top + items_[i - 1]->getMinHeight() + itemSpacing_;
+      if (i >= itemsToKeep) {
+        items_[i]->minCenter_ = top + items_[i]->getMinHeight() / 2;
+      }
+    }
+  }
+
+  for (int i = itemsToKeep; i < itemCount(); ++i) {
+    int delta;
+    if (isHorizontal()) {
+      delta = std::abs(items_[i]->minCenter_ - mouseX_ +
+                       (width() - minWidth_) / 2);
+    } else {  // Vertical
+      delta = std::abs(items_[i]->minCenter_ - mouseY_ +
+                       (height() - minHeight_) / 2);
+    }
+    items_[i]->size_ = parabolic(delta);
+    if (position_ == PanelPosition::Top) {
+      items_[i]->top_ = itemSpacing_ / 2;
+    } else if (position_ == PanelPosition::Bottom) {
+      items_[i]->top_ = itemSpacing_ / 2 + maxSize_ - items_[i]->getHeight();
+    } else if (position_ == PanelPosition::Left) {
+      items_[i]->left_ = itemSpacing_ / 2;
+    } else {  // Right
+      items_[i]->left_ = itemSpacing_ / 2 + maxSize_ - items_[i]->getWidth();
+    }
+    if (i > 0) {
+      if (isHorizontal()) {
+        items_[i]->left_ = items_[i - 1]->left_ + items_[i - 1]->getWidth()
+            + itemSpacing_;
+      } else {  // Vertical
+        items_[i]->top_ = items_[i - 1]->top_ + items_[i - 1]->getHeight()
+            + itemSpacing_;
+      }
+    }
+  }
+  // Re-calculate panel's size.
+  initLayoutVars();
+  // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
+  // mess up the zooming.
+  QWidget::resize(maxWidth_, maxHeight_);
   update();
 }
 

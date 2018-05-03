@@ -204,6 +204,9 @@ class DockPanel : public QWidget {
   // Updates width, height, items's size and position given the mouse position.
   void updateLayout(int x, int y);
 
+  // Resize dynamically, i.e. without intefering with the zooming.
+  void resize();
+
   void setStrut(int width);
 
   // Finds the active item given the mouse position.
