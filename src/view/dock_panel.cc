@@ -778,7 +778,7 @@ void DockPanel::updateLayout() {
       item->endSize_ = item->size_;
       if (isHorizontal()) {
         item->endLeft_ = item->left_ + (screenGeometry_.width() - minWidth_) / 2
-            - x();
+            - x() + screenGeometry_.x();
         if (position_ == PanelPosition::Top) {
           item->endTop_ = item->top_ + minHeight_ - distance;
         } else {  // Bottom
@@ -786,7 +786,7 @@ void DockPanel::updateLayout() {
         }
       } else {  // Vertical
         item->endTop_ = item->top_ + (screenGeometry_.height() - minHeight_) / 2
-            - y();
+            - y() + screenGeometry_.y();
         if (position_ == PanelPosition::Left) {
           item->endLeft_ = item->left_ + minWidth_ - distance;
         } else {  // Right
@@ -886,7 +886,6 @@ void DockPanel::updateLayout(int x, int y) {
       }
     }
   }
-  /*
   for (int i = itemCount() - 1; i >= last_update_index + 1; --i) {
     if (isHorizontal()) {
       items_[i]->left_ = (i == itemCount() - 1)
@@ -909,7 +908,6 @@ void DockPanel::updateLayout(int x, int y) {
       }
     }
   }
-  */
 
   if (isEntering_) {
     for (const auto& item : items_) {
@@ -972,6 +970,7 @@ void DockPanel::resize() {
     }
   }
 
+  int last_update_index = 0;
   for (int i = itemsToKeep; i < itemCount(); ++i) {
     int delta;
     if (isHorizontal()) {
@@ -980,6 +979,9 @@ void DockPanel::resize() {
     } else {  // Vertical
       delta = std::abs(items_[i]->minCenter_ - mouseY_ +
                        (height() - minHeight_) / 2);
+    }
+    if (delta < parabolicMaxX_) {
+      last_update_index = i;
     }
     items_[i]->size_ = parabolic(delta);
     if (position_ == PanelPosition::Top) {
@@ -1001,6 +1003,20 @@ void DockPanel::resize() {
       }
     }
   }
+
+  for (int i = itemCount() - 1;
+       i >= std::max(itemsToKeep, last_update_index + 1); --i) {
+    if (isHorizontal()) {
+      items_[i]->left_ = (i == itemCount() - 1)
+          ? maxWidth_ - itemSpacing_ / 2 - items_[i]->getMinWidth()
+          : items_[i + 1]->left_ - items_[i]->getMinWidth() - itemSpacing_;
+    } else {  // Vertical
+      items_[i]->top_ = (i == itemCount() - 1)
+          ? maxHeight_ - itemSpacing_ / 2 - items_[i]->getMinHeight()
+          : items_[i + 1]->top_ - items_[i]->getMinHeight() - itemSpacing_;
+    }
+  }
+
   // Re-calculate panel's size.
   initLayoutVars();
   // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
