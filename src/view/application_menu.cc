@@ -107,6 +107,7 @@ ApplicationMenu::ApplicationMenu(
                         minSize, maxSize),
       model_(model),
       entryDirs_(entryDirs),
+      showingMenu_(false),
       fileWatcher_(entryDirs) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
@@ -118,11 +119,34 @@ ApplicationMenu::ApplicationMenu(
 
   connect(&menu_, SIGNAL(aboutToShow()), parent_,
           SLOT(setStrutForApplicationMenu()));
+  connect(&menu_, &QMenu::aboutToShow, this,
+          [this]() { showingMenu_ = true; } );
   connect(&menu_, SIGNAL(aboutToHide()), parent_, SLOT(setStrut()));
+  connect(&menu_, &QMenu::aboutToHide, this,
+          [this]() { showingMenu_ = false; } );
   connect(&fileWatcher_, SIGNAL(directoryChanged(const QString&)),
           this, SLOT(reloadMenu()));
   connect(&fileWatcher_, SIGNAL(fileChanged(const QString&)),
           this, SLOT(reloadMenu()));
+}
+
+void ApplicationMenu::draw(QPainter* painter) const {
+  if (showingMenu_) {
+    painter->setRenderHint(QPainter::Antialiasing);
+    QColor fillColor;
+    QPainterPath path;
+    fillColor = model_->backgroundColor().lighter();
+    fillColor.setAlphaF(0.42);
+    const int spacing = minSize_ / 4 - 4;
+    path.addRoundedRect(
+        QRect(left_ - spacing, top_ - spacing, getWidth() + 2 * spacing,
+              getHeight() + 2 * spacing),
+        size_ / 8, size_ / 8);
+    painter->fillPath(path, QBrush(fillColor));
+    painter->setRenderHint(QPainter::Antialiasing, false);
+  }
+
+  IconBasedDockItem::draw(painter);
 }
 
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
@@ -180,6 +204,7 @@ bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
 
 QString ApplicationMenu::getStyleSheet() {
   QColor bgColor = parent_->backgroundColor();
+  bgColor.setAlphaF(0.42);
   QColor borderColor = parent_->borderColor();
   return " \
 QMenu { \

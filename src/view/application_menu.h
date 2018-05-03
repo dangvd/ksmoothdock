@@ -125,6 +125,7 @@ class ApplicationMenu : public QObject, public IconBasedDockItem {
           QDir::homePath() + "/.local/share/applications"});
   virtual ~ApplicationMenu() = default;
 
+  void draw(QPainter* painter) const override;
   void mousePressEvent(QMouseEvent* e) override;
   void loadConfig() override;
 
@@ -176,6 +177,7 @@ protected:
 
   // The cascading popup menu that contains all application entries.
   QMenu menu_;
+  bool showingMenu_;
 
   ApplicationMenuStyle style_;
 
