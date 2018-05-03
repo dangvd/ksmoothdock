@@ -33,20 +33,22 @@ Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
       animationTimer_(std::make_unique<QTimer>(this)) {}
 
 void Task::draw(QPainter *painter) const {
+  painter->setRenderHint(QPainter::Antialiasing);
+  QColor fillColor;
+  QPainterPath path;
   if (active()) {
-    auto fillColor = model_->backgroundColor().lighter();
+    fillColor = model_->backgroundColor().lighter();
     fillColor.setAlphaF(0.42);
-    painter->setRenderHint(QPainter::Antialiasing);
-    QPainterPath path;
     path.addRoundedRect(
         QRect(left_ - 5, top_ - 5, getWidth() + 10, getHeight() + 10),
-              size_ / 8, size_ / 8);
-    painter->fillPath(path, QBrush(fillColor));
-    painter->setRenderHint(QPainter::Antialiasing, false);
+        size_ / 8, size_ / 8);
   } else {
-    painter->fillRect(left_, top_ + getHeight() + 3, getWidth(), 2,
-                      QBrush(model_->borderColor()));
+    fillColor = model_->borderColor();
+    path.addRoundedRect(QRect(left_, top_ + getHeight() + 2, getWidth(), 3),
+                        2, 2);
   }
+  painter->fillPath(path, QBrush(fillColor));
+  painter->setRenderHint(QPainter::Antialiasing, false);
 
   IconBasedDockItem::draw(painter);
 }
