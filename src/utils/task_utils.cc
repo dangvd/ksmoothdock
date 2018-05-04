@@ -79,12 +79,17 @@ TaskInfo getTaskInfo(WId wId) {
 }
 
 int getScreen(WId wId) {
+  const auto* desktop = QApplication::desktop();
+  const auto screenCount = desktop->screenCount();
+  if (screenCount == 1) {
+    return 0;
+  }
+
   KWindowInfo info(wId, NET::WMFrameExtents);
   const auto& geometry = info.frameGeometry();
-  const auto* desktop = QApplication::desktop();
-  for (int screen = 0; screen < desktop->screenCount(); ++screen) {
+  for (int screen = 0; screen < screenCount; ++screen) {
     const auto& screenGeometry = desktop->screenGeometry(screen);
-    if (screenGeometry.contains(geometry.topLeft())) {
+    if (screenGeometry.intersects(geometry)) {
       return screen;
     }
   }
