@@ -317,23 +317,23 @@ void DockPanel::onWindowAdded(WId wId) {
   // TODO
   if (showTaskManager() && isValidTask(wId, screen_)) {
     // Check if the task already exists in the list.
-    auto taskPosition = std::find_if(items_.begin(), items_.end(),
-                                     [wId](const auto& item) {
+    const auto currentPos = std::find_if(items_.begin(), items_.end(),
+                                         [wId](const auto& item) {
       const auto* task = dynamic_cast<Task*>(item.get());
       return task != nullptr && task->wId() == wId; });
-    if (taskPosition != items_.end()) {
+    if (currentPos != items_.end()) {
       return;
     }
 
     // Now inserts it.
-    taskPosition = items_.end();
+    auto newPos = items_.end();
     if (showClock_) {
-      --taskPosition;
+      --newPos;
     }
     const auto task = getTaskInfo(wId);
-    items_.insert(taskPosition, std::make_unique<Task>(
-        this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-        task.wId));
+    items_.insert(newPos, std::make_unique<Task>(
+                    this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+                    task.wId));
     resizeTaskManager();
   }
 }
