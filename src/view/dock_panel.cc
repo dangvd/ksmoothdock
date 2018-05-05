@@ -1106,22 +1106,22 @@ void DockPanel::showTooltip(int i) {
   tooltip_.setText(items_[i]->getLabel());
   int x, y;
   if (position_ == PanelPosition::Top) {
-    x = (screenGeometry_.width() - width()) / 2 + items_[i]->left_
+    x = geometry().x() + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
     y = maxHeight_ + kTooltipSpacing;
   } else if (position_ == PanelPosition::Bottom) {
-    x = (screenGeometry_.width() - width()) / 2 + items_[i]->left_
+    x = geometry().x() + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
     // No need for additional tooltip spacing in this position.
     y = screenGeometry_.height() - maxHeight_ - tooltip_.height();
   } else if (position_ == PanelPosition::Left) {
     x = maxWidth_ + kTooltipSpacing;
-    y = (screenGeometry_.height() - height()) / 2 + items_[i]->top_
+    y = geometry().y() + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   } else {  // Right
     x = screenGeometry_.width() - maxWidth_ - tooltip_.width()
         - kTooltipSpacing;
-    y = (screenGeometry_.height() - height()) / 2 + items_[i]->top_
+    y = geometry().y() + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   }
   tooltip_.move(x + screenGeometry_.x(), y + screenGeometry_.y());
