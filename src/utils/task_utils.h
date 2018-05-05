@@ -44,7 +44,7 @@ std::vector<TaskInfo> loadTasks(int screen);
 bool isValidTask(WId wId);
 
 // Whether the task is valid for showing on the task manager on specific screen.
-bool isValidTask(WId wId, int screen);
+bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true);
 
 TaskInfo getTaskInfo(WId wId);
 

@@ -41,7 +41,7 @@ bool isValidTask(WId wId) {
     return false;
   }
 
-  KWindowInfo info(wId, NET::WMDesktop | NET::WMState | NET::WMWindowType);
+  KWindowInfo info(wId, NET::WMState | NET::WMWindowType);
   const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
   if (windowType == NET::Dock || windowType == NET::Desktop) {
     return false;
@@ -52,19 +52,20 @@ bool isValidTask(WId wId) {
     return false;
   }
 
-  if (!info.isOnCurrentDesktop()) {
-    return false;
-  }
-
   return true;
 }
 
-bool isValidTask(WId wId, int screen) {
+bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
   if (!isValidTask(wId)) {
     return false;
   }
 
   if (getScreen(wId) != screen) {
+    return false;
+  }
+
+  KWindowInfo info(wId, NET::WMDesktop);
+  if (currentDesktopOnly && !info.isOnCurrentDesktop()) {
     return false;
   }
 
