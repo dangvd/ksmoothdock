@@ -1026,6 +1026,11 @@ void DockPanel::resizeTaskManager() {
   // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
   // mess up the zooming.
   QWidget::resize(maxWidth_, maxHeight_);
+  if (isHorizontal()) {
+    backgroundWidth_ = maxWidth_;
+  } else {
+    backgroundHeight_ = maxHeight_;
+  }
   update();
 }
 
