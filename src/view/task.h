@@ -23,6 +23,7 @@
 
 #include <memory>
 
+#include <QMenu>
 #include <QObject>
 #include <QTimer>
 
@@ -62,9 +63,15 @@ class Task : public QObject, public IconBasedDockItem {
   void close();
 
  private:
+  // Creates the context menu.
+  void createMenu();
+
   MultiDockModel* model_;
   WId wId_;
   bool demandAttention_; // does the task demand attention?
+
+  // Context menu.
+  QMenu menu_;
 
   std::unique_ptr<QTimer> animationTimer_;
 };

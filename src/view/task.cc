@@ -21,6 +21,8 @@
 #include <QPainterPath>
 #include <QRect>
 
+#include "dock_panel.h"
+
 namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
@@ -30,7 +32,9 @@ Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
       model_(model),
       wId_(wId),
       demandAttention_(false),
-      animationTimer_(std::make_unique<QTimer>(this)) {}
+      animationTimer_(std::make_unique<QTimer>(this)) {
+  createMenu();
+}
 
 void Task::draw(QPainter *painter) const {
   painter->setRenderHint(QPainter::Antialiasing);
@@ -60,6 +64,8 @@ void Task::mousePressEvent(QMouseEvent *e) {
     } else {
       KWindowSystem::forceActiveWindow(wId_);
     }
+  } else if (e->button() == Qt::RightButton) {
+    menu_.popup(e->globalPos());
   }
 }
 
@@ -68,5 +74,12 @@ void Task::minimize() {}
 void Task::maximize() {}
 
 void Task::close() {}
+
+void Task::createMenu() {
+  menu_.addAction(QIcon::fromTheme("configure"),
+                  i18n("Task Manager &Settings"),
+                  parent_,
+                  SLOT(showTaskManagerSettingsDialog()));
+}
 
 }  // namespace ksmoothdock

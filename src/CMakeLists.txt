@@ -34,6 +34,7 @@ set(SRCS
     view/launcher.cc
     view/multi_dock_view.cc
     view/task.cc
+    view/task_manager_settings_dialog.cc
     view/tooltip.cc
     view/wallpaper_settings_dialog.cc
     utils/task_utils.cc

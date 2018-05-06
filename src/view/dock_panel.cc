@@ -282,6 +282,10 @@ void DockPanel::showWallpaperSettingsDialog(int desktop) {
   wallpaperSettingsDialog_.show();
 }
 
+void DockPanel::showTaskManagerSettingsDialog() {
+  taskManagerSettingsDialog_.show();
+}
+
 void DockPanel::addDock() {
   addPanelDialog_.setMode(AddPanelDialog::Mode::Add);
   addPanelDialog_.show();
