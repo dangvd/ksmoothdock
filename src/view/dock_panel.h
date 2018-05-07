@@ -147,7 +147,8 @@ class DockPanel : public QWidget {
 
   void onWindowAdded(WId wId);
   void onWindowRemoved(WId wId);
-  void onWindowChanged(WId wId);
+  void onWindowChanged(WId wId, NET::Properties properties,
+                       NET::Properties2 properties2);
 
  protected:
   virtual void paintEvent(QPaintEvent* e) override;

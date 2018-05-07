@@ -92,12 +92,16 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       this, SLOT(updatePager()));
   connect(KWindowSystem::self(), SIGNAL(currentDesktopChanged(int)),
           this, SLOT(onCurrentDesktopChanged()));
+  connect(KWindowSystem::self(), SIGNAL(activeWindowChanged(WId)),
+          this, SLOT(update()));
   connect(KWindowSystem::self(), SIGNAL(windowAdded(WId)),
           this, SLOT(onWindowAdded(WId)));
   connect(KWindowSystem::self(), SIGNAL(windowRemoved(WId)),
           this, SLOT(onWindowRemoved(WId)));
-  connect(KWindowSystem::self(), SIGNAL(windowChanged(WId)),
-          this, SLOT(onWindowChanged(WId)));
+  connect(KWindowSystem::self(),
+          SIGNAL(windowChanged(WId, NET::Properties, NET::Properties2)),
+          this,
+          SLOT(onWindowChanged(WId, NET::Properties, NET::Properties2)));
   connect(model_, SIGNAL(appearanceOutdated()), this, SLOT(update()));
   connect(model_, SIGNAL(appearanceChanged()), this, SLOT(reload()));
   connect(model_, SIGNAL(dockLaunchersChanged(int)),
@@ -356,10 +360,43 @@ void DockPanel::onWindowRemoved(WId wId) {
   }
 }
 
-void DockPanel::onWindowChanged(WId wId) {
+void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
+                                NET::Properties2 properties2) {
   // TODO
   if (showTaskManager() && wId != winId() && isValidTask(wId)) {
-    reloadTasks();
+    if (properties & NET::WMDesktop) {
+        auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                         [wId](const auto& item) {
+          const auto* task = dynamic_cast<Task*>(item.get());
+          return task != nullptr && task->wId() == wId; });
+        if (taskPosition != items_.end()) {
+          items_.erase(taskPosition);
+        } else if (isValidTask(wId, screen_)) {
+            auto newPos = items_.end();
+            if (showClock_) {
+              --newPos;
+            }
+            const auto task = getTaskInfo(wId);
+            items_.insert(newPos, std::make_unique<Task>(
+                            this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+                            task.wId));
+        }
+        resizeTaskManager();
+    }
+
+    if (properties & NET::WMVisibleName) {
+      auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                       [wId](const auto& item) {
+        const auto* task = dynamic_cast<Task*>(item.get());
+        return task != nullptr && task->wId() == wId; });
+      if (taskPosition != items_.end()) {
+        KWindowInfo info(wId, NET::WMVisibleName);
+        (*taskPosition)->setLabel(info.visibleName());
+        tooltip_.update();
+      }
+    }
+
+    // TODO: icon changed
   }
 }
 
@@ -947,10 +984,21 @@ void DockPanel::updateLayout(int x, int y) {
 }
 
 void DockPanel::resizeTaskManager() {
+  // Re-calculate panel's size.
+  initLayoutVars();
+
   if (isMinimized_) {
-    initLayoutVars();
     updateLayout();
     return;
+  } else {
+      // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
+      // mess up the zooming.
+      QWidget::resize(maxWidth_, maxHeight_);
+      if (isHorizontal()) {
+        backgroundWidth_ = maxWidth_;
+      } else {
+        backgroundHeight_ = maxHeight_;
+      }
   }
 
   const int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
@@ -1021,16 +1069,6 @@ void DockPanel::resizeTaskManager() {
     }
   }
 
-  // Re-calculate panel's size.
-  initLayoutVars();
-  // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
-  // mess up the zooming.
-  QWidget::resize(maxWidth_, maxHeight_);
-  if (isHorizontal()) {
-    backgroundWidth_ = maxWidth_;
-  } else {
-    backgroundHeight_ = maxHeight_;
-  }
   update();
 }
 
