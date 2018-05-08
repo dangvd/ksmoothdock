@@ -328,7 +328,8 @@ void DockPanel::onWindowAdded(WId wId) {
     const auto currentPos = std::find_if(items_.begin(), items_.end(),
                                          [wId](const auto& item) {
       const auto* task = dynamic_cast<Task*>(item.get());
-      return task != nullptr && task->wId() == wId; });
+      return task != nullptr && task->wId() == wId;
+    });
     if (currentPos != items_.end()) {
       return;
     }
@@ -352,7 +353,8 @@ void DockPanel::onWindowRemoved(WId wId) {
     auto taskPosition = std::find_if(items_.begin(), items_.end(),
                                      [wId](const auto& item) {
       const auto* task = dynamic_cast<Task*>(item.get());
-      return task != nullptr && task->wId() == wId; });
+      return task != nullptr && task->wId() == wId;
+    });
     if (taskPosition != items_.end()) {
       items_.erase(taskPosition);
       resizeTaskManager();
@@ -365,23 +367,24 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
   // TODO
   if (showTaskManager() && wId != winId() && isValidTask(wId)) {
     if (properties & NET::WMDesktop) {
-        auto taskPosition = std::find_if(items_.begin(), items_.end(),
-                                         [wId](const auto& item) {
-          const auto* task = dynamic_cast<Task*>(item.get());
-          return task != nullptr && task->wId() == wId; });
-        if (taskPosition != items_.end()) {
-          items_.erase(taskPosition);
-        } else if (isValidTask(wId, screen_)) {
-            auto newPos = items_.end();
-            if (showClock_) {
-              --newPos;
-            }
-            const auto task = getTaskInfo(wId);
-            items_.insert(newPos, std::make_unique<Task>(
-                            this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-                            task.wId));
+      auto taskPosition = std::find_if(items_.begin(), items_.end(),
+                                       [wId](const auto& item) {
+        const auto* task = dynamic_cast<Task*>(item.get());
+        return task != nullptr && task->wId() == wId;
+      });
+      if (taskPosition != items_.end()) {
+        items_.erase(taskPosition);
+      } else if (isValidTask(wId, screen_)) {
+        auto newPos = items_.end();
+        if (showClock_) {
+          --newPos;
         }
-        resizeTaskManager();
+        const auto task = getTaskInfo(wId);
+        items_.insert(newPos, std::make_unique<Task>(
+                        this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+                        task.wId));
+      }
+      resizeTaskManager();
     }
 
     if (properties & NET::WMVisibleName) {
@@ -991,14 +994,14 @@ void DockPanel::resizeTaskManager() {
     updateLayout();
     return;
   } else {
-      // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
-      // mess up the zooming.
-      QWidget::resize(maxWidth_, maxHeight_);
-      if (isHorizontal()) {
-        backgroundWidth_ = maxWidth_;
-      } else {
-        backgroundHeight_ = maxHeight_;
-      }
+    // Need to call QWidget::resize(), not DockPanel::resize(), in order not to
+    // mess up the zooming.
+    QWidget::resize(maxWidth_, maxHeight_);
+    if (isHorizontal()) {
+      backgroundWidth_ = maxWidth_;
+    } else {
+      backgroundHeight_ = maxHeight_;
+    }
   }
 
   const int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
@@ -1009,13 +1012,13 @@ void DockPanel::resizeTaskManager() {
   for (int i = 0; i < itemCount(); ++i) {
     if (isHorizontal()) {
       left = (i == 0) ? itemSpacing_ / 2
-          : left + items_[i - 1]->getMinWidth() + itemSpacing_;
+                      : left + items_[i - 1]->getMinWidth() + itemSpacing_;
       if (i >= itemsToKeep) {
         items_[i]->minCenter_ = left + items_[i]->getMinWidth() / 2;
       }
     } else {  // Vertical
       top = (i == 0) ? itemSpacing_ / 2
-          : top + items_[i - 1]->getMinHeight() + itemSpacing_;
+                     : top + items_[i - 1]->getMinHeight() + itemSpacing_;
       if (i >= itemsToKeep) {
         items_[i]->minCenter_ = top + items_[i]->getMinHeight() / 2;
       }
