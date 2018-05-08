@@ -341,9 +341,10 @@ void DockPanel::onWindowAdded(WId wId) {
       --newPos;
     }
     const auto task = getTaskInfo(wId);
-    items_.insert(newPos, std::make_unique<Task>(
-                    this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-                    task.wId));
+    items_.insert(newPos,
+                  std::make_unique<Task>(this, model_, task.name, orientation_,
+                                         task.icon, minSize_, maxSize_,
+                                         task.wId));
     resizeTaskManager();
   }
 }
