@@ -1161,23 +1161,22 @@ void DockPanel::showTooltip(int i) {
   if (position_ == PanelPosition::Top) {
     x = geometry().x() + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
-    y = maxHeight_ + kTooltipSpacing;
+    y = geometry().y() + maxHeight_ + kTooltipSpacing;
   } else if (position_ == PanelPosition::Bottom) {
     x = geometry().x() + items_[i]->left_
         - tooltip_.width() / 2 + items_[i]->getWidth() / 2;
     // No need for additional tooltip spacing in this position.
-    y = screenGeometry_.height() - maxHeight_ - tooltip_.height();
+    y = geometry().y() - tooltip_.height();
   } else if (position_ == PanelPosition::Left) {
-    x = maxWidth_ + kTooltipSpacing;
+    x = geometry().x() + maxWidth_ + kTooltipSpacing;
     y = geometry().y() + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   } else {  // Right
-    x = screenGeometry_.width() - maxWidth_ - tooltip_.width()
-        - kTooltipSpacing;
+    x = geometry().x() - tooltip_.width() - kTooltipSpacing;
     y = geometry().y() + items_[i]->top_
         - tooltip_.height() / 2 + items_[i]->getHeight() / 2;
   }
-  tooltip_.move(x + screenGeometry_.x(), y + screenGeometry_.y());
+  tooltip_.move(x, y);
   tooltip_.show();
 }
 
