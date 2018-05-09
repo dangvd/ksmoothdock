@@ -28,11 +28,13 @@ namespace ksmoothdock {
 
 struct TaskInfo {
   WId wId;
-  QString name;
+  QString program;  // e.g. dolphin
+  QString name;  // e.g. home -- Dolphin
   QPixmap icon;
 
-  TaskInfo(WId wId2, const QString& name2, const QPixmap& icon2)
-      : wId(wId2), name(name2), icon(icon2) {}
+  TaskInfo(WId wId2, const QString& program2, const QString& name2,
+           const QPixmap& icon2)
+      : wId(wId2), program(program2), name(name2), icon(icon2) {}
   TaskInfo(const TaskInfo& taskInfo) = default;
   TaskInfo& operator=(const TaskInfo& taskInfo) = default;
 };

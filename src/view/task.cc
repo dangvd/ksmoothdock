@@ -27,10 +27,11 @@ namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
            Qt::Orientation orientation, const QPixmap &icon, int minSize,
-           int maxSize, WId wId)
+           int maxSize, WId wId, const QString& program)
     : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
       model_(model),
       wId_(wId),
+      program_(program),
       demandAttention_(false),
       animationTimer_(std::make_unique<QTimer>(this)) {
   createMenu();

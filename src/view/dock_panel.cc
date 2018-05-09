@@ -326,25 +326,17 @@ void DockPanel::onWindowAdded(WId wId) {
   // TODO
   if (showTaskManager() && isValidTask(wId, screen_)) {
     // Check if the task already exists in the list.
-    const auto currentPos = std::find_if(items_.begin(), items_.end(),
+    const auto currentPos = std::find_if(begin_task(), end_task(),
                                          [wId](const auto& item) {
       const auto* task = dynamic_cast<Task*>(item.get());
       return task != nullptr && task->wId() == wId;
     });
-    if (currentPos != items_.end()) {
+    if (currentPos != end_task()) {
       return;
     }
 
     // Now inserts it.
-    auto newPos = items_.end();
-    if (showClock_) {
-      --newPos;
-    }
-    const auto task = getTaskInfo(wId);
-    items_.insert(newPos,
-                  std::make_unique<Task>(this, model_, task.name, orientation_,
-                                         task.icon, minSize_, maxSize_,
-                                         task.wId));
+    addTask(wId);
     resizeTaskManager();
   }
 }
@@ -352,12 +344,12 @@ void DockPanel::onWindowAdded(WId wId) {
 void DockPanel::onWindowRemoved(WId wId) {
   // TODO
   if (showTaskManager()) {
-    auto taskPosition = std::find_if(items_.begin(), items_.end(),
+    auto taskPosition = std::find_if(begin_task(), end_task(),
                                      [wId](const auto& item) {
       const auto* task = dynamic_cast<Task*>(item.get());
       return task != nullptr && task->wId() == wId;
     });
-    if (taskPosition != items_.end()) {
+    if (taskPosition != end_task()) {
       items_.erase(taskPosition);
       resizeTaskManager();
     }
@@ -369,35 +361,27 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
   // TODO
   if (showTaskManager() && wId != winId() && isValidTask(wId)) {
     if (properties & NET::WMDesktop) {
-      auto taskPosition = std::find_if(items_.begin(), items_.end(),
+      auto taskPosition = std::find_if(begin_task(), end_task(),
                                        [wId](const auto& item) {
         const auto* task = dynamic_cast<Task*>(item.get());
         return task != nullptr && task->wId() == wId;
       });
-      if (taskPosition != items_.end()) {
+      if (taskPosition != end_task()) {
         items_.erase(taskPosition);
       } else if (isValidTask(wId, screen_)) {
-        auto newPos = items_.end();
-        if (showClock_) {
-          --newPos;
-        }
-        const auto task = getTaskInfo(wId);
-        items_.insert(newPos, std::make_unique<Task>(
-                        this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-                        task.wId));
+        addTask(wId);
       }
       resizeTaskManager();
     }
 
     if (properties & NET::WMVisibleName) {
-      auto taskPosition = std::find_if(items_.begin(), items_.end(),
+      auto taskPosition = std::find_if(begin_task(), end_task(),
                                        [wId](const auto& item) {
         const auto* task = dynamic_cast<Task*>(item.get());
         return task != nullptr && task->wId() == wId; });
-      if (taskPosition != items_.end()) {
+      if (taskPosition != end_task()) {
         KWindowInfo info(wId, NET::WMVisibleName);
         (*taskPosition)->setLabel(info.visibleName());
-        tooltip_.update();
       }
     }
 
@@ -711,7 +695,7 @@ void DockPanel::initTasks() {
     for (const auto& task : loadTasks(screen_)) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-          task.wId));
+          task.wId, task.program));
     }
   }
 }
@@ -724,6 +708,27 @@ void DockPanel::reloadTasks() {
   initTasks();
   initClock();
   resizeTaskManager();
+}
+
+void DockPanel::addTask(WId wId) {
+  const auto taskInfo = getTaskInfo(wId);
+  const auto programPos = std::find_if(begin_task(), end_task(),
+                                   [wId, &taskInfo](const auto& item) {
+    const auto* task = dynamic_cast<Task*>(item.get());
+    return task != nullptr && task->program() == taskInfo.program;
+  });
+  const auto newPos = (programPos == end_task())
+      ? end_task()
+      : std::find_if(programPos, end_task(),
+                     [wId, &taskInfo](const auto& item) {
+    const auto* task = dynamic_cast<Task*>(item.get());
+    return task != nullptr && task->program() != taskInfo.program;
+  });
+  items_.insert(newPos,
+                std::make_unique<Task>(this, model_, taskInfo.name,
+                                       orientation_, taskInfo.icon, minSize_,
+                                       maxSize_, taskInfo.wId,
+                                       taskInfo.program));
 }
 
 void DockPanel::initClock() {

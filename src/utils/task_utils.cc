@@ -18,6 +18,8 @@
 
 #include "task_utils.h"
 
+#include <iostream>
+
 #include <QApplication>
 #include <QDesktopWidget>
 
@@ -74,8 +76,8 @@ bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
 
 TaskInfo getTaskInfo(WId wId) {
   static constexpr int kIconLoadSize = 128;
-  KWindowInfo info(wId, NET::WMVisibleName);
-  return TaskInfo(wId, info.visibleName(),
+  KWindowInfo info(wId, NET::WMVisibleName, NET::WM2WindowClass);
+  return TaskInfo(wId, QString(info.windowClassName()), info.visibleName(),
                   KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize));
 }
 

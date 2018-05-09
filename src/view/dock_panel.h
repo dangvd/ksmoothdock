@@ -172,13 +172,34 @@ class DockPanel : public QWidget {
 
   void setVisibility(PanelVisibility visibility);
 
-  int itemCount() { return static_cast<int>(items_.size()); }
+  int itemCount() const { return static_cast<int>(items_.size()); }
+
+  int applicationMenuItemCount() const { return showApplicationMenu_ ? 1 : 0; }
+
+  int launcherItemCount() const {
+    return model_->dockLauncherConfigs(dockId_).size();
+  }
+
+  int pagerItemCount() const {
+    return showPager_ ? KWindowSystem::numberOfDesktops() : 0;
+  }
+
+  int clockItemCount() const {
+    return showClock_ ? 1 : 0;
+  }
 
   void reserveItems(int numLaunchers) {
-    const int numPagerIcons = showPager_ ? KWindowSystem::numberOfDesktops()
-                                         : 0;
-    const int numClockIcons = showClock_ ? 1 : 0;
-    items_.reserve(numLaunchers + numPagerIcons + numClockIcons);
+    items_.reserve(applicationMenuItemCount() + numLaunchers +
+                   pagerItemCount() + clockItemCount());
+  }
+
+  std::vector<std::unique_ptr<DockItem>>::iterator begin_task() {
+    return items_.begin() + applicationMenuItemCount() + launcherItemCount() +
+        pagerItemCount();
+  }
+
+  std::vector<std::unique_ptr<DockItem>>::iterator end_task() {
+    return items_.end() - clockItemCount();
   }
 
   bool showTaskManager() { return model_->showTasks(dockId_); }
@@ -196,6 +217,7 @@ class DockPanel : public QWidget {
   void initPager();
   void initTasks();
   void reloadTasks();
+  void addTask(WId wId);
   void initClock();
 
   void initLayoutVars();

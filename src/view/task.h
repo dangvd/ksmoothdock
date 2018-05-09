@@ -39,11 +39,13 @@ class Task : public QObject, public IconBasedDockItem {
  public:
   Task(DockPanel* parent, MultiDockModel* model, const QString& label,
        Qt::Orientation orientation, const QPixmap& icon, int minSize,
-       int maxSize, WId wId);
+       int maxSize, WId wId, const QString& program);
 
   virtual ~Task() = default;
 
   WId wId() const { return wId_; }
+
+  const QString program() const { return program_; }
 
   bool demandAttention() { return demandAttention_; }
 
@@ -68,6 +70,7 @@ class Task : public QObject, public IconBasedDockItem {
 
   MultiDockModel* model_;
   WId wId_;
+  const QString program_;
   bool demandAttention_; // does the task demand attention?
 
   // Context menu.
