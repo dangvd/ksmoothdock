@@ -218,6 +218,7 @@ class DockPanel : public QWidget {
   void initTasks();
   void reloadTasks();
   void addTask(WId wId);
+  void removeTask(WId wId);
   void initClock();
 
   void initLayoutVars();
