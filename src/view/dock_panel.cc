@@ -674,9 +674,8 @@ void DockPanel::initTasks() {
 }
 
 void DockPanel::reloadTasks() {
-  int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
-      model_->dockLauncherConfigs(dockId_).size() +
-      (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
+  const int itemsToKeep = applicationMenuItemCount() + launcherItemCount() +
+      pagerItemCount();
   items_.resize(itemsToKeep);
   initTasks();
   initClock();
