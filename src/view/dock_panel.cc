@@ -374,7 +374,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
       resizeTaskManager();
     }
 
-    if (properties & NET::WMVisibleName) {
+    if (properties & NET::WMName) {
       auto taskPosition = std::find_if(begin_task(), end_task(),
                                        [wId](const auto& item) {
         const auto* task = dynamic_cast<Task*>(item.get());
