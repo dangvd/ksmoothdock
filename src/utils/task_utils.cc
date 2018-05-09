@@ -18,7 +18,7 @@
 
 #include "task_utils.h"
 
-#include <iostream>
+#include <algorithm>
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -35,6 +35,7 @@ std::vector<TaskInfo> loadTasks(int screen) {
     }
   }
 
+  std::stable_sort(tasks.begin(), tasks.end());
   return std::move(tasks);
 }
 

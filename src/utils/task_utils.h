@@ -37,6 +37,10 @@ struct TaskInfo {
       : wId(wId2), program(program2), name(name2), icon(icon2) {}
   TaskInfo(const TaskInfo& taskInfo) = default;
   TaskInfo& operator=(const TaskInfo& taskInfo) = default;
+
+  bool operator<(const TaskInfo& taskInfo) const {
+    return program < taskInfo.program;
+  }
 };
 
 // Loads running tasks.

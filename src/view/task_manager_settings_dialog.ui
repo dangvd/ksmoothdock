@@ -124,6 +124,9 @@
    <property name="text">
     <string>By progra&amp;m name, then by creation time</string>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QRadioButton" name="sortCreationTime">
    <property name="geometry">
@@ -135,10 +138,10 @@
     </rect>
    </property>
    <property name="text">
-    <string>By creation time</string>
+    <string>B&amp;y creation time</string>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
  </widget>
