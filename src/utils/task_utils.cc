@@ -19,10 +19,12 @@
 #include "task_utils.h"
 
 #include <algorithm>
+#include <map>
 
 #include <QApplication>
 #include <QDesktopWidget>
 
+#include <KIconLoader>
 #include <KWindowSystem>
 
 namespace ksmoothdock {
@@ -78,8 +80,33 @@ bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
 TaskInfo getTaskInfo(WId wId) {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName, NET::WM2WindowClass);
-  return TaskInfo(wId, QString(info.windowClassName()), info.visibleName(),
-                  KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize));
+
+  const auto program = QString(info.windowClassName());
+  const auto name = info.visibleName();
+  QPixmap icon;
+  QString iconName;
+
+  static const std::map<QString, QString> icon_map = {
+    {"Gmail -", "internet-mail"},
+    {"Google Calendar -", "office-calendar"},
+    {"Google Drive -", "nfs"},
+    // {"YouTube -", "youtube"},
+    // {"Facebook –", "facebook"},
+  };
+  for (const auto& entry : icon_map) {
+    if (name.contains(entry.first)) {
+      iconName = entry.second;
+      break;
+    }
+  }
+  if (!iconName.isEmpty()) {
+    icon = KIconLoader::global()->loadIcon(iconName,
+                                           KIconLoader::NoGroup, kIconLoadSize);
+  } else {
+    icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize);
+  }
+
+  return TaskInfo(wId, program, name, icon);
 }
 
 int getScreen(WId wId) {

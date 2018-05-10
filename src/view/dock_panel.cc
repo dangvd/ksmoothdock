@@ -353,8 +353,10 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         const auto* task = dynamic_cast<Task*>(item.get());
         return task != nullptr && task->wId() == wId; });
       if (taskPosition != end_task()) {
-        KWindowInfo info(wId, NET::WMVisibleName);
-        (*taskPosition)->setLabel(info.visibleName());
+        TaskInfo taskInfo = getTaskInfo(wId);
+        (*taskPosition)->setLabel(taskInfo.name);
+        auto* task = dynamic_cast<Task*>((*taskPosition).get());
+        task->setIcon(taskInfo.icon);
       }
     }
 
