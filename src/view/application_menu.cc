@@ -135,7 +135,7 @@ void ApplicationMenu::draw(QPainter* painter) const {
     painter->setRenderHint(QPainter::Antialiasing);
     QColor fillColor;
     QPainterPath path;
-    fillColor = model_->backgroundColor().lighter();
+    fillColor = model_->backgroundColor().lighter(300);
     fillColor.setAlphaF(0.42);
     const int spacing = minSize_ / 4 - 4;
     path.addRoundedRect(

@@ -702,12 +702,11 @@ void DockPanel::addTask(WId wId) {
     const auto* task = dynamic_cast<Task*>(item.get());
     return task != nullptr && task->program() == taskInfo.program;
   });
-  const auto newPos = (programPos == end_task())
-      ? end_task()
-      : std::find_if(programPos, end_task(),
-                     [wId, &taskInfo](const auto& item) {
+  const auto startPos = (programPos == end_task()) ? begin_task() : programPos;
+  const auto newPos = std::find_if(startPos, end_task(),
+                                   [wId, &taskInfo](const auto& item) {
     const auto* task = dynamic_cast<Task*>(item.get());
-    return task != nullptr && task->program() != taskInfo.program;
+    return task != nullptr && task->program() > taskInfo.program;
   });
   items_.insert(newPos,
                 std::make_unique<Task>(this, model_, taskInfo.name,

@@ -42,7 +42,7 @@ void Task::draw(QPainter *painter) const {
   QColor fillColor;
   QPainterPath path;
   if (active()) {
-    fillColor = model_->backgroundColor().lighter();
+    fillColor = model_->backgroundColor().lighter(300);
     fillColor.setAlphaF(0.42);
     path.addRoundedRect(
         QRect(left_ - 5, top_ - 5, getWidth() + 10, getHeight() + 10),
