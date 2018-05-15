@@ -19,7 +19,7 @@
 #include "task_utils.h"
 
 #include <algorithm>
-#include <map>
+#include <utility>
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -86,10 +86,12 @@ TaskInfo getTaskInfo(WId wId) {
   QPixmap icon;
   QString iconName;
 
-  static const std::map<QString, QString> icon_map = {
+  static const std::vector<std::pair<QString, QString>> icon_map = {
     {"Gmail -", "internet-mail"},
     {"Google Calendar -", "office-calendar"},
     {"Google Drive -", "nfs"},
+    {"- Google Chrome", "internet-web-browser"},
+    {"- Qt Creator", "applications-development"},
     // {"YouTube -", "youtube"},
     // {"Facebook –", "facebook"},
   };
