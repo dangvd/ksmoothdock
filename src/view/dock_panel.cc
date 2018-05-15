@@ -697,13 +697,7 @@ void DockPanel::addTask(WId wId) {
 
   // Now insert it.
   const auto taskInfo = getTaskInfo(wId);
-  const auto programPos = std::find_if(begin_task(), end_task(),
-                                   [wId, &taskInfo](const auto& item) {
-    const auto* task = dynamic_cast<Task*>(item.get());
-    return task != nullptr && task->program() == taskInfo.program;
-  });
-  const auto startPos = (programPos == end_task()) ? begin_task() : programPos;
-  const auto newPos = std::find_if(startPos, end_task(),
+  const auto newPos = std::find_if(begin_task(), end_task(),
                                    [wId, &taskInfo](const auto& item) {
     const auto* task = dynamic_cast<Task*>(item.get());
     return task != nullptr && task->program() > taskInfo.program;
