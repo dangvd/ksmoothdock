@@ -350,8 +350,14 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
     } else if (properties & NET::WMName) {
       auto taskPosition = std::find_if(begin_task(), end_task(),
                                        [wId](const auto& item) {
-        const auto* task = dynamic_cast<Task*>(item.get());
-        return task != nullptr && task->wId() == wId; });
+        if (item) {
+          const auto* task = dynamic_cast<Task*>(item.get());
+          if (task && task->wId() == wId) {
+            return true;
+          }
+        }
+        return false;
+      });
       if (taskPosition != end_task()) {
         TaskInfo taskInfo = getTaskInfo(wId);
         (*taskPosition)->setLabel(taskInfo.name);
@@ -688,8 +694,13 @@ void DockPanel::addTask(WId wId) {
   // Check if the task already exists in the list.
   const auto currentPos = std::find_if(begin_task(), end_task(),
                                        [wId](const auto& item) {
-    const auto* task = dynamic_cast<Task*>(item.get());
-    return task != nullptr && task->wId() == wId;
+    if (item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      if (task && task->wId() == wId) {
+        return true;
+      }
+    }
+    return false;
   });
   if (currentPos != end_task()) {
     return;
@@ -697,10 +708,15 @@ void DockPanel::addTask(WId wId) {
 
   // Now insert it.
   const auto taskInfo = getTaskInfo(wId);
-  const auto newPos = std::find_if(begin_task(), end_task(),
-                                   [wId, &taskInfo](const auto& item) {
-    const auto* task = dynamic_cast<Task*>(item.get());
-    return task != nullptr && task->program() > taskInfo.program;
+  auto newPos = std::find_if(begin_task(), end_task(),
+                             [wId, &taskInfo](const auto& item) {
+    if (item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      if (task && task->program() > taskInfo.program) {
+        return true;
+      }
+    }
+    return false;
   });
   items_.insert(newPos,
                 std::make_unique<Task>(this, model_, taskInfo.name,
@@ -713,8 +729,13 @@ void DockPanel::addTask(WId wId) {
 void DockPanel::removeTask(WId wId) {
   auto taskPosition = std::find_if(begin_task(), end_task(),
                                    [wId](const auto& item) {
-    const auto* task = dynamic_cast<Task*>(item.get());
-    return task != nullptr && task->wId() == wId;
+    if (item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      if (task && task->wId() == wId) {
+        return true;
+      }
+    }
+    return false;
   });
   if (taskPosition != end_task()) {
     items_.erase(taskPosition);
