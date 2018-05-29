@@ -48,7 +48,8 @@ void Task::draw(QPainter *painter) const {
         QRect(left_ - 5, top_ - 5, getWidth() + 10, getHeight() + 10),
         size_ / 8, size_ / 8);
   } else {
-    fillColor = model_->borderColor();
+    fillColor = model_->borderColor().lighter(300);
+    fillColor.setAlphaF(0.8);
     path.addRoundedRect(QRect(left_, top_ + getHeight() + 2, getWidth(), 3),
                         2, 2);
   }
