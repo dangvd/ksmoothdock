@@ -42,12 +42,20 @@ class ConfigHelper  {
   // Global appearance config.
   static constexpr char kAppearanceConfig[] = "appearance.conf";
 
+  // Global icon override rules (for task manager).
+  static constexpr char kIconOverrideRules[] = "icon_override.rules";
+
   explicit ConfigHelper(const QString& configDir);
   ~ConfigHelper() = default;
 
   // Gets the appearance config file path.
   QString appearanceConfigPath() const {
     return configDir_.filePath(kAppearanceConfig);
+  }
+
+  // Gets the icon override rules file path.
+  QString iconOverrideRulesPath() const {
+    return configDir_.filePath(kIconOverrideRules);
   }
 
   static QString wallpaperConfigKey(int desktop, int screen) {

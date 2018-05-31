@@ -29,6 +29,7 @@ constexpr char ConfigHelper::kSingleDockLaunchers[];
 
 constexpr char ConfigHelper::kConfigPattern[];
 constexpr char ConfigHelper::kAppearanceConfig[];
+constexpr char ConfigHelper::kIconOverrideRules[];
 
 ConfigHelper::ConfigHelper(const QString& configDir)
     : configDir_{configDir} {

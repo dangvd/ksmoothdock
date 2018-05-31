@@ -22,6 +22,7 @@
 #include <memory>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <QColor>
 #include <QDir>
@@ -33,6 +34,7 @@
 #include <KLocalizedString>
 
 #include "config_helper.h"
+#include "icon_override_rule.h"
 
 namespace ksmoothdock {
 
@@ -344,7 +346,11 @@ class MultiDockModel : public QObject {
   }
 
   // Whether any dock has a pager.
-  bool hasPager();
+  bool hasPager() const;
+
+  const std::vector<IconOverrideRule>& icon_override_rules() const {
+    return icon_override_rules_;
+  }
 
  signals:
   // Minor appearance changes that require view update.
@@ -435,6 +441,8 @@ class MultiDockModel : public QObject {
 
   void loadDocks();
 
+  void initIconOverrideRules();
+
   int addDock(const std::tuple<QString, QString>& configs,
               PanelPosition position, int screen);
 
@@ -477,6 +485,8 @@ class MultiDockModel : public QObject {
 
   // ID for the next dock.
   int nextDockId_;
+
+  std::vector<IconOverrideRule> icon_override_rules_;
 };
 
 }  // namespace ksmoothdock

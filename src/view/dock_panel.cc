@@ -359,7 +359,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         return false;
       });
       if (taskPosition != end_task()) {
-        TaskInfo taskInfo = getTaskInfo(wId);
+        TaskInfo taskInfo = getTaskInfo(wId, model_->icon_override_rules());
         (*taskPosition)->setLabel(taskInfo.name);
         auto* task = dynamic_cast<Task*>((*taskPosition).get());
         task->setIcon(taskInfo.icon);
@@ -673,7 +673,7 @@ void DockPanel::initPager() {
 
 void DockPanel::initTasks() {
   if (showTaskManager()) {
-    for (const auto& task : loadTasks(screen_)) {
+    for (const auto& task : loadTasks(screen_, model_->icon_override_rules())) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
           task.wId, task.program));
@@ -707,7 +707,7 @@ void DockPanel::addTask(WId wId) {
   }
 
   // Now insert it.
-  const auto taskInfo = getTaskInfo(wId);
+  const auto taskInfo = getTaskInfo(wId, model_->icon_override_rules());
   auto newPos = std::find_if(begin_task(), end_task(),
                              [wId, &taskInfo](const auto& item) {
     if (item) {

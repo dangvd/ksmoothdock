@@ -29,11 +29,12 @@
 
 namespace ksmoothdock {
 
-std::vector<TaskInfo> loadTasks(int screen) {
+std::vector<TaskInfo> loadTasks(
+    int screen, const std::vector<IconOverrideRule>& icon_override_rules) {
   std::vector<TaskInfo> tasks;
   for (const auto wId : KWindowSystem::windows()) {
     if (isValidTask(wId, screen)) {
-      tasks.push_back(getTaskInfo(wId));
+      tasks.push_back(getTaskInfo(wId, icon_override_rules));
     }
   }
 
@@ -77,7 +78,8 @@ bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
   return true;
 }
 
-TaskInfo getTaskInfo(WId wId) {
+TaskInfo getTaskInfo(WId wId,
+                     const std::vector<IconOverrideRule>& icon_override_rules) {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName, NET::WM2WindowClass);
 
@@ -86,18 +88,9 @@ TaskInfo getTaskInfo(WId wId) {
   QPixmap icon;
   QString iconName;
 
-  static const std::vector<std::pair<QString, QString>> icon_map = {
-    {"Gmail -", "internet-mail"},
-    {"Google Calendar -", "office-calendar"},
-    {"Google Drive -", "nfs"},
-    {"- Google Chrome", "internet-web-browser"},
-    {"- Qt Creator", "applications-development"},
-    // {"YouTube -", "youtube"},
-    // {"Facebook –", "facebook"},
-  };
-  for (const auto& entry : icon_map) {
-    if (name.contains(entry.first)) {
-      iconName = entry.second;
+  for (const auto& rule : icon_override_rules) {
+    if (name.contains(rule.window_name_regex)) {
+      iconName = rule.icon;
       break;
     }
   }

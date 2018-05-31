@@ -79,6 +79,7 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     appearanceConfig_.reparseConfiguration();
   }
   loadDocks();
+  initIconOverrideRules();
 }
 
 void MultiDockModel::loadDocks() {
@@ -171,7 +172,12 @@ void MultiDockModel::removeDock(int dockId) {
   // No need to emit a signal here.
 }
 
-bool MultiDockModel::hasPager() {
+void MultiDockModel::initIconOverrideRules() {
+  icon_override_rules_ = loadIconOverrideRules<std::vector<IconOverrideRule>>(
+      configHelper_.iconOverrideRulesPath());
+}
+
+bool MultiDockModel::hasPager() const {
   for (const auto& dock : dockConfigs_) {
     if (showPager(dock.first)) {
       return true;

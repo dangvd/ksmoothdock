@@ -24,6 +24,8 @@
 #include <QString>
 #include <QPixmap>
 
+#include "model/icon_override_rule.h"
+
 namespace ksmoothdock {
 
 struct TaskInfo {
@@ -44,7 +46,8 @@ struct TaskInfo {
 };
 
 // Loads running tasks.
-std::vector<TaskInfo> loadTasks(int screen);
+std::vector<TaskInfo>
+loadTasks(int screen, const std::vector<IconOverrideRule>& icon_override_rules);
 
 // Whether the task is valid for showing on the task manager.
 bool isValidTask(WId wId);
@@ -52,7 +55,8 @@ bool isValidTask(WId wId);
 // Whether the task is valid for showing on the task manager on specific screen.
 bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true);
 
-TaskInfo getTaskInfo(WId wId);
+TaskInfo getTaskInfo(WId wId,
+                     const std::vector<IconOverrideRule>& icon_override_rules);
 
 // Gets the screen that a task is running on.
 int getScreen(WId wId);
