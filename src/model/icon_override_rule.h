@@ -51,13 +51,13 @@ struct IconOverrideRule {
     }
   }
 
-  QString toString() {
+  QString toString() const {
     return name + DELIM + window_name_regex + DELIM + icon;
   }
 };
 
 template <typename S>
-S loadIconOverrideRules(const QString& filename) {
+S loadIconOverrideRulesFromFile(const QString& filename) {
   QFile file(filename);
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     std::cerr << "Failed to read icon override rules from file: "
@@ -77,7 +77,7 @@ S loadIconOverrideRules(const QString& filename) {
 }
 
 template <typename S>
-void saveIconOverrideRules(const QString& filename, const S& s) {
+void saveIconOverrideRulesToFile(const QString& filename, const S& s) {
   QFile file(filename);
   if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
     std::cerr << "Failed to write icon override rules to file: "

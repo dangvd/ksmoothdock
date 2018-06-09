@@ -189,7 +189,7 @@ void IconOverrideRulesDialog::saveData() {
     auto* listItem = rules_->item(i);
     auto info = listItem->data(Qt::UserRole).value<RuleInfo>();
     rules.push_back(IconOverrideRule(
-                                listItem->text(), info.icon, info.window_name_regex));
+        listItem->text(), info.window_name_regex, info.icon));
   }
   model_->setIconOverrideRules(rules);
   model_->saveIconOverrideRules();

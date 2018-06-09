@@ -357,11 +357,12 @@ class MultiDockModel : public QObject {
   }
 
   void saveIconOverrideRules() {
-    // TODO
+    syncIconOverrideRules();
+    emit appearanceChanged();
   }
 
  signals:
-  // Minor appearance changes that require view update.
+  // Minor appearance changes that require view update (repaint).
   void appearanceOutdated();
   // Major appearance changes that require view reload.
   void appearanceChanged();
@@ -449,8 +450,6 @@ class MultiDockModel : public QObject {
 
   void loadDocks();
 
-  void initIconOverrideRules();
-
   int addDock(const std::tuple<QString, QString>& configs,
               PanelPosition position, int screen);
 
@@ -463,6 +462,10 @@ class MultiDockModel : public QObject {
   }
 
   void syncDockLaunchersConfig(int dockId);
+
+  void loadIconOverrideRules();
+
+  void syncIconOverrideRules();
 
   static void copyEntry(const QString& key, const KConfigGroup& sourceGroup,
                         KConfigGroup* destGroup) {

@@ -79,7 +79,7 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     appearanceConfig_.reparseConfiguration();
   }
   loadDocks();
-  initIconOverrideRules();
+  loadIconOverrideRules();
 }
 
 void MultiDockModel::loadDocks() {
@@ -172,11 +172,6 @@ void MultiDockModel::removeDock(int dockId) {
   // No need to emit a signal here.
 }
 
-void MultiDockModel::initIconOverrideRules() {
-  iconOverrideRules_ = loadIconOverrideRules<std::vector<IconOverrideRule>>(
-      configHelper_.iconOverrideRulesPath());
-}
-
 bool MultiDockModel::hasPager() const {
   for (const auto& dock : dockConfigs_) {
     if (showPager(dock.first)) {
@@ -244,6 +239,17 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
   }
 
   return std::move(launchers);
+}
+
+void MultiDockModel::loadIconOverrideRules() {
+  iconOverrideRules_ =
+      loadIconOverrideRulesFromFile<std::vector<IconOverrideRule>>(
+          configHelper_.iconOverrideRulesPath());
+}
+
+void MultiDockModel::syncIconOverrideRules() {
+  saveIconOverrideRulesToFile(configHelper_.iconOverrideRulesPath(),
+                              iconOverrideRules_);
 }
 
 bool MultiDockModel::convertConfig() {
