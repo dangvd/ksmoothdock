@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2018 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_EDIT_LAUNCHERS_DIALOG_H_
-#define KSMOOTHDOCK_EDIT_LAUNCHERS_DIALOG_H_
+#ifndef KSMOOTHDOCK_ICON_OVERRIDE_RULES_DIALOG_H_
+#define KSMOOTHDOCK_ICON_OVERRIDE_RULES_DIALOG_H_
 
 #include <QAbstractButton>
 #include <QDataStream>
@@ -35,71 +35,64 @@
 #include <model/multi_dock_model.h>
 
 namespace Ui {
-  class EditLaunchersDialog;
+  class IconOverrideRulesDialog;
 }
 
 namespace ksmoothdock {
 
 // User data for the items in QListWidget/QComboBox.
-struct LauncherInfo {
+struct RuleInfo {
   // The name(label) is already stored as item text in QListWidget/QComboBox.
-  QString iconName;
-  QString command;
+  QString icon;
+  QString window_name_regex;
 
-  LauncherInfo() {}
-  LauncherInfo(QString iconName2, QString command2)
-      : iconName(iconName2), command(command2) {}
+  RuleInfo() {}
+  RuleInfo(QString icon2, QString window_name_regex2)
+      : icon(icon2), window_name_regex(window_name_regex2) {}
 };
 
-QDataStream &operator<<(QDataStream &out, const LauncherInfo& launcher);
-QDataStream &operator>>(QDataStream &in, LauncherInfo& launcher);
+QDataStream &operator<<(QDataStream &out, const RuleInfo& rule);
+QDataStream &operator>>(QDataStream &in, RuleInfo& rule);
 
-class EditLaunchersDialog;
+class IconOverrideRulesDialog;
 
-class LauncherList : public QListWidget {
+class RuleList : public QListWidget {
  public:
-  explicit LauncherList(EditLaunchersDialog* parent);
+  explicit RuleList(IconOverrideRulesDialog* parent);
 
  protected:
   void dragEnterEvent(QDragEnterEvent *event) override;
   void dragMoveEvent(QDragMoveEvent* event) override;
-  void dropEvent(QDropEvent *event) override;
 
  private:
-  EditLaunchersDialog* parent_;
+  IconOverrideRulesDialog* parent_;
 };
 
-class EditLaunchersDialog : public QDialog {
+class IconOverrideRulesDialog : public QDialog {
   Q_OBJECT
 
  public:
-  EditLaunchersDialog(QWidget* parent, MultiDockModel* model, int dockId);
-  ~EditLaunchersDialog() = default;
+  IconOverrideRulesDialog(QWidget* parent, MultiDockModel* model);
+  ~IconOverrideRulesDialog() = default;
 
   void reload() { loadData(); }
 
-  void addLauncher(const QString& name, const QString& command,
-      const QString& iconName);
+  void addRule(const QString& name, const QString& window_name_regex,
+      const QString& icon);
 
  public slots:
   void accept() override;
   void buttonClicked(QAbstractButton* button);
 
-  void refreshSelectedLauncher(QListWidgetItem* current,
+  void refreshSelectedRule(QListWidgetItem* current,
       QListWidgetItem* previous);
 
-  void addLauncher();
-  void removeSelectedLauncher();
-  void removeAllLaunchers();
-  void updateSelectedLauncher();
+  void addRule();
+  void removeSelectedRule();
+  void removeAllRules();
+  void updateSelectedRule();
 
-  void openLink(const QString& link);
-
-  void browseCommand();
-  void updateInternalCommand(int index);
-  void updateDBusCommand(int index);
-  void updateWebCommand(int index);
-  void resetCommandLists();
+  void resetRulePresets();
 
  private:
   static constexpr int kListIconSize = 48;
@@ -107,29 +100,26 @@ class EditLaunchersDialog : public QDialog {
   void loadData();
   void saveData();
 
-  QIcon getListItemIcon(const QString& iconName) {
-    return QIcon(KIconLoader::global()->loadIcon(iconName,
+  QIcon getListItemIcon(const QString& icon) {
+    return QIcon(KIconLoader::global()->loadIcon(icon,
         KIconLoader::NoGroup, kListIconSize));
   }
 
-  void populateInternalCommands();
-  void populateDBusCommands();
-  void populateWebCommands();
+  void populateRulePresets();
 
   void clearItemDetails();
 
-  Ui::EditLaunchersDialog *ui;
-  LauncherList *launchers_;
+  Ui::IconOverrideRulesDialog *ui;
+  RuleList *rules_;
   KIconButton *icon_;
 
   MultiDockModel* model_;
-  int dockId_;
 
-  friend class EditLaunchersDialogTest;
+  friend class IconOverrideRulesDialogTest;
 };
 
 }  // namespace ksmoothdock
 
-Q_DECLARE_METATYPE(ksmoothdock::LauncherInfo);
+Q_DECLARE_METATYPE(ksmoothdock::RuleInfo);
 
-#endif  // KSMOOTHDOCK_EDIT_LAUNCHERS_DIALOG_H_
+#endif  // KSMOOTHDOCK_ICON_OVERRIDE_RULES_DIALOG_H_

@@ -30,6 +30,7 @@ set(SRCS
     view/dock_panel.cc
     view/edit_launchers_dialog.cc
     view/icon_based_dock_item.cc
+    view/icon_override_rules_dialog.cc
     view/iconless_dock_item.cc
     view/launcher.cc
     view/multi_dock_view.cc

@@ -71,6 +71,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       editLaunchersDialog_(this, model, dockId),
       applicationMenuSettingsDialog_(this, model),
       wallpaperSettingsDialog_(this, model),
+      iconOverrideRulesDialog_(this, model),
       isMinimized_(true),
       isResizing_(false),
       isEntering_(false),
@@ -290,6 +291,11 @@ void DockPanel::showTaskManagerSettingsDialog() {
   taskManagerSettingsDialog_.show();
 }
 
+void DockPanel::showIconOverrideRulesDialog() {
+  iconOverrideRulesDialog_.reload();
+  iconOverrideRulesDialog_.show();
+}
+
 void DockPanel::addDock() {
   addPanelDialog_.setMode(AddPanelDialog::Mode::Add);
   addPanelDialog_.show();
@@ -359,7 +365,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         return false;
       });
       if (taskPosition != end_task()) {
-        TaskInfo taskInfo = getTaskInfo(wId, model_->icon_override_rules());
+        TaskInfo taskInfo = getTaskInfo(wId, model_->iconOverrideRules());
         (*taskPosition)->setLabel(taskInfo.name);
         auto* task = dynamic_cast<Task*>((*taskPosition).get());
         task->setIcon(taskInfo.icon);
@@ -673,7 +679,7 @@ void DockPanel::initPager() {
 
 void DockPanel::initTasks() {
   if (showTaskManager()) {
-    for (const auto& task : loadTasks(screen_, model_->icon_override_rules())) {
+    for (const auto& task : loadTasks(screen_, model_->iconOverrideRules())) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
           task.wId, task.program));
@@ -707,7 +713,7 @@ void DockPanel::addTask(WId wId) {
   }
 
   // Now insert it.
-  const auto taskInfo = getTaskInfo(wId, model_->icon_override_rules());
+  const auto taskInfo = getTaskInfo(wId, model_->iconOverrideRules());
   auto newPos = std::find_if(begin_task(), end_task(),
                              [wId, &taskInfo](const auto& item) {
     if (item) {

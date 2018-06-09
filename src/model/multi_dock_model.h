@@ -348,8 +348,16 @@ class MultiDockModel : public QObject {
   // Whether any dock has a pager.
   bool hasPager() const;
 
-  const std::vector<IconOverrideRule>& icon_override_rules() const {
-    return icon_override_rules_;
+  const std::vector<IconOverrideRule>& iconOverrideRules() const {
+    return iconOverrideRules_;
+  }
+
+  void setIconOverrideRules(const std::vector<IconOverrideRule>& rules) {
+    iconOverrideRules_ = rules;
+  }
+
+  void saveIconOverrideRules() {
+    // TODO
   }
 
  signals:
@@ -486,7 +494,7 @@ class MultiDockModel : public QObject {
   // ID for the next dock.
   int nextDockId_;
 
-  std::vector<IconOverrideRule> icon_override_rules_;
+  std::vector<IconOverrideRule> iconOverrideRules_;
 };
 
 }  // namespace ksmoothdock

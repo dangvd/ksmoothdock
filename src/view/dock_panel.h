@@ -41,6 +41,7 @@
 #include "appearance_settings_dialog.h"
 #include "dock_item.h"
 #include "edit_launchers_dialog.h"
+#include "icon_override_rules_dialog.h"
 #include "task_manager_settings_dialog.h"
 #include "tooltip.h"
 #include "wallpaper_settings_dialog.h"
@@ -140,6 +141,7 @@ class DockPanel : public QWidget {
   void showApplicationMenuSettingsDialog();
   void showWallpaperSettingsDialog(int desktop);
   void showTaskManagerSettingsDialog();
+  void showIconOverrideRulesDialog();
 
   void addDock();
   void cloneDock();
@@ -316,6 +318,7 @@ class DockPanel : public QWidget {
   ApplicationMenuSettingsDialog applicationMenuSettingsDialog_;
   WallpaperSettingsDialog wallpaperSettingsDialog_;
   TaskManagerSettingsDialog taskManagerSettingsDialog_;
+  IconOverrideRulesDialog iconOverrideRulesDialog_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;

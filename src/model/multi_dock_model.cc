@@ -173,7 +173,7 @@ void MultiDockModel::removeDock(int dockId) {
 }
 
 void MultiDockModel::initIconOverrideRules() {
-  icon_override_rules_ = loadIconOverrideRules<std::vector<IconOverrideRule>>(
+  iconOverrideRules_ = loadIconOverrideRules<std::vector<IconOverrideRule>>(
       configHelper_.iconOverrideRulesPath());
 }
 

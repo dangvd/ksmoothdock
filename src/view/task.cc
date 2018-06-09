@@ -82,6 +82,10 @@ void Task::createMenu() {
                   i18n("Task Manager &Settings"),
                   parent_,
                   SLOT(showTaskManagerSettingsDialog()));
+  menu_.addAction(QIcon::fromTheme("configure"),
+                  i18n("Edit &Icon Override Rules"),
+                  parent_,
+                  SLOT(showIconOverrideRulesDialog()));
 }
 
 }  // namespace ksmoothdock

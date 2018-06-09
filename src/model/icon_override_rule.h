@@ -38,6 +38,10 @@ struct IconOverrideRule {
 
   IconOverrideRule() = default;
 
+  IconOverrideRule(const QString& name2, const QString& window_name_regex2,
+                   const QString& icon2)
+      : name(name2), window_name_regex(window_name_regex2), icon(icon2) {}
+
   IconOverrideRule(const QString& s) {
     auto list = s.split(DELIM);
     if (list.size() == 3) {
