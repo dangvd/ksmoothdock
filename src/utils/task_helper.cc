@@ -16,7 +16,7 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "task_utils.h"
+#include "task_helper.h"
 
 #include <algorithm>
 #include <utility>
@@ -29,12 +29,18 @@
 
 namespace ksmoothdock {
 
-std::vector<TaskInfo> loadTasks(
-    int screen, const std::vector<IconOverrideRule>& icon_override_rules) {
+TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
+    : iconOverrideRules_(iconOverrideRules) {
+  currentDesktop_ = KWindowSystem::currentDesktop();
+  connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
+          this, &TaskHelper::onCurrentDesktopChanged);
+}
+
+std::vector<TaskInfo> TaskHelper::loadTasks(int screen) {
   std::vector<TaskInfo> tasks;
   for (const auto wId : KWindowSystem::windows()) {
     if (isValidTask(wId, screen)) {
-      tasks.push_back(getTaskInfo(wId, icon_override_rules));
+      tasks.push_back(getTaskInfo(wId));
     }
   }
 
@@ -42,7 +48,7 @@ std::vector<TaskInfo> loadTasks(
   return std::move(tasks);
 }
 
-bool isValidTask(WId wId) {
+bool TaskHelper::isValidTask(WId wId) {
   if (!KWindowSystem::hasWId(wId)) {
     return false;
   }
@@ -61,7 +67,7 @@ bool isValidTask(WId wId) {
   return true;
 }
 
-bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
+bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly) {
   if (!isValidTask(wId)) {
     return false;
   }
@@ -71,15 +77,14 @@ bool isValidTask(WId wId, int screen, bool currentDesktopOnly) {
   }
 
   KWindowInfo info(wId, NET::WMDesktop);
-  if (currentDesktopOnly && !info.isOnCurrentDesktop()) {
+  if (currentDesktopOnly && info.desktop() != currentDesktop_) {
     return false;
   }
 
   return true;
 }
 
-TaskInfo getTaskInfo(WId wId,
-                     const std::vector<IconOverrideRule>& icon_override_rules) {
+TaskInfo TaskHelper::getTaskInfo(WId wId) {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName, NET::WM2WindowClass);
 
@@ -88,7 +93,7 @@ TaskInfo getTaskInfo(WId wId,
   QPixmap icon;
   QString iconName;
 
-  for (const auto& rule : icon_override_rules) {
+  for (const auto& rule : iconOverrideRules_) {
     if (name.contains(rule.window_name_regex)) {
       iconName = rule.icon;
       break;
@@ -104,7 +109,7 @@ TaskInfo getTaskInfo(WId wId,
   return TaskInfo(wId, program, name, icon);
 }
 
-int getScreen(WId wId) {
+int TaskHelper::getScreen(WId wId) {
   const auto* desktop = QApplication::desktop();
   const auto screenCount = desktop->screenCount();
   if (screenCount == 1) {

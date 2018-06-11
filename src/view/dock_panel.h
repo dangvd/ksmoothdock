@@ -45,6 +45,7 @@
 #include "task_manager_settings_dialog.h"
 #include "tooltip.h"
 #include "wallpaper_settings_dialog.h"
+#include "utils/task_helper.h"
 
 namespace ksmoothdock {
 
@@ -319,6 +320,8 @@ class DockPanel : public QWidget {
   WallpaperSettingsDialog wallpaperSettingsDialog_;
   TaskManagerSettingsDialog taskManagerSettingsDialog_;
   IconOverrideRulesDialog iconOverrideRulesDialog_;
+
+  TaskHelper taskHelper_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;

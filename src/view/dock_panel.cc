@@ -50,7 +50,7 @@
 #include "multi_dock_view.h"
 #include "task.h"
 #include <utils/command_utils.h>
-#include <utils/task_utils.h>
+#include <utils/task_helper.h>
 
 namespace ksmoothdock {
 
@@ -72,6 +72,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       applicationMenuSettingsDialog_(this, model),
       wallpaperSettingsDialog_(this, model),
       iconOverrideRulesDialog_(this, model),
+      taskHelper_(model->iconOverrideRules()),
       isMinimized_(true),
       isResizing_(false),
       isEntering_(false),
@@ -330,7 +331,7 @@ void DockPanel::removeDock() {
 
 void DockPanel::onWindowAdded(WId wId) {
   // TODO
-  if (showTaskManager() && isValidTask(wId, screen_)) {
+  if (showTaskManager() && taskHelper_.isValidTask(wId, screen_)) {
     // Now inserts it.
     addTask(wId);
   }
@@ -346,9 +347,9 @@ void DockPanel::onWindowRemoved(WId wId) {
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
   // TODO
-  if (showTaskManager() && wId != winId() && isValidTask(wId)) {
+  if (showTaskManager() && wId != winId() && taskHelper_.isValidTask(wId)) {
     if (properties & NET::WMDesktop || properties & NET::WMGeometry) {
-      if (isValidTask(wId, screen_)) {
+      if (taskHelper_.isValidTask(wId, screen_)) {
         addTask(wId);
       } else {
         removeTask(wId);
@@ -365,7 +366,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         return false;
       });
       if (taskPosition != end_task()) {
-        TaskInfo taskInfo = getTaskInfo(wId, model_->iconOverrideRules());
+        TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
         (*taskPosition)->setLabel(taskInfo.name);
         auto* task = dynamic_cast<Task*>((*taskPosition).get());
         task->setIcon(taskInfo.icon);
@@ -679,7 +680,7 @@ void DockPanel::initPager() {
 
 void DockPanel::initTasks() {
   if (showTaskManager()) {
-    for (const auto& task : loadTasks(screen_, model_->iconOverrideRules())) {
+    for (const auto& task : taskHelper_.loadTasks(screen_)) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
           task.wId, task.program));
@@ -713,7 +714,7 @@ void DockPanel::addTask(WId wId) {
   }
 
   // Now insert it.
-  const auto taskInfo = getTaskInfo(wId, model_->iconOverrideRules());
+  const auto taskInfo = taskHelper_.getTaskInfo(wId);
   auto newPos = std::find_if(begin_task(), end_task(),
                              [wId, &taskInfo](const auto& item) {
     if (item) {

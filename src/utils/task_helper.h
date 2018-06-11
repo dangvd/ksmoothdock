@@ -16,13 +16,14 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KSMOOTHDOCK_TASK_UTILS_H_
-#define KSMOOTHDOCK_TASK_UTILS_H_
+#ifndef KSMOOTHDOCK_TASK_HELPER_H_
+#define KSMOOTHDOCK_TASK_HELPER_H_
 
 #include <vector>
 
-#include <QString>
+#include <QObject>
 #include <QPixmap>
+#include <QString>
 
 #include "model/icon_override_rule.h"
 
@@ -45,22 +46,39 @@ struct TaskInfo {
   }
 };
 
-// Loads running tasks.
-std::vector<TaskInfo>
-loadTasks(int screen, const std::vector<IconOverrideRule>& icon_override_rules);
+class TaskHelper : public QObject {
+  Q_OBJECT
 
-// Whether the task is valid for showing on the task manager.
-bool isValidTask(WId wId);
+ public:
+  TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules);
 
-// Whether the task is valid for showing on the task manager on specific screen.
-bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true);
+  // Loads running tasks.
+  std::vector<TaskInfo> loadTasks(int screen);
 
-TaskInfo getTaskInfo(WId wId,
-                     const std::vector<IconOverrideRule>& icon_override_rules);
+  // Whether the task is valid for showing on the task manager.
+  bool isValidTask(WId wId);
 
-// Gets the screen that a task is running on.
-int getScreen(WId wId);
+  // Whether the task is valid for showing on the task manager on specific screen.
+  bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true);
+
+  TaskInfo getTaskInfo(WId wId);
+
+  // Gets the screen that a task is running on.
+  int getScreen(WId wId);
+
+ public slots:
+  void onCurrentDesktopChanged(int desktop) {
+    currentDesktop_ = desktop;
+  }
+
+ private:
+  const std::vector<IconOverrideRule>& iconOverrideRules_;
+
+  // KWindowSystem::currentDesktop() is buggy sometimes, for example,
+  // on windowAdded() event, so we store it here ourselves.
+  int currentDesktop_;
+};
 
 }  // namespace ksmoothdock
 
-#endif  // KSMOOTHDOCK_TASK_UTILS_H_
+#endif  // KSMOOTHDOCK_TASK_HELPER_H_

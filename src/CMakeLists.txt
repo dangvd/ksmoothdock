@@ -38,7 +38,7 @@ set(SRCS
     view/task_manager_settings_dialog.cc
     view/tooltip.cc
     view/wallpaper_settings_dialog.cc
-    utils/task_utils.cc
+    utils/task_helper.cc
     utils/wallpaper_helper.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
