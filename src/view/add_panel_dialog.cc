@@ -67,21 +67,23 @@ void AddPanelDialog::setMode(Mode mode) {
 
   ui->showApplicationMenu->setChecked(mode == Mode::Welcome);
   ui->showPager->setChecked(mode == Mode::Welcome);
+  ui->showTaskManager->setChecked(mode == Mode::Welcome);
   ui->showClock->setChecked(mode == Mode::Welcome);
 
   ui->componentsLabel->setVisible(mode != Mode::Clone);
   ui->showApplicationMenu->setVisible(mode != Mode::Clone);
   ui->showLaunchers->setVisible(mode != Mode::Clone);
   ui->showPager->setVisible(mode != Mode::Clone);
+  ui->showTaskManager->setVisible(mode != Mode::Clone);
   ui->showClock->setVisible(mode != Mode::Clone);
 
   const int deltaY = (mode == Mode::Clone) ? 200 : 0;
-  ui->positionLabel->move(40, 275 - deltaY);
-  ui->position->move(290, 265 - deltaY);
-  ui->screenLabel->move(40, 325 - deltaY);
-  ui->screen->move(290, 315 - deltaY);
-  ui->buttonBox->move(20, 380 - deltaY);
-  resize(440, 440 - deltaY);
+  ui->positionLabel->move(40, 315 - deltaY);
+  ui->position->move(290, 305 - deltaY);
+  ui->screenLabel->move(40, 365 - deltaY);
+  ui->screen->move(290, 355 - deltaY);
+  ui->buttonBox->move(20, 420 - deltaY);
+  resize(440, 480 - deltaY);
 
   // Adjust the UI for single/multi-screen.
   if (isSingleScreen_) {
@@ -98,8 +100,10 @@ void AddPanelDialog::accept() {
   if (mode_ == Mode::Clone) {
     model_->cloneDock(dockId_, position, screen);
   } else {
-    model_->addDock(position, screen, ui->showApplicationMenu->isChecked(),
-                    ui->showPager->isChecked(), ui->showClock->isChecked());
+    model_->addDock(
+        position, screen, ui->showApplicationMenu->isChecked(),
+        ui->showPager->isChecked(), ui->showTaskManager->isChecked(),
+        ui->showClock->isChecked());
   }
 }
 

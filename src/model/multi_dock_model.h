@@ -99,10 +99,10 @@ class MultiDockModel : public QObject {
 
   // Adds a new dock in the specified position and screen.
   void addDock(PanelPosition position, int screen, bool showApplicationMenu,
-               bool showPager, bool showClock);
+               bool showPager, bool showTaskManager, bool showClock);
 
   void addDock() {
-    addDock(PanelPosition::Bottom, 0, true, true, true);
+    addDock(PanelPosition::Bottom, 0, true, true, true, true);
   }
 
   // Clones an existing dock in the specified position and screen.
