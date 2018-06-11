@@ -34,6 +34,7 @@ constexpr char MultiDockModel::kScreen[];
 constexpr char MultiDockModel::kShowApplicationMenu[];
 constexpr char MultiDockModel::kShowClock[];
 constexpr char MultiDockModel::kShowPager[];
+constexpr char MultiDockModel::kShowTaskManager[];
 constexpr char MultiDockModel::kVisibility[];
 
 constexpr char MultiDockModel::kBackgroundColor[];

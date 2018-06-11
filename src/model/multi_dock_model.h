@@ -58,6 +58,7 @@ constexpr PanelVisibility kDefaultVisibility = PanelVisibility::AlwaysVisible;
 constexpr bool kDefaultAutoHide = false;
 constexpr bool kDefaultShowApplicationMenu = true;
 constexpr bool kDefaultShowPager = false;
+constexpr bool kDefaultShowTaskManager = false;
 constexpr bool kDefaultShowClock = false;
 
 constexpr char kDefaultApplicationMenuName[] = "Applications";
@@ -308,9 +309,13 @@ class MultiDockModel : public QObject {
     setDockProperty(dockId, kGeneralCategory, kShowPager, value);
   }
 
-  bool showTasks(int dockId) const {
-    // TODO(dangvd)
-    return panelPosition(dockId) == PanelPosition::Bottom;
+  bool showTaskManager(int dockId) const {
+    return dockProperty(dockId, kGeneralCategory, kShowTaskManager,
+                        kDefaultShowTaskManager);
+  }
+
+  void setShowTaskManager(int dockId, bool value) {
+    setDockProperty(dockId, kGeneralCategory, kShowTaskManager, value);
   }
 
   bool showClock(int dockId) const {
@@ -382,6 +387,7 @@ class MultiDockModel : public QObject {
   static constexpr char kShowApplicationMenu[] = "showApplicationMenu";
   static constexpr char kShowClock[] = "showClock";
   static constexpr char kShowPager[] = "showPager";
+  static constexpr char kShowTaskManager[] = "showTaskManager";
 
   // Global appearance config's categories/properties.
 

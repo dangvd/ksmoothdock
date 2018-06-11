@@ -114,6 +114,12 @@ class DockPanel : public QWidget {
     }
   }
 
+  void toggleTaskManager() {
+    model_->setShowTaskManager(dockId_, taskManagerAction_->isChecked());
+    reload();
+    saveDockConfig();
+  }
+
   void toggleClock() {
     showClock_ = !showClock_;
     reload();
@@ -205,7 +211,7 @@ class DockPanel : public QWidget {
     return items_.end() - clockItemCount();
   }
 
-  bool showTaskManager() { return model_->showTasks(dockId_); }
+  bool showTaskManager() { return model_->showTaskManager(dockId_); }
 
   void initUi();
 
@@ -308,6 +314,7 @@ class DockPanel : public QWidget {
   QAction* applicationMenuAction_;
   QAction* applicationMenuSettings_;
   QAction* pagerAction_;
+  QAction* taskManagerAction_;
   QAction* clockAction_;
   // Actions to set the dock on a specific screen.
   std::vector<QAction*> screenActions_;

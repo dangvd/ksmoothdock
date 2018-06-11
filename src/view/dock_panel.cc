@@ -568,6 +568,9 @@ void DockPanel::createMenu() {
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
   pagerAction_->setCheckable(true);
+  taskManagerAction_ = extraComponents->addAction(i18n("Task Manager"), this,
+      SLOT(toggleTaskManager()));
+  taskManagerAction_->setCheckable(true);
   clockAction_ = extraComponents->addAction(i18n("Clock"), this,
       SLOT(toggleClock()));
   clockAction_->setCheckable(true);
@@ -630,6 +633,8 @@ void DockPanel::loadDockConfig() {
   showPager_ = model_->showPager(dockId_);
   pagerAction_->setChecked(showPager_);
 
+  taskManagerAction_->setChecked(model_->showTaskManager(dockId_));
+
   showClock_ = model_->showClock(dockId_);
   clockAction_->setChecked(showClock_);
 }
@@ -640,6 +645,7 @@ void DockPanel::saveDockConfig() {
   model_->setVisibility(dockId_, visibility_);
   model_->setShowApplicationMenu(dockId_, showApplicationMenu_);
   model_->setShowPager(dockId_, showPager_);
+  model_->setShowTaskManager(dockId_, taskManagerAction_->isChecked());
   model_->setShowClock(dockId_, showClock_);
   model_->saveDockConfig(dockId_);
 }
