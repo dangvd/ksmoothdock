@@ -76,9 +76,11 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly) {
     return false;
   }
 
-  KWindowInfo info(wId, NET::WMDesktop);
-  if (currentDesktopOnly && info.desktop() != currentDesktop_) {
-    return false;
+  if (currentDesktopOnly) {
+    KWindowInfo info(wId, NET::WMDesktop);
+    if (info.desktop() != currentDesktop_ && !info.onAllDesktops()) {
+      return false;
+    }
   }
 
   return true;
