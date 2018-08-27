@@ -416,6 +416,17 @@ void DockPanel::paintEvent(QPaintEvent* e) {
 }
 
 void DockPanel::mouseMoveEvent(QMouseEvent* e) {
+  if (isEntering_) {
+    // Don't do the parabolic zooming if the mouse is near the border.
+    // Quite often the user was just scrolling a window etc.
+    if ((position_ == PanelPosition::Bottom && e->y() < itemSpacing_ / 2) ||
+        (position_ == PanelPosition::Top && e->y() > height() - itemSpacing_ / 2) ||
+        (position_ == PanelPosition::Left && e->x() > width() - itemSpacing_ / 2) ||
+        (position_ == PanelPosition::Right && e->x() < itemSpacing_ / 2)) {
+      return;
+    }
+  }
+
   if (isAnimationActive_) {
     return;
   }
