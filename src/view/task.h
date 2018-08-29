@@ -55,7 +55,7 @@ class Task : public QObject, public IconBasedDockItem {
 
   void draw(QPainter* painter) const override;
 
-  virtual void mousePressEvent(QMouseEvent* e) override;
+  void mousePressEvent(QMouseEvent* e) override;
 
  public slots:
   void minimize();

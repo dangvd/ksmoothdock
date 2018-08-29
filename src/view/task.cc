@@ -23,6 +23,8 @@
 
 #include "dock_panel.h"
 
+#include <utils/draw_utils.h>
+
 namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
@@ -38,23 +40,18 @@ Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
 }
 
 void Task::draw(QPainter *painter) const {
-  painter->setRenderHint(QPainter::Antialiasing);
-  QColor fillColor;
-  QPainterPath path;
   if (active()) {
-    fillColor = model_->backgroundColor().lighter(300);
-    fillColor.setAlphaF(0.42);
-    path.addRoundedRect(
-        QRect(left_ - 5, top_ - 5, getWidth() + 10, getHeight() + 10),
-        size_ / 8, size_ / 8);
+    drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
+                        5, size_ / 8, painter);
   } else {
-    fillColor = model_->borderColor().lighter(300);
+    painter->setRenderHint(QPainter::Antialiasing);
+    QColor fillColor = model_->borderColor().lighter(300);
     fillColor.setAlphaF(0.8);
-    path.addRoundedRect(QRect(left_, top_ + getHeight() + 2, getWidth(), 3),
-                        2, 2);
+    QPainterPath path;
+    path.addRoundedRect(QRect(left_, top_ + getHeight() + 2, getWidth(), 3), 2, 2);
+    painter->fillPath(path, QBrush(fillColor));
+    painter->setRenderHint(QPainter::Antialiasing, false);
   }
-  painter->fillPath(path, QBrush(fillColor));
-  painter->setRenderHint(QPainter::Antialiasing, false);
 
   IconBasedDockItem::draw(painter);
 }

@@ -27,14 +27,26 @@
 #include <KMessageBox>
 #include <KWindowSystem>
 
+#include <utils/draw_utils.h>
+
 namespace ksmoothdock {
 
-Launcher::Launcher(DockPanel* parent, const QString& label,
+Launcher::Launcher(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
     int maxSize, const QString& command)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize,
-          maxSize), 
-      command_(command) {}
+          maxSize),
+      model_(model),
+      command_(command),
+      launching_(false) {}
+
+void Launcher::draw(QPainter *painter) const {
+  if (launching_) {
+    drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
+                        5, size_ / 8, painter);
+  }
+  IconBasedDockItem::draw(painter);
+}
 
 void Launcher::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.

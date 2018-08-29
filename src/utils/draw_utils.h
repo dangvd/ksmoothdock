@@ -19,8 +19,11 @@
 #ifndef KSMOOTHDOCK_DRAW_UTILS_H_
 #define KSMOOTHDOCK_DRAW_UTILS_H_
 
+#include <QBrush>
 #include <QColor>
 #include <QPainter>
+#include <QPainterPath>
+#include <QRect>
 #include <QString>
 
 namespace ksmoothdock {
@@ -52,6 +55,19 @@ inline void drawBorderedText(int x, int y, int width, int height, int flags,
 
   painter->setPen(textColor);
   painter->drawText(x, y, width, height, flags, text);
+}
+
+inline void drawHighlightedIcon(QColor bgColor, int left, int top, int width, int height,
+                                int padding, int roundedRectRadius, QPainter* painter) {
+  painter->setRenderHint(QPainter::Antialiasing);
+  QColor fillColor = bgColor.lighter(300);
+  fillColor.setAlphaF(0.42);
+  QPainterPath path;
+  path.addRoundedRect(
+      QRect(left - padding, top - padding, width + 2 * padding, height + 2 * padding),
+      roundedRectRadius, roundedRectRadius);
+  painter->fillPath(path, QBrush(fillColor));
+  painter->setRenderHint(QPainter::Antialiasing, false);
 }
 
 }  // namespace ksmoothdock

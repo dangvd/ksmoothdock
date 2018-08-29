@@ -21,13 +21,14 @@
 
 #include "icon_based_dock_item.h"
 
+#include <model/multi_dock_model.h>
 #include <utils/command_utils.h>
 
 namespace ksmoothdock {
 
 class Launcher : public IconBasedDockItem {
  public:
-  Launcher(DockPanel* parent, const QString& label,
+  Launcher(DockPanel* parent, MultiDockModel* model, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
       int maxSize, const QString& command);
 
@@ -35,13 +36,19 @@ class Launcher : public IconBasedDockItem {
 
   QString command() const { return command_; }
 
-  virtual void mousePressEvent(QMouseEvent* e) override;
+  void setLaunching(bool launching) { launching_ = launching; }
+
+  void draw(QPainter* painter) const override;
+
+  void mousePressEvent(QMouseEvent* e) override;
 
   static void launch(const QString& command);
   static void lockScreen() { launch(kLockScreenCommand); }
 
  private:
+  MultiDockModel* model_;
   QString command_;
+  bool launching_;
 
   friend class DockPanel;
 };

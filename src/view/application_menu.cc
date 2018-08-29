@@ -35,6 +35,7 @@
 #include "dock_panel.h"
 #include "launcher.h"
 #include <utils/command_utils.h>
+#include <utils/draw_utils.h>
 
 namespace ksmoothdock {
 
@@ -132,20 +133,9 @@ ApplicationMenu::ApplicationMenu(
 
 void ApplicationMenu::draw(QPainter* painter) const {
   if (showingMenu_) {
-    painter->setRenderHint(QPainter::Antialiasing);
-    QColor fillColor;
-    QPainterPath path;
-    fillColor = model_->backgroundColor().lighter(300);
-    fillColor.setAlphaF(0.42);
-    const int spacing = minSize_ / 4 - 4;
-    path.addRoundedRect(
-        QRect(left_ - spacing, top_ - spacing, getWidth() + 2 * spacing,
-              getHeight() + 2 * spacing),
-        size_ / 8, size_ / 8);
-    painter->fillPath(path, QBrush(fillColor));
-    painter->setRenderHint(QPainter::Antialiasing, false);
+    drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
+                        minSize_ / 4 - 4, size_ / 8, painter);
   }
-
   IconBasedDockItem::draw(painter);
 }
 

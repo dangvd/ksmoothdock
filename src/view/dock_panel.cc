@@ -462,6 +462,12 @@ void DockPanel::mousePressEvent(QMouseEvent* e) {
          !isCommandDBus(launcher->command())) {
         // Acknowledge launching the program.
         showWaitCursor();
+        launcher->setLaunching(true);
+        update();
+        QTimer::singleShot(500, [this, launcher]() {
+          launcher->setLaunching(false);
+          update();
+        });
       }
       items_[i]->mousePressEvent(e);
     }
@@ -673,7 +679,7 @@ void DockPanel::loadAppearanceConfig() {
 void DockPanel::initLaunchers() {
   for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
     items_.push_back(std::make_unique<Launcher>(
-        this, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
+        this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
         maxSize_, launcherConfig.command));
   }
 }
