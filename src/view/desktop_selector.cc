@@ -57,8 +57,8 @@ void DesktopSelector::draw(QPainter* painter) const {
     IconBasedDockItem::draw(painter);
   } else {
     // Draw rectangles with desktop numbers if no custom wallpapers set.
-    const auto bgColor = model_->backgroundColor();
-    const QColor fillColor = bgColor.lighter();
+    QColor fillColor = model_->backgroundColor().lighter();
+    fillColor.setAlphaF(0.42);
     painter->fillRect(left_, top_, getWidth(), getHeight(), QBrush(fillColor));
   }
 
