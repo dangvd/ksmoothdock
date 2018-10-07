@@ -71,6 +71,7 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       editLaunchersDialog_(this, model, dockId),
       applicationMenuSettingsDialog_(this, model),
       wallpaperSettingsDialog_(this, model),
+      taskManagerSettingsDialog_(this, model),
       iconOverrideRulesDialog_(this, model),
       taskHelper_(model->iconOverrideRules()),
       isMinimized_(true),
@@ -703,7 +704,8 @@ void DockPanel::initPager() {
 
 void DockPanel::initTasks() {
   if (showTaskManager()) {
-    for (const auto& task : taskHelper_.loadTasks(screen_)) {
+    auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
+    for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
           task.wId, task.program));

@@ -19,16 +19,62 @@
 #include "task_manager_settings_dialog.h"
 #include "ui_task_manager_settings_dialog.h"
 
+#include <QApplication>
+#include <QDesktopWidget>
+
 namespace ksmoothdock {
 
-TaskManagerSettingsDialog::TaskManagerSettingsDialog(QWidget *parent) :
+TaskManagerSettingsDialog::TaskManagerSettingsDialog(QWidget* parent, MultiDockModel* model) :
   QDialog(parent),
-  ui(new Ui::TaskManagerSettingsDialog) {
+  ui(new Ui::TaskManagerSettingsDialog),
+  model_(model),
+  isSingleScreen_(true) {
   ui->setupUi(this);
+
+  // Adjust the UI for single/multi-screen.
+  isSingleScreen_ = (QApplication::desktop()->screenCount() == 1);
+  ui->showCurrentScreenOnly->setVisible(!isSingleScreen_);
+  if (isSingleScreen_) {
+    ui->sortLabel->move(40, 180);
+    ui->sortProgramName->move(80, 220);
+    ui->buttonBox->move(40, 320);
+    resize(600, 380);
+  }
+  connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
+      this, SLOT(buttonClicked(QAbstractButton*)));
+
+  loadData();
 }
 
 TaskManagerSettingsDialog::~TaskManagerSettingsDialog() {
   delete ui;
+}
+
+void TaskManagerSettingsDialog::accept() {
+  QDialog::accept();
+  saveData();
+}
+
+void TaskManagerSettingsDialog::buttonClicked(QAbstractButton* button) {
+  auto role = ui->buttonBox->buttonRole(button);
+  if (role == QDialogButtonBox::ApplyRole) {
+    saveData();
+  }
+}
+
+void TaskManagerSettingsDialog::loadData() {
+  ui->showCurrentDesktopOnly->setChecked(model_->currentDesktopTasksOnly());
+  if (!isSingleScreen_) {
+    ui->showCurrentScreenOnly->setChecked(model_->currentScreenTasksOnly());
+  }
+}
+
+void TaskManagerSettingsDialog::saveData() {
+  model_->setCurrentDesktopTasksOnly(ui->showCurrentDesktopOnly->isChecked());
+  if (!isSingleScreen_) {
+    model_->setCurrentScreenTasksOnly(ui->showCurrentScreenOnly->isChecked());
+  }
+  model_->saveAppearanceConfig();
 }
 
 }  // namespace ksmoothdock

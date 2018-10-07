@@ -36,10 +36,10 @@ TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
           this, &TaskHelper::onCurrentDesktopChanged);
 }
 
-std::vector<TaskInfo> TaskHelper::loadTasks(int screen) {
+std::vector<TaskInfo> TaskHelper::loadTasks(int screen, bool currentDesktopOnly) {
   std::vector<TaskInfo> tasks;
   for (const auto wId : KWindowSystem::windows()) {
-    if (isValidTask(wId, screen)) {
+    if (isValidTask(wId, screen, currentDesktopOnly)) {
       tasks.push_back(getTaskInfo(wId));
     }
   }
@@ -72,7 +72,7 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly) {
     return false;
   }
 
-  if (getScreen(wId) != screen) {
+  if (screen >= 0 && getScreen(wId) != screen) {
     return false;
   }
 

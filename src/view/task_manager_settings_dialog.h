@@ -19,7 +19,10 @@
 #ifndef KSMOOTHDOCK_TASK_MANAGER_SETTINGS_DIALOG_H_
 #define KSMOOTHDOCK_TASK_MANAGER_SETTINGS_DIALOG_H_
 
+#include <QAbstractButton>
 #include <QDialog>
+
+#include <model/multi_dock_model.h>
 
 namespace Ui {
   class TaskManagerSettingsDialog;
@@ -30,12 +33,23 @@ namespace ksmoothdock {
 class TaskManagerSettingsDialog : public QDialog {
   Q_OBJECT
 
-public:
-  explicit TaskManagerSettingsDialog(QWidget *parent = 0);
+ public:
+  explicit TaskManagerSettingsDialog(QWidget* parent, MultiDockModel* model);
   ~TaskManagerSettingsDialog();
 
-private:
+ public slots:
+  void accept() override;
+  void buttonClicked(QAbstractButton* button);
+
+ private:
+  void loadData();
+  void saveData();
+
   Ui::TaskManagerSettingsDialog *ui;
+
+  MultiDockModel* model_;
+
+  bool isSingleScreen_;
 };
 
 }  // namespace ksmoothdock

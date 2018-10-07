@@ -53,7 +53,10 @@ class TaskHelper : public QObject {
   TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules);
 
   // Loads running tasks.
-  std::vector<TaskInfo> loadTasks(int screen);
+  //
+  // Args:
+  //   screen: screen index to load, or -1 if loading for all screens.
+  std::vector<TaskInfo> loadTasks(int screen, bool currentDesktopOnly);
 
   // Whether the task is valid for showing on the task manager.
   bool isValidTask(WId wId);

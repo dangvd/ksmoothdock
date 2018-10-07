@@ -65,6 +65,8 @@ constexpr char kDefaultApplicationMenuName[] = "Applications";
 constexpr char kDefaultApplicationMenuIcon[] = "start-here-kde";
 constexpr bool kDefaultApplicationMenuStrut = true;
 constexpr bool kDefaultShowDesktopNumber = true;
+constexpr bool kDefaultCurrentDesktopTasksOnly = true;
+constexpr bool kDefaultCurrentScreenTasksOnly = false;
 constexpr bool kDefaultUse24HourClock = true;
 constexpr float kDefaultClockFontScaleFactor = kLargeClockFontScaleFactor;
 
@@ -219,6 +221,24 @@ class MultiDockModel : public QObject {
 
   void setShowDesktopNumber(bool value) {
     setAppearanceProperty(kPagerCategory, kShowDesktopNumber, value);
+  }
+
+  bool currentDesktopTasksOnly() const {
+    return appearanceProperty(kTaskManagerCategory, kCurrentDesktopTasksOnly,
+                              kDefaultCurrentDesktopTasksOnly);
+  }
+
+  void setCurrentDesktopTasksOnly(bool value) {
+    setAppearanceProperty(kTaskManagerCategory, kCurrentDesktopTasksOnly, value);
+  }
+
+  bool currentScreenTasksOnly() const {
+    return appearanceProperty(kTaskManagerCategory, kCurrentScreenTasksOnly,
+                              kDefaultCurrentScreenTasksOnly);
+  }
+
+  void setCurrentScreenTasksOnly(bool value) {
+    setAppearanceProperty(kTaskManagerCategory, kCurrentScreenTasksOnly, value);
   }
 
   bool use24HourClock() const {
@@ -407,6 +427,10 @@ class MultiDockModel : public QObject {
   static constexpr char kPagerCategory[] = "Pager";
   static constexpr char kWallpaper[] = "wallpaper";
   static constexpr char kShowDesktopNumber[] = "showDesktopNumber";
+
+  static constexpr char kTaskManagerCategory[] = "TaskManager";
+  static constexpr char kCurrentDesktopTasksOnly[] = "currentDesktopTasksOnly";
+  static constexpr char kCurrentScreenTasksOnly[] = "currentScreenTasksOnly";
 
   static constexpr char kClockCategory[] = "Clock";
   static constexpr char kUse24HourClock[] = "use24HourClock";
