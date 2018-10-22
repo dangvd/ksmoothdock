@@ -75,11 +75,6 @@ IconOverrideRulesDialog::IconOverrideRulesDialog(
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
       this,
       SLOT(refreshSelectedRule(QListWidgetItem*, QListWidgetItem*)));
-  connect(
-      rules_,
-      SIGNAL(currentRowChanged(int)),
-      this,
-      SLOT(resetRulePresets()));
   rules_->setSelectionMode(QAbstractItemView::SingleSelection);
   rules_->setDragEnabled(true);
   rules_->setAcceptDrops(true);
@@ -90,8 +85,6 @@ IconOverrideRulesDialog::IconOverrideRulesDialog(
   connect(ui->remove, SIGNAL(clicked()), this, SLOT(removeSelectedRule()));
   connect(ui->removeAll, SIGNAL(clicked()), this, SLOT(removeAllRules()));
   connect(ui->update, SIGNAL(clicked()), this, SLOT(updateSelectedRule()));
-  connect(ui->windowNameRegex, SIGNAL(textEdited(const QString&)),
-      this, SLOT(resetRuleLists()));
 
   icon_ = new KIconButton(this);
   icon_->setGeometry(QRect(820, 390, 80, 80));
@@ -140,7 +133,6 @@ void IconOverrideRulesDialog::refreshSelectedRule(QListWidgetItem* current,
 
 void IconOverrideRulesDialog::addRule() {
   addRule(i18n("New rule"), "", "", "xorg");
-  resetRulePresets();
 }
 
 void IconOverrideRulesDialog::removeSelectedRule() {
@@ -163,11 +155,6 @@ void IconOverrideRulesDialog::updateSelectedRule() {
     item->setData(Qt::UserRole, QVariant::fromValue(
         RuleInfo(ui->program->text(), ui->windowNameRegex->text(), icon_->icon())));
   }
-}
-
-void IconOverrideRulesDialog::resetRulePresets() {
-  // TODO: consider adding presets/templates?
-  //ui->rulePresets->setCurrentIndex(0);
 }
 
 void IconOverrideRulesDialog::loadData() {

@@ -90,8 +90,6 @@ class IconOverrideRulesDialog : public QDialog {
   void removeAllRules();
   void updateSelectedRule();
 
-  void resetRulePresets();
-
  private:
   static constexpr int kListIconSize = 48;
 
