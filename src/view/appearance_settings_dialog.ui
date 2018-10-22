@@ -106,7 +106,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Background opacity</string>
+    <string>Panel opacity</string>
    </property>
   </widget>
   <widget class="QDoubleSpinBox" name="backgroundAlpha">
@@ -143,12 +143,12 @@
     <rect>
      <x>40</x>
      <y>150</y>
-     <width>181</width>
+     <width>261</width>
      <height>29</height>
     </rect>
    </property>
    <property name="text">
-    <string>Show border</string>
+    <string>Show panel border</string>
    </property>
   </widget>
   <widget class="QLabel" name="borderColorLabel">

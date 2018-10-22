@@ -46,9 +46,9 @@ enum class PanelVisibility { AlwaysVisible, AutoHide, WindowsCanCover,
 constexpr int kDefaultMinSize = 48;
 constexpr int kDefaultMaxSize = 128;
 constexpr int kDefaultTooltipFontSize = 20;
-constexpr float kDefaultBackgroundAlpha = 0.42;
+constexpr float kDefaultBackgroundAlpha = 0.0;
 constexpr char kDefaultBackgroundColor[] = "#638abd";
-constexpr bool kDefaultShowBorder = true;
+constexpr bool kDefaultShowBorder = false;
 constexpr char kDefaultBorderColor[] = "#b1c4de";
 constexpr float kLargeClockFontScaleFactor = 1.0;
 constexpr float kMediumClockFontScaleFactor = 0.8;
