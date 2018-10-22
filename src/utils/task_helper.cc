@@ -19,6 +19,7 @@
 #include "task_helper.h"
 
 #include <algorithm>
+#include <regex>
 #include <utility>
 
 #include <QApplication>
@@ -96,11 +97,24 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) {
   QString iconName;
 
   for (const auto& rule : iconOverrideRules_) {
-    if (name.contains(rule.window_name_regex)) {
-      iconName = rule.icon;
-      break;
+    if (rule.program.isEmpty() || program == rule.program) {
+      // Check substring matching.
+      if (name.contains(rule.window_name_regex)) {
+        iconName = rule.icon;
+        break;
+      }
+
+      // Check regex matching.
+      std::regex re(rule.window_name_regex.toStdString());
+      std::smatch m;
+      std::string sname(name.toStdString());
+      if (std::regex_match(sname, m, re)) {
+        iconName = rule.icon;
+        break;
+      }
     }
   }
+
   if (!iconName.isEmpty()) {
     icon = KIconLoader::global()->loadIcon(iconName,
                                            KIconLoader::NoGroup, kIconLoadSize);

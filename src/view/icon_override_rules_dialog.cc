@@ -94,7 +94,7 @@ IconOverrideRulesDialog::IconOverrideRulesDialog(
       this, SLOT(resetRuleLists()));
 
   icon_ = new KIconButton(this);
-  icon_->setGeometry(QRect(800, 390, 80, 80));
+  icon_->setGeometry(QRect(820, 390, 80, 80));
 
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));

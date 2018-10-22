@@ -99,7 +99,7 @@
   <widget class="QLineEdit" name="name">
    <property name="geometry">
     <rect>
-     <x>819</x>
+     <x>820</x>
      <y>20</y>
      <width>381</width>
      <height>36</height>
@@ -122,7 +122,7 @@
   <widget class="QLineEdit" name="windowNameRegex">
    <property name="geometry">
     <rect>
-     <x>819</x>
+     <x>820</x>
      <y>200</y>
      <width>381</width>
      <height>36</height>
@@ -192,7 +192,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Leave empty to match anything</string>
+    <string>Leave empty to match any program</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -201,11 +201,11 @@
      <x>820</x>
      <y>240</y>
      <width>381</width>
-     <height>24</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Leave empty to match anything</string>
+    <string>Supports sub-string and regular expression</string>
    </property>
   </widget>
  </widget>
