@@ -30,8 +30,6 @@
 namespace ksmoothdock {
 
 constexpr int kDockId = 1;
-constexpr int kScreen = 0;
-constexpr int kDefaultLauncherCount = 7;
 
 class DockPanelTest: public QObject {
   Q_OBJECT

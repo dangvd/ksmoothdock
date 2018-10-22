@@ -340,7 +340,7 @@ void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
 
 void ApplicationMenu::addEntry(const ApplicationEntry &entry, QMenu *menu) {
   QAction* action = menu->addAction(loadIcon(entry.icon), entry.name, this,
-                  [this, &entry]() {
+                  [&entry]() {
                     Launcher::launch(entry.command);
                   });
   action->setData(entry.desktopFile);

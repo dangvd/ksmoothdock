@@ -59,14 +59,11 @@ class IconOverrideRulesDialog;
 
 class RuleList : public QListWidget {
  public:
-  explicit RuleList(IconOverrideRulesDialog* parent);
+  RuleList(IconOverrideRulesDialog* parent);
 
  protected:
   void dragEnterEvent(QDragEnterEvent *event) override;
   void dragMoveEvent(QDragMoveEvent* event) override;
-
- private:
-  IconOverrideRulesDialog* parent_;
 };
 
 class IconOverrideRulesDialog : public QDialog {

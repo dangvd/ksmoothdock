@@ -220,7 +220,7 @@ std::vector<LauncherConfig> MultiDockModel::loadDockLaunchers(
     launchers.push_back(LauncherConfig(desktopFile));
   }
 
-  return std::move(launchers);
+  return launchers;
 }
 
 std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
@@ -243,7 +243,7 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
         LauncherConfig(kItems[i][0], kItems[i][1], kItems[i][2]));
   }
 
-  return std::move(launchers);
+  return launchers;
 }
 
 void MultiDockModel::loadIconOverrideRules() {

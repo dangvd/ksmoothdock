@@ -42,7 +42,7 @@ QDataStream &operator>>(QDataStream &in, RuleInfo& rule) {
 }
 
 RuleList::RuleList(IconOverrideRulesDialog* parent)
-    : QListWidget(parent), parent_(parent) {}
+    : QListWidget(parent) {}
 
 void RuleList::dragEnterEvent(QDragEnterEvent *event) {
   // Internal drag-and-drop.

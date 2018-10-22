@@ -28,7 +28,6 @@
 namespace ksmoothdock {
 
 constexpr int kDockId = 1;
-constexpr int kScreen = 0;
 
 class AddPanelDialogTest: public QObject {
   Q_OBJECT

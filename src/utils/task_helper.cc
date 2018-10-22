@@ -46,7 +46,7 @@ std::vector<TaskInfo> TaskHelper::loadTasks(int screen, bool currentDesktopOnly)
   }
 
   std::stable_sort(tasks.begin(), tasks.end());
-  return std::move(tasks);
+  return tasks;
 }
 
 bool TaskHelper::isValidTask(WId wId) {
