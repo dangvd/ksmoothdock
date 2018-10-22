@@ -55,6 +55,7 @@
 namespace ksmoothdock {
 
 const int DockPanel::kTooltipSpacing;
+const int DockPanel::kAutoHideSize;
 
 DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
     : QWidget(),
@@ -417,7 +418,7 @@ void DockPanel::paintEvent(QPaintEvent* e) {
 }
 
 void DockPanel::mouseMoveEvent(QMouseEvent* e) {
-  if (isEntering_) {
+  if (isEntering_ && !autoHide()) {
     // Don't do the parabolic zooming if the mouse is near the border.
     // Quite often the user was just scrolling a window etc.
     if ((position_ == PanelPosition::Bottom && e->y() < itemSpacing_ / 2) ||
@@ -817,7 +818,7 @@ void DockPanel::initLayoutVars() {
     for (const auto& item : items_) {
       minWidth_ += (item->getMinWidth() + itemSpacing_);
     }
-    minHeight_ = autoHide() ? 1 : distance;
+    minHeight_ = autoHide() ? kAutoHideSize : distance;
     maxWidth_ = minWidth_ + delta;
     maxHeight_ = itemSpacing_ + maxSize_;
   } else {  // Vertical
@@ -825,7 +826,7 @@ void DockPanel::initLayoutVars() {
     for (const auto& item : items_) {
       minHeight_ += (item->getMinHeight() + itemSpacing_);
     }
-    minWidth_ = autoHide() ? 1 : distance;
+    minWidth_ = autoHide() ? kAutoHideSize : distance;
     maxHeight_ = minHeight_ + delta;
     maxWidth_ = itemSpacing_ + maxSize_;
   }
@@ -893,12 +894,12 @@ void DockPanel::updateLayout() {
     if (isHorizontal()) {
       endBackgroundWidth_ = minWidth_;
       backgroundWidth_ = startBackgroundWidth_;
-      endBackgroundHeight_ = autoHide() ? 1 : distance;
+      endBackgroundHeight_ = autoHide() ? kAutoHideSize : distance;
       backgroundHeight_ = startBackgroundHeight_;
     } else {  // Vertical
       endBackgroundHeight_ = minHeight_;
       backgroundHeight_ = startBackgroundHeight_;
-      endBackgroundWidth_ = autoHide() ? 1 : distance;
+      endBackgroundWidth_ = autoHide() ? kAutoHideSize : distance;
       backgroundWidth_ = startBackgroundWidth_;
     }
     currentAnimationStep_ = 0;
@@ -934,10 +935,10 @@ void DockPanel::updateLayout(int x, int y) {
     }
     if (isHorizontal()) {
       startBackgroundWidth_ = minWidth_;
-      startBackgroundHeight_ = autoHide() ? 1 : distance;
+      startBackgroundHeight_ = autoHide() ? kAutoHideSize : distance;
     } else {  // Vertical
       startBackgroundHeight_ = minHeight_;
-      startBackgroundWidth_ = autoHide() ? 1 : distance;
+      startBackgroundWidth_ = autoHide() ? kAutoHideSize : distance;
     }
   }
 
