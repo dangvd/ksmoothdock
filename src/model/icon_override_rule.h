@@ -33,26 +33,28 @@ struct IconOverrideRule {
   static constexpr char DELIM = '\t';
 
   QString name;
+  QString program;
   QString window_name_regex;
   QString icon;
 
   IconOverrideRule() = default;
 
-  IconOverrideRule(const QString& name2, const QString& window_name_regex2,
+  IconOverrideRule(const QString& name2, const QString& program2, const QString& window_name_regex2,
                    const QString& icon2)
-      : name(name2), window_name_regex(window_name_regex2), icon(icon2) {}
+      : name(name2), program(program2), window_name_regex(window_name_regex2), icon(icon2) {}
 
   IconOverrideRule(const QString& s) {
     auto list = s.split(DELIM);
-    if (list.size() == 3) {
+    if (list.size() == 4) {
       name = list[0];
-      window_name_regex = list[1];
-      icon = list[2];
+      program = list[1];
+      window_name_regex = list[2];
+      icon = list[3];
     }
   }
 
   QString toString() const {
-    return name + DELIM + window_name_regex + DELIM + icon;
+    return name + DELIM + program + DELIM + window_name_regex + DELIM + icon;
   }
 };
 

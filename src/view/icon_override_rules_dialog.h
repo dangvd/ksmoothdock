@@ -43,12 +43,13 @@ namespace ksmoothdock {
 // User data for the items in QListWidget/QComboBox.
 struct RuleInfo {
   // The name(label) is already stored as item text in QListWidget/QComboBox.
-  QString icon;
+  QString program;
   QString window_name_regex;
+  QString icon;
 
   RuleInfo() {}
-  RuleInfo(QString icon2, QString window_name_regex2)
-      : icon(icon2), window_name_regex(window_name_regex2) {}
+  RuleInfo(const QString& program2, const QString& window_name_regex2, const QString& icon2)
+      : program(program2), window_name_regex(window_name_regex2), icon(icon2) {}
 };
 
 QDataStream &operator<<(QDataStream &out, const RuleInfo& rule);
@@ -77,7 +78,7 @@ class IconOverrideRulesDialog : public QDialog {
 
   void reload() { loadData(); }
 
-  void addRule(const QString& name, const QString& window_name_regex,
+  void addRule(const QString& name, const QString& program, const QString& window_name_regex,
       const QString& icon);
 
  public slots:

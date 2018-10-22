@@ -32,26 +32,10 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLabel" name="launchersNote">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>475</y>
-     <width>351</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Note: &lt;a href=https://github.com/dangvd/ksmoothdock/wiki/Documentation#editLaunchers_dragAndDrop&gt;Drag and drop&lt;/a&gt; is supported.</string>
-   </property>
-   <property name="textFormat">
-    <enum>Qt::RichText</enum>
-   </property>
-  </widget>
   <widget class="QPushButton" name="add">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>410</x>
      <y>80</y>
      <width>141</width>
      <height>38</height>
@@ -68,7 +52,7 @@
   <widget class="QPushButton" name="remove">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>410</x>
      <y>150</y>
      <width>141</width>
      <height>38</height>
@@ -85,7 +69,7 @@
   <widget class="QPushButton" name="update">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>410</x>
      <y>290</y>
      <width>141</width>
      <height>38</height>
@@ -102,22 +86,22 @@
   <widget class="QLabel" name="nameLabel">
    <property name="geometry">
     <rect>
-     <x>570</x>
+     <x>590</x>
      <y>30</y>
-     <width>81</width>
+     <width>211</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>Name</string>
+    <string>Rule Name</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="name">
    <property name="geometry">
     <rect>
-     <x>800</x>
+     <x>819</x>
      <y>20</y>
-     <width>400</width>
+     <width>381</width>
      <height>36</height>
     </rect>
    </property>
@@ -125,8 +109,8 @@
   <widget class="QLabel" name="windowNameLabel">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>110</y>
+     <x>590</x>
+     <y>210</y>
      <width>221</width>
      <height>23</height>
     </rect>
@@ -138,19 +122,9 @@
   <widget class="QLineEdit" name="windowNameRegex">
    <property name="geometry">
     <rect>
-     <x>800</x>
-     <y>100</y>
-     <width>400</width>
-     <height>36</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="rulePresets">
-   <property name="geometry">
-    <rect>
-     <x>800</x>
-     <y>215</y>
-     <width>350</width>
+     <x>819</x>
+     <y>200</y>
+     <width>381</width>
      <height>36</height>
     </rect>
    </property>
@@ -158,9 +132,9 @@
   <widget class="QLabel" name="iconLabel">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>418</y>
-     <width>72</width>
+     <x>590</x>
+     <y>410</y>
+     <width>131</width>
      <height>23</height>
     </rect>
    </property>
@@ -171,7 +145,7 @@
   <widget class="QPushButton" name="removeAll">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>410</x>
      <y>220</y>
      <width>141</width>
      <height>38</height>
@@ -183,6 +157,55 @@
    <property name="icon">
     <iconset theme="edit-delete">
      <normaloff>.</normaloff>.</iconset>
+   </property>
+  </widget>
+  <widget class="QLabel" name="programLabel">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>120</y>
+     <width>211</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Program Name</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="program">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>110</y>
+     <width>381</width>
+     <height>36</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>150</y>
+     <width>381</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Leave empty to match anything</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>240</y>
+     <width>381</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Leave empty to match anything</string>
    </property>
   </widget>
  </widget>

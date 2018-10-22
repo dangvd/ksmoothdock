@@ -32,12 +32,12 @@
 namespace ksmoothdock {
 
 QDataStream &operator<<(QDataStream &out, const RuleInfo& rule) {
-  out << rule.icon << rule.window_name_regex;
+  out << rule.program << rule.window_name_regex << rule.icon;
   return out;
 }
 
 QDataStream &operator>>(QDataStream &in, RuleInfo& rule) {
-  in >> rule.icon >> rule.window_name_regex;
+  in >> rule.program >> rule.window_name_regex >> rule.icon;
   return in;
 }
 
@@ -102,14 +102,15 @@ IconOverrideRulesDialog::IconOverrideRulesDialog(
   loadData();
 }
 
-void IconOverrideRulesDialog::addRule(const QString& name,
+void IconOverrideRulesDialog::addRule(const QString& name, const QString& program,
     const QString& window_name_regex, const QString& icon) {
   ui->name->setText(name);
+  ui->program->setText(program);
   ui->windowNameRegex->setText(window_name_regex);
   icon_->setIcon(icon);
   QListWidgetItem* item = new QListWidgetItem(getListItemIcon(icon), name);
   item->setData(Qt::UserRole, QVariant::fromValue(
-      RuleInfo(icon, window_name_regex)));
+      RuleInfo(program, window_name_regex, icon)));
   rules_->addItem(item);
   rules_->setCurrentItem(item);
 }
@@ -131,13 +132,14 @@ void IconOverrideRulesDialog::refreshSelectedRule(QListWidgetItem* current,
   if (current != nullptr) {
     ui->name->setText(current->text());
     RuleInfo info = current->data(Qt::UserRole).value<RuleInfo>();
+    ui->program->setText(info.program);
     ui->windowNameRegex->setText(info.window_name_regex);
     icon_->setIcon(info.icon);
   }
 }
 
 void IconOverrideRulesDialog::addRule() {
-  addRule(i18n("New rule"), "", "xorg");
+  addRule(i18n("New rule"), "", "", "xorg");
   resetRulePresets();
 }
 
@@ -159,12 +161,13 @@ void IconOverrideRulesDialog::updateSelectedRule() {
     item->setText(ui->name->text());
     item->setIcon(getListItemIcon(icon_->icon()));
     item->setData(Qt::UserRole, QVariant::fromValue(
-        RuleInfo(icon_->icon(), ui->windowNameRegex->text())));
+        RuleInfo(ui->program->text(), ui->windowNameRegex->text(), icon_->icon())));
   }
 }
 
 void IconOverrideRulesDialog::resetRulePresets() {
-  ui->rulePresets->setCurrentIndex(0);
+  // TODO: consider adding presets/templates?
+  //ui->rulePresets->setCurrentIndex(0);
 }
 
 void IconOverrideRulesDialog::loadData() {
@@ -172,10 +175,9 @@ void IconOverrideRulesDialog::loadData() {
   for (const auto& item : model_->iconOverrideRules()) {
     QPixmap icon = KIconLoader::global()->loadIcon(
         item.icon, KIconLoader::NoGroup, kListIconSize);
-    QListWidgetItem* listItem = new QListWidgetItem(
-          icon, item.name);
+    QListWidgetItem* listItem = new QListWidgetItem(icon, item.name);
     listItem->setData(Qt::UserRole, QVariant::fromValue(
-                        RuleInfo(item.icon, item.window_name_regex)));
+        RuleInfo(item.program, item.window_name_regex, item.icon)));
     rules_->addItem(listItem);
   }
   rules_->setCurrentRow(0);
@@ -189,7 +191,7 @@ void IconOverrideRulesDialog::saveData() {
     auto* listItem = rules_->item(i);
     auto info = listItem->data(Qt::UserRole).value<RuleInfo>();
     rules.push_back(IconOverrideRule(
-        listItem->text(), info.window_name_regex, info.icon));
+        listItem->text(), info.program, info.window_name_regex, info.icon));
   }
   model_->setIconOverrideRules(rules);
   model_->saveIconOverrideRules();
@@ -197,6 +199,7 @@ void IconOverrideRulesDialog::saveData() {
 
 void IconOverrideRulesDialog::clearItemDetails() {
   ui->name->clear();
+  ui->program->clear();
   ui->windowNameRegex->clear();
 }
 
