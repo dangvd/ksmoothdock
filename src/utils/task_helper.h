@@ -21,6 +21,7 @@
 
 #include <vector>
 
+#include <QDBusInterface>
 #include <QObject>
 #include <QPixmap>
 #include <QString>
@@ -62,7 +63,8 @@ class TaskHelper : public QObject {
   bool isValidTask(WId wId);
 
   // Whether the task is valid for showing on the task manager on specific screen.
-  bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true);
+  bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true,
+                   bool currentActivityOnly = true);
 
   TaskInfo getTaskInfo(WId wId);
 
@@ -80,6 +82,8 @@ class TaskHelper : public QObject {
   // KWindowSystem::currentDesktop() is buggy sometimes, for example,
   // on windowAdded() event, so we store it here ourselves.
   int currentDesktop_;
+  
+  QDBusInterface activityManagerDBus_;
 };
 
 }  // namespace ksmoothdock

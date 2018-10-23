@@ -19,10 +19,12 @@
 #include "task_helper.h"
 
 #include <algorithm>
+#include <iostream>
 #include <regex>
 #include <utility>
 
 #include <QApplication>
+#include <QDBusReply>
 #include <QDesktopWidget>
 
 #include <KIconLoader>
@@ -31,8 +33,10 @@
 namespace ksmoothdock {
 
 TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
-    : iconOverrideRules_(iconOverrideRules) {
-  currentDesktop_ = KWindowSystem::currentDesktop();
+    : iconOverrideRules_(iconOverrideRules),
+      currentDesktop_(KWindowSystem::currentDesktop()),
+      activityManagerDBus_("org.kde.ActivityManager", "/ActivityManager/Activities",
+                           "org.kde.ActivityManager.Activities") {
   connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
           this, &TaskHelper::onCurrentDesktopChanged);
 }
@@ -68,7 +72,8 @@ bool TaskHelper::isValidTask(WId wId) {
   return true;
 }
 
-bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly) {
+bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
+                             bool currentActivityOnly) {
   if (!isValidTask(wId)) {
     return false;
   }
@@ -84,6 +89,19 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly) {
     }
   }
 
+  if (currentActivityOnly) {
+    if (!activityManagerDBus_.isValid()) {  // Not running in KDE Plasma 5.
+      return true;
+    }
+    
+    const QDBusReply<QString> reply = activityManagerDBus_.call("CurrentActivity");
+    if (!reply.isValid()) {
+      return true;
+    }
+    
+    std::cout << reply.value().toStdString() << std::endl;
+  }
+  
   return true;
 }
 
