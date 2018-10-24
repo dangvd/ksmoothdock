@@ -21,10 +21,11 @@
 
 #include <vector>
 
-#include <QDBusInterface>
 #include <QObject>
 #include <QPixmap>
 #include <QString>
+
+#include <kactivities/consumer.h>
 
 #include "model/icon_override_rule.h"
 
@@ -76,14 +77,21 @@ class TaskHelper : public QObject {
     currentDesktop_ = desktop;
   }
 
+  void onCurrentActivityChanged(QString activity) {
+    currentActivity_ = activity;
+  }
+
  private:
   const std::vector<IconOverrideRule>& iconOverrideRules_;
 
   // KWindowSystem::currentDesktop() is buggy sometimes, for example,
   // on windowAdded() event, so we store it here ourselves.
   int currentDesktop_;
-  
-  QDBusInterface activityManagerDBus_;
+
+  // ID of the current activity.
+  QString currentActivity_;
+
+  KActivities::Consumer activityManager_;
 };
 
 }  // namespace ksmoothdock

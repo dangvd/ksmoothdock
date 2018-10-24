@@ -14,7 +14,7 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(Qt5 5.6 REQUIRED COMPONENTS DBus Gui Test Widgets)
-find_package(KF5 5.7 REQUIRED COMPONENTS Config CoreAddons DBusAddons I18n
+find_package(KF5 5.7 REQUIRED COMPONENTS Activities Config CoreAddons DBusAddons I18n
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
 set(SRCS
@@ -42,7 +42,7 @@ set(SRCS
     utils/wallpaper_helper.cc)
 add_library(ksmoothdock_lib ${SRCS})
 
-set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::ConfigCore KF5::ConfigGui
+set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::Activities KF5::ConfigCore KF5::ConfigGui
     KF5::CoreAddons KF5::DBusAddons KF5::I18n KF5::IconThemes KF5::XmlGui
     KF5::WidgetsAddons KF5::WindowSystem)
 target_link_libraries(ksmoothdock_lib ${LIBS})

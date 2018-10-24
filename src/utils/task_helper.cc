@@ -24,6 +24,7 @@
 #include <utility>
 
 #include <QApplication>
+#include <QDBusInterface>
 #include <QDBusReply>
 #include <QDesktopWidget>
 
@@ -34,11 +35,22 @@ namespace ksmoothdock {
 
 TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
     : iconOverrideRules_(iconOverrideRules),
-      currentDesktop_(KWindowSystem::currentDesktop()),
-      activityManagerDBus_("org.kde.ActivityManager", "/ActivityManager/Activities",
-                           "org.kde.ActivityManager.Activities") {
+      currentDesktop_(KWindowSystem::currentDesktop()) {
+  // Calling DBus to get current activity. This is more convenient than waiting for
+  // KActivities::Consumer's status change then calling it.
+  QDBusInterface activityManagerDBus("org.kde.ActivityManager", "/ActivityManager/Activities",
+                                     "org.kde.ActivityManager.Activities");
+  if (activityManagerDBus.isValid()) {
+    const QDBusReply<QString> reply = activityManagerDBus.call("CurrentActivity");
+    if (reply.isValid()) {
+      currentActivity_ = reply.value();
+    }
+  }
+
   connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
           this, &TaskHelper::onCurrentDesktopChanged);
+  connect(&activityManager_, &KActivities::Consumer::currentActivityChanged,
+          this, &TaskHelper::onCurrentActivityChanged);
 }
 
 std::vector<TaskInfo> TaskHelper::loadTasks(int screen, bool currentDesktopOnly) {
@@ -59,14 +71,16 @@ bool TaskHelper::isValidTask(WId wId) {
   }
 
   KWindowInfo info(wId, NET::WMState | NET::WMWindowType);
-  const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
-  if (windowType == NET::Dock || windowType == NET::Desktop) {
-    return false;
-  }
+  if (info.valid()) {
+    const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
+    if (windowType == NET::Dock || windowType == NET::Desktop) {
+      return false;
+    }
 
-  const auto state = info.state();
-  if (state == NET::SkipTaskbar) {
-    return false;
+    const auto state = info.state();
+    if (state == NET::SkipTaskbar) {
+      return false;
+    }
   }
 
   return true;
@@ -84,22 +98,16 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 
   if (currentDesktopOnly) {
     KWindowInfo info(wId, NET::WMDesktop);
-    if (info.desktop() != currentDesktop_ && !info.onAllDesktops()) {
+    if (info.valid() && info.desktop() != currentDesktop_ && !info.onAllDesktops()) {
       return false;
     }
   }
 
   if (currentActivityOnly) {
-    if (!activityManagerDBus_.isValid()) {  // Not running in KDE Plasma 5.
-      return true;
+    KWindowInfo info(wId, 0, NET::WM2Activities);
+    if (info.valid() && !info.activities().contains(currentActivity_)) {
+      return false;
     }
-    
-    const QDBusReply<QString> reply = activityManagerDBus_.call("CurrentActivity");
-    if (!reply.isValid()) {
-      return true;
-    }
-    
-    std::cout << reply.value().toStdString() << std::endl;
   }
   
   return true;

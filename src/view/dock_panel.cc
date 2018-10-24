@@ -106,6 +106,8 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
           SIGNAL(windowChanged(WId, NET::Properties, NET::Properties2)),
           this,
           SLOT(onWindowChanged(WId, NET::Properties, NET::Properties2)));
+  connect(&activityManager_, &KActivities::Consumer::currentActivityChanged,
+          this, &DockPanel::onCurrentActivityChanged);
   connect(model_, SIGNAL(appearanceOutdated()), this, SLOT(update()));
   connect(model_, SIGNAL(appearanceChanged()), this, SLOT(reload()));
   connect(model_, SIGNAL(dockLaunchersChanged(int)),
@@ -189,6 +191,12 @@ void DockPanel::onCurrentDesktopChanged() {
     // We also need to repaint anyway to update the border around the current
     // desktop if pager is on.
     update();
+  }
+}
+
+void DockPanel::onCurrentActivityChanged() {
+  if (showTaskManager()) {
+    reloadTasks();
   }
 }
 

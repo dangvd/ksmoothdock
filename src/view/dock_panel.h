@@ -35,6 +35,7 @@
 
 #include <KAboutApplicationDialog>
 #include <KWindowSystem>
+#include <kactivities/consumer.h>
 
 #include "add_panel_dialog.h"
 #include "application_menu_settings_dialog.h"
@@ -77,6 +78,7 @@ class DockPanel : public QWidget {
   void reload();
 
   void onCurrentDesktopChanged();
+  void onCurrentActivityChanged();
 
   void onDockLaunchersChanged(int dockId) {
     if (dockId_ == dockId) {
@@ -332,6 +334,7 @@ class DockPanel : public QWidget {
   IconOverrideRulesDialog iconOverrideRulesDialog_;
 
   TaskHelper taskHelper_;
+  KActivities::Consumer activityManager_;
 
   // The tooltip object to show tooltip for the active item.
   Tooltip tooltip_;
