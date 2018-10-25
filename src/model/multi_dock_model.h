@@ -381,6 +381,10 @@ class MultiDockModel : public QObject {
     iconOverrideRules_ = rules;
   }
 
+  bool hasIconOverrideRules() const {
+    return !iconOverrideRules_.empty();
+  }
+
   void saveIconOverrideRules() {
     syncIconOverrideRules();
     emit appearanceChanged();

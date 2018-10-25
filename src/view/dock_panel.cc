@@ -358,32 +358,29 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
   // TODO
   if (showTaskManager() && wId != winId() && taskHelper_.isValidTask(wId)) {
+    auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
     if (properties & NET::WMDesktop || properties & NET::WMGeometry) {
-      if (taskHelper_.isValidTask(wId, screen_)) {
+      if (taskHelper_.isValidTask(wId, screen, model_->currentDesktopTasksOnly())) {
         addTask(wId);
       } else {
         removeTask(wId);
       }
-    } else if (properties & NET::WMName) {
-      auto taskPosition = std::find_if(begin_task(), end_task(),
-                                       [wId](const auto& item) {
-        if (item) {
-          const auto* task = dynamic_cast<Task*>(item.get());
-          if (task && task->wId() == wId) {
-            return true;
-          }
-        }
-        return false;
-      });
+    } else if (properties & NET::WMName || properties & NET::WMIcon) {
+      auto taskPosition = findTask(wId);
       if (taskPosition != end_task()) {
-        TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
-        (*taskPosition)->setLabel(taskInfo.name);
         auto* task = dynamic_cast<Task*>((*taskPosition).get());
-        task->setIcon(taskInfo.icon);
+        if (properties & NET::WMName) {
+          TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
+          task->setLabel(taskInfo.name);
+          if (model_->hasIconOverrideRules()) {
+            task->setIcon(taskInfo.icon);
+          }
+        } else if (properties & NET::WMIcon) {
+          TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
+          task->setIcon(taskInfo.icon);
+        }
       }
     }
-
-    // TODO: icon changed
   }
 }
 
@@ -733,16 +730,7 @@ void DockPanel::reloadTasks() {
 
 void DockPanel::addTask(WId wId) {
   // Check if the task already exists in the list.
-  const auto currentPos = std::find_if(begin_task(), end_task(),
-                                       [wId](const auto& item) {
-    if (item) {
-      const auto* task = dynamic_cast<Task*>(item.get());
-      if (task && task->wId() == wId) {
-        return true;
-      }
-    }
-    return false;
-  });
+  const auto currentPos = findTask(wId);
   if (currentPos != end_task()) {
     return;
   }
@@ -782,6 +770,19 @@ void DockPanel::removeTask(WId wId) {
     items_.erase(taskPosition);
     resizeTaskManager();
   }
+}
+
+std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
+  return std::find_if(begin_task(), end_task(),
+                      [wId](const auto& item) {
+    if (item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      if (task && task->wId() == wId) {
+        return true;
+      }
+    }
+    return false;
+  });
 }
 
 void DockPanel::initClock() {

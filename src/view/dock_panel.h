@@ -216,6 +216,8 @@ class DockPanel : public QWidget {
     return items_.end() - clockItemCount();
   }
 
+  std::vector<std::unique_ptr<DockItem>>::iterator findTask(WId wId);
+
   bool showTaskManager() { return model_->showTaskManager(dockId_); }
 
   void initUi();
