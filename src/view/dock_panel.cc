@@ -756,16 +756,7 @@ void DockPanel::addTask(WId wId) {
 }
 
 void DockPanel::removeTask(WId wId) {
-  auto taskPosition = std::find_if(begin_task(), end_task(),
-                                   [wId](const auto& item) {
-    if (item) {
-      const auto* task = dynamic_cast<Task*>(item.get());
-      if (task && task->wId() == wId) {
-        return true;
-      }
-    }
-    return false;
-  });
+  auto taskPosition = findTask(wId);
   if (taskPosition != end_task()) {
     items_.erase(taskPosition);
     resizeTaskManager();
