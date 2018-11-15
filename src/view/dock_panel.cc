@@ -365,19 +365,20 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
       } else {
         removeTask(wId);
       }
-    } else if (properties & NET::WMName || properties & NET::WMIcon) {
+    } else if (properties & NET::WMName || properties & NET::WMIcon || properties & NET::WMState) {
       auto taskPosition = findTask(wId);
       if (taskPosition != end_task()) {
         auto* task = dynamic_cast<Task*>((*taskPosition).get());
+        TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
         if (properties & NET::WMName) {
-          TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
           task->setLabel(taskInfo.name);
           if (model_->hasIconOverrideRules()) {
             task->setIcon(taskInfo.icon);
           }
         } else if (properties & NET::WMIcon) {
-          TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
           task->setIcon(taskInfo.icon);
+        } else if (properties & NET::WMState) {
+          task->setDemandsAttention(taskInfo.demandsAttention);
         }
       }
     }
@@ -714,7 +715,7 @@ void DockPanel::initTasks() {
     for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
       items_.push_back(std::make_unique<Task>(
           this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-          task.wId, task.program));
+          task.wId, task.program, task.demandsAttention));
     }
   }
 }
@@ -751,7 +752,7 @@ void DockPanel::addTask(WId wId) {
                 std::make_unique<Task>(this, model_, taskInfo.name,
                                        orientation_, taskInfo.icon, minSize_,
                                        maxSize_, taskInfo.wId,
-                                       taskInfo.program));
+                                       taskInfo.program, taskInfo.demandsAttention));
   resizeTaskManager();
 }
 

@@ -39,7 +39,7 @@ class Task : public QObject, public IconBasedDockItem {
  public:
   Task(DockPanel* parent, MultiDockModel* model, const QString& label,
        Qt::Orientation orientation, const QPixmap& icon, int minSize,
-       int maxSize, WId wId, const QString& program);
+       int maxSize, WId wId, const QString& program, bool demandsAttention);
 
   virtual ~Task() = default;
 
@@ -47,9 +47,9 @@ class Task : public QObject, public IconBasedDockItem {
 
   const QString program() const { return program_; }
 
-  bool demandAttention() { return demandAttention_; }
+  bool demandsAttention() { return demandsAttention_; }
 
-  void setDemandAttention(bool value) { demandAttention_ = value; }
+  void setDemandsAttention(bool value);
 
   bool active() const { return KWindowSystem::activeWindow() == wId_; }
 
@@ -71,12 +71,13 @@ class Task : public QObject, public IconBasedDockItem {
   MultiDockModel* model_;
   WId wId_;
   const QString program_;
-  bool demandAttention_; // does the task demand attention?
+  bool demandsAttention_; // does the task demand attention?
 
   // Context menu.
   QMenu menu_;
 
   std::unique_ptr<QTimer> animationTimer_;
+  bool attentionStrong_;
 };
 
 }  // namespace ksmoothdock

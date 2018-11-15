@@ -115,7 +115,7 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 
 TaskInfo TaskHelper::getTaskInfo(WId wId) {
   static constexpr int kIconLoadSize = 128;
-  KWindowInfo info(wId, NET::WMVisibleName, NET::WM2WindowClass);
+  KWindowInfo info(wId, NET::WMVisibleName | NET::WMState, NET::WM2WindowClass);
 
   const auto program = QString(info.windowClassName());
   const auto name = info.visibleName();
@@ -148,7 +148,7 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) {
     icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize);
   }
 
-  return TaskInfo(wId, program, name, icon);
+  return TaskInfo(wId, program, name, icon, info.state() == NET::DemandsAttention);
 }
 
 int TaskHelper::getScreen(WId wId) {

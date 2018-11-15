@@ -29,18 +29,37 @@ namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
            Qt::Orientation orientation, const QPixmap &icon, int minSize,
-           int maxSize, WId wId, const QString& program)
+           int maxSize, WId wId, const QString& program, bool demandsAttention)
     : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
       model_(model),
       wId_(wId),
       program_(program),
-      demandAttention_(false),
-      animationTimer_(std::make_unique<QTimer>(this)) {
+      demandsAttention_(demandsAttention),
+      animationTimer_(std::make_unique<QTimer>(this)),
+      attentionStrong_(false) {
   createMenu();
+
+  animationTimer_->setInterval(500);
+  connect(animationTimer_.get(), &QTimer::timeout, this, [this]() {
+    attentionStrong_ = !attentionStrong_;
+    parent_->update();
+  });
+  if (demandsAttention_) {
+    animationTimer_->start();
+  }
+}
+
+void Task::setDemandsAttention(bool value) {
+  demandsAttention_ = value;
+  if (demandsAttention_) {
+    animationTimer_->start();
+  } else if (animationTimer_->isActive()) {
+    animationTimer_->stop();
+  }
 }
 
 void Task::draw(QPainter *painter) const {
-  if (active()) {
+  if (active() || attentionStrong_) {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
                         5, size_ / 8, painter);
   } else {
