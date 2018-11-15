@@ -357,7 +357,8 @@ void DockPanel::onWindowRemoved(WId wId) {
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
   // TODO
-  if (showTaskManager() && wId != winId() && taskHelper_.isValidTask(wId)) {
+  if (showTaskManager() && wId != winId() && wId != tooltip_.winId() &&
+      taskHelper_.isValidTask(wId)) {
     auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
     if (properties & NET::WMDesktop || properties & NET::WMGeometry) {
       if (taskHelper_.isValidTask(wId, screen, model_->currentDesktopTasksOnly())) {
