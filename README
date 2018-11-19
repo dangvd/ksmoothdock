@@ -7,7 +7,7 @@ For more information, please visit KSmoothDock's homepage: https://dangvd.github
 ---
 
 Dependencies: to build from the source code, several Qt 5 and KDE Frameworks 5 development packages are required. On Debian-based distributions, they can be installed by running:
-$ sudo apt install extra-cmake-modules qtbase5-dev libkf5config-dev libkf5coreaddons-dev libkf5dbusaddons-dev libkf5i18n-dev libkf5iconthemes-dev libkf5xmlgui-dev libkf5widgetsaddons-dev libkf5windowsystem-dev
+$ sudo apt install extra-cmake-modules qtbase5-dev libkf5activities-dev libkf5config-dev libkf5coreaddons-dev libkf5dbusaddons-dev libkf5i18n-dev libkf5iconthemes-dev libkf5xmlgui-dev libkf5widgetsaddons-dev libkf5windowsystem-dev
 
 To build, run:
 $ cmake src
