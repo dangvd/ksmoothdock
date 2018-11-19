@@ -340,7 +340,6 @@ void DockPanel::removeDock() {
 }
 
 void DockPanel::onWindowAdded(WId wId) {
-  // TODO
   if (showTaskManager() && taskHelper_.isValidTask(wId, screen_)) {
     // Now inserts it.
     addTask(wId);
@@ -348,7 +347,6 @@ void DockPanel::onWindowAdded(WId wId) {
 }
 
 void DockPanel::onWindowRemoved(WId wId) {
-  // TODO
   if (showTaskManager()) {
     removeTask(wId);
   }
@@ -356,7 +354,6 @@ void DockPanel::onWindowRemoved(WId wId) {
 
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
-  // TODO
   if (showTaskManager() && wId != winId() && wId != tooltip_.winId() &&
       taskHelper_.isValidTask(wId)) {
     auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
