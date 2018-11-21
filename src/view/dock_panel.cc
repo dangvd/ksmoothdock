@@ -378,6 +378,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         } else if (properties & NET::WMState) {
           task->setDemandsAttention(taskInfo.demandsAttention);
         }
+        update();
       }
     }
   }
