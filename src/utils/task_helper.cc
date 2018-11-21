@@ -145,7 +145,7 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) {
     icon = KIconLoader::global()->loadIcon(iconName,
                                            KIconLoader::NoGroup, kIconLoadSize);
   } else {
-    icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize);
+    icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
   }
 
   return TaskInfo(wId, program, name, icon, info.state() == NET::DemandsAttention);
