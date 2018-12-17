@@ -72,6 +72,7 @@ class DockPanel : public QWidget {
   // Gets the position to show the application menu's sub-menus.
   QPoint applicationSubMenuPosition(const QSize& menuSize,
                                        const QRect& subMenuGeometry);
+  void addPanelSettings(QMenu* menu);
 
  public slots:
   // Reloads the items and updates the dock.

@@ -102,6 +102,9 @@ void Task::createMenu() {
                   i18n("Edit &Icon Override Rules"),
                   parent_,
                   SLOT(showIconOverrideRulesDialog()));
+
+  menu_.addSeparator();
+  parent_->addPanelSettings(&menu_);
 }
 
 }  // namespace ksmoothdock

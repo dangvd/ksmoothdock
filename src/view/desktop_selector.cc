@@ -131,6 +131,9 @@ void DesktopSelector::createMenu() {
         saveConfig();
       });
   showDesktopNumberAction_->setCheckable(true);
+
+  menu_.addSeparator();
+  parent_->addPanelSettings(&menu_);
 }
 
 }  // namespace ksmoothdock

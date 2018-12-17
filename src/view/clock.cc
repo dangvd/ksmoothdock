@@ -146,6 +146,9 @@ void Clock::createMenu() {
                                          this,
                                          SLOT(setSmallFont()));
   smallFontAction_->setCheckable(true);
+
+  menu_.addSeparator();
+  parent_->addPanelSettings(&menu_);
 }
 
 void Clock::loadConfig() {

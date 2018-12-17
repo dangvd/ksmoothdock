@@ -519,6 +519,12 @@ void DockPanel::initUi() {
   setStrut();
 }
 
+void DockPanel::addPanelSettings(QMenu* menu) {
+  QAction* action = menu->addMenu(&menu_);
+  action->setText("&Panel Settings");
+  action->setIcon(QIcon::fromTheme("configure"));
+}
+
 void DockPanel::createMenu() {
   menu_.addAction(QIcon::fromTheme("list-add"), i18n("&Add Panel"),
       this, SLOT(addDock()));
