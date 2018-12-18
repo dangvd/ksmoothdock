@@ -131,13 +131,15 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) {
       }
 
       // Check regex matching.
-      std::regex re(rule.window_name_regex.toStdString());
-      std::smatch m;
-      std::string sname(name.toStdString());
-      if (std::regex_match(sname, m, re)) {
-        iconName = rule.icon;
-        break;
-      }
+      try {
+        std::regex re(rule.window_name_regex.toStdString());
+        std::smatch m;
+        std::string sname(name.toStdString());
+        if (std::regex_match(sname, m, re)) {
+          iconName = rule.icon;
+          break;
+        }
+      } catch (const std::regex_error& e) { /* Ignore */ }
     }
   }
 
