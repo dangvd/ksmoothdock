@@ -78,7 +78,7 @@ bool TaskHelper::isValidTask(WId wId) {
     }
 
     const auto state = info.state();
-    if (state == NET::SkipTaskbar) {
+    if (state & NET::SkipTaskbar) {
       return false;
     }
   }

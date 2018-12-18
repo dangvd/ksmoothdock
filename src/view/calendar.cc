@@ -21,12 +21,15 @@
 #include <QDate>
 
 #include <KLocalizedString>
+#include <KWindowSystem>
+#include <netwm_def.h>
 
 namespace ksmoothdock {
 
 Calendar::Calendar(QWidget* parent)
     : QDialog(parent),
       calendar_(this) {
+  KWindowSystem::setState(winId(), NET::SkipTaskbar);
   setWindowTitle(i18n("Calendar"));
   calendar_.setVerticalHeaderFormat(QCalendarWidget::NoVerticalHeader);
   resize(calendar_.sizeHint());
