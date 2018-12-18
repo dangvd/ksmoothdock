@@ -105,7 +105,7 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 
   if (currentActivityOnly) {
     KWindowInfo info(wId, 0, NET::WM2Activities);
-    if (info.valid() && !info.activities().contains(currentActivity_)) {
+    if (info.valid() && !info.activities().empty() && !info.activities().contains(currentActivity_)) {
       return false;
     }
   }
