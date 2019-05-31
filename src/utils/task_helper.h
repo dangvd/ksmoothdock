@@ -38,6 +38,7 @@ struct TaskInfo {
   QPixmap icon;
   bool demandsAttention;
 
+  TaskInfo(WId wId2, const QString& program2) : wId(wId2), program(program2) {}
   TaskInfo(WId wId2, const QString& program2, const QString& name2,
            const QPixmap& icon2, bool demandsAttention2)
       : wId(wId2), program(program2), name(name2), icon(icon2),
@@ -45,9 +46,7 @@ struct TaskInfo {
   TaskInfo(const TaskInfo& taskInfo) = default;
   TaskInfo& operator=(const TaskInfo& taskInfo) = default;
 
-  bool operator<(const TaskInfo& taskInfo) const {
-    return program < taskInfo.program;
-  }
+  bool operator<(const TaskInfo& taskInfo) const;
 };
 
 class TaskHelper : public QObject {
@@ -69,7 +68,9 @@ class TaskHelper : public QObject {
   bool isValidTask(WId wId, int screen, bool currentDesktopOnly = true,
                    bool currentActivityOnly = true);
 
-  TaskInfo getTaskInfo(WId wId);
+  static TaskInfo getBasicTaskInfo(WId wId);
+
+  TaskInfo getTaskInfo(WId wId) const;
 
   // Gets the screen that a task is running on.
   int getScreen(WId wId);

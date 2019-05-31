@@ -33,6 +33,22 @@
 
 namespace ksmoothdock {
 
+bool TaskInfo::operator<(const TaskInfo& taskInfo) const {
+  if (program == taskInfo.program) {
+    // If same program, sort by creation time.
+    bool found = false;
+    for (const auto window : KWindowSystem::windows()) {
+      if (window == wId) {
+        found = true;
+      } else if (window == taskInfo.wId) {
+        return found;
+      }
+    }
+    return true;
+  }
+  return program < taskInfo.program;
+}
+
 TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
     : iconOverrideRules_(iconOverrideRules),
       currentDesktop_(KWindowSystem::currentDesktop()) {
@@ -113,7 +129,13 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
   return true;
 }
 
-TaskInfo TaskHelper::getTaskInfo(WId wId) {
+/* static */ TaskInfo TaskHelper::getBasicTaskInfo(WId wId) {
+  KWindowInfo info(wId, 0, NET::WM2WindowClass);
+  const auto program = QString(info.windowClassName());
+  return TaskInfo(wId, program);
+}
+
+TaskInfo TaskHelper::getTaskInfo(WId wId) const {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName | NET::WMState, NET::WM2WindowClass);
 

@@ -741,8 +741,27 @@ void DockPanel::addTask(WId wId) {
     return;
   }
 
-  // Now reload task list.
-  reloadTasks();
+  // Now add the new task.
+  const auto newTaskInfo = TaskHelper::getBasicTaskInfo(wId);
+  const auto insertPos = std::find_if(begin_task(), end_task(),
+      [&newTaskInfo](const auto& item) {
+    if (item) {
+      const auto* task = dynamic_cast<Task*>(item.get());
+      if (task) {
+        const auto taskInfo = TaskHelper::getBasicTaskInfo(task->wId());
+        if (newTaskInfo < taskInfo) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+  const auto task = taskHelper_.getTaskInfo(wId);
+  items_.insert(insertPos,
+                std::make_unique<Task>(
+                    this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+                    task.wId, task.program, task.demandsAttention));
+  resizeTaskManager();
 }
 
 void DockPanel::removeTask(WId wId) {
