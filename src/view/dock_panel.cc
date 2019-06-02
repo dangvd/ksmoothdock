@@ -370,8 +370,8 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
         if (properties & NET::WMName) {
           task->setLabel(taskInfo.name);
-          if (model_->hasIconOverrideRules()) {
-            task->setIcon(taskInfo.icon);
+          if (!taskInfo.iconName.isEmpty() && taskInfo.iconName != task->getIconName()) {
+            task->setIconName(taskInfo.iconName);
           }
         } else if (properties & NET::WMIcon) {
           task->setIcon(taskInfo.icon);
@@ -719,7 +719,7 @@ void DockPanel::initTasks() {
     auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
     for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
       items_.push_back(std::make_unique<Task>(
-          this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
+          this, model_, task.name, orientation_, task.icon, task.iconName, minSize_, maxSize_,
           task.wId, task.program, task.demandsAttention));
     }
   }
@@ -759,8 +759,8 @@ void DockPanel::addTask(WId wId) {
   const auto task = taskHelper_.getTaskInfo(wId);
   items_.insert(insertPos,
                 std::make_unique<Task>(
-                    this, model_, task.name, orientation_, task.icon, minSize_, maxSize_,
-                    task.wId, task.program, task.demandsAttention));
+                    this, model_, task.name, orientation_, task.icon, task.iconName, minSize_,
+                    maxSize_, task.wId, task.program, task.demandsAttention));
   resizeTaskManager();
 }
 

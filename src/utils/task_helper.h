@@ -35,13 +35,16 @@ struct TaskInfo {
   WId wId;
   QString program;  // e.g. dolphin
   QString name;  // e.g. home -- Dolphin
+  // Only one of {icon, iconName} will be populated, iconName only if
+  // there is an applicable icon override rule.
   QPixmap icon;
+  QString iconName;
   bool demandsAttention;
 
   TaskInfo(WId wId2, const QString& program2) : wId(wId2), program(program2) {}
   TaskInfo(WId wId2, const QString& program2, const QString& name2,
-           const QPixmap& icon2, bool demandsAttention2)
-      : wId(wId2), program(program2), name(name2), icon(icon2),
+           const QPixmap& icon2, const QString& iconName2, bool demandsAttention2)
+      : wId(wId2), program(program2), name(name2), icon(icon2), iconName(iconName2),
         demandsAttention(demandsAttention2) {}
   TaskInfo(const TaskInfo& taskInfo) = default;
   TaskInfo& operator=(const TaskInfo& taskInfo) = default;

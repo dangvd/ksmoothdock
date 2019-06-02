@@ -38,7 +38,7 @@ class Task : public QObject, public IconBasedDockItem {
 
  public:
   Task(DockPanel* parent, MultiDockModel* model, const QString& label,
-       Qt::Orientation orientation, const QPixmap& icon, int minSize,
+       Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
        int maxSize, WId wId, const QString& program, bool demandsAttention);
 
   virtual ~Task() = default;

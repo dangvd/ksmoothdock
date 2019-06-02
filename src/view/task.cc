@@ -28,9 +28,9 @@
 namespace ksmoothdock {
 
 Task::Task(DockPanel *parent, MultiDockModel* model, const QString &label,
-           Qt::Orientation orientation, const QPixmap &icon, int minSize,
-           int maxSize, WId wId, const QString& program, bool demandsAttention)
-    : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
+           Qt::Orientation orientation, const QPixmap &icon, const QString& iconName,
+           int minSize, int maxSize, WId wId, const QString& program, bool demandsAttention)
+    : IconBasedDockItem(parent, label, orientation, icon, iconName, minSize, maxSize),
       model_(model),
       wId_(wId),
       program_(program),

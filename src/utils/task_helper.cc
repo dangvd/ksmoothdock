@@ -28,7 +28,6 @@
 #include <QDBusReply>
 #include <QDesktopWidget>
 
-#include <KIconLoader>
 #include <KWindowSystem>
 
 namespace ksmoothdock {
@@ -165,14 +164,11 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
     }
   }
 
-  if (!iconName.isEmpty()) {
-    icon = KIconLoader::global()->loadIcon(iconName,
-                                           KIconLoader::NoGroup, kIconLoadSize);
-  } else {
+  if (iconName.isEmpty()) {
     icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
   }
 
-  return TaskInfo(wId, program, name, icon, info.state() == NET::DemandsAttention);
+  return TaskInfo(wId, program, name, icon, iconName, info.state() == NET::DemandsAttention);
 }
 
 int TaskHelper::getScreen(WId wId) {
