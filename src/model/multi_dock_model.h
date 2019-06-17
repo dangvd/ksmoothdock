@@ -45,6 +45,7 @@ enum class PanelVisibility { AlwaysVisible, AutoHide, WindowsCanCover,
 
 constexpr int kDefaultMinSize = 48;
 constexpr int kDefaultMaxSize = 128;
+constexpr float kDefaultSpacingFactor = 0.5;
 constexpr int kDefaultTooltipFontSize = 20;
 constexpr float kDefaultBackgroundAlpha = 0.0;
 constexpr char kDefaultBackgroundColor[] = "#638abd";
@@ -129,6 +130,14 @@ class MultiDockModel : public QObject {
 
   void setMaxIconSize(int value) {
     setAppearanceProperty(kGeneralCategory, kMaximumIconSize, value);
+  }
+
+  float spacingFactor() const {
+    return appearanceProperty(kGeneralCategory, kSpacingFactor, kDefaultSpacingFactor);
+  }
+
+  void setSpacingFactor(float value) {
+    setAppearanceProperty(kGeneralCategory, kSpacingFactor, value);
   }
 
   QColor backgroundColor() const {
@@ -420,6 +429,7 @@ class MultiDockModel : public QObject {
   static constexpr char kBorderColor[] = "borderColor";
   static constexpr char kMaximumIconSize[] = "maximumIconSize";
   static constexpr char kMinimumIconSize[] = "minimumIconSize";
+  static constexpr char kSpacingFactor[] = "spacingFactor";
   static constexpr char kShowBorder[] = "showBorder";
   static constexpr char kTooltipFontSize[] = "tooltipFontSize";
 

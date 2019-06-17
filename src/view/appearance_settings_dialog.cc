@@ -21,6 +21,16 @@
 
 namespace ksmoothdock {
 
+namespace {
+  inline int alphaFToTransparencyPercent(float alphaF) {
+    return static_cast<int>(100 * (1 - alphaF));
+  }
+
+  inline float transparencyPercentToAlphaF(int transparencyPercent) {
+    return 1 - transparencyPercent / 100.0;
+  }
+}
+
 AppearanceSettingsDialog::AppearanceSettingsDialog(QWidget* parent,
                                                    MultiDockModel* model)
     : QDialog(parent),
@@ -30,11 +40,11 @@ AppearanceSettingsDialog::AppearanceSettingsDialog(QWidget* parent,
 
   backgroundColor_ = new KColorButton(this);
   backgroundColor_->setAlphaChannelEnabled(false);
-  backgroundColor_->setGeometry(QRect(550, 80, 71, 38));
+  backgroundColor_->setGeometry(QRect(260, 150, 80, 40));
 
   borderColor_ = new KColorButton(this);
   borderColor_->setAlphaChannelEnabled(false);
-  borderColor_->setGeometry(QRect(550, 140, 71, 38));
+  borderColor_->setGeometry(QRect(660, 150, 80, 40));
 
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
@@ -63,9 +73,10 @@ void AppearanceSettingsDialog::buttonClicked(QAbstractButton* button) {
 void AppearanceSettingsDialog::loadData() {
   ui->minSize->setValue(model_->minIconSize());
   ui->maxSize->setValue(model_->maxIconSize());
+  ui->spacingFactor->setValue(model_->spacingFactor());
   QColor backgroundColor = model_->backgroundColor();
   backgroundColor_->setColor(QColor(backgroundColor.rgb()));
-  ui->backgroundAlpha->setValue(backgroundColor.alphaF());
+  ui->backgroundTransparency->setValue(alphaFToTransparencyPercent(backgroundColor.alphaF()));
   ui->showBorder->setChecked(model_->showBorder());
   borderColor_->setColor(model_->borderColor());
   ui->tooltipFontSize->setValue(model_->tooltipFontSize());
@@ -74,8 +85,9 @@ void AppearanceSettingsDialog::loadData() {
 void AppearanceSettingsDialog::resetData() {
   ui->minSize->setValue(kDefaultMinSize);
   ui->maxSize->setValue(kDefaultMaxSize);
+  ui->spacingFactor->setValue(kDefaultSpacingFactor);
   backgroundColor_->setColor(QColor(kDefaultBackgroundColor));
-  ui->backgroundAlpha->setValue(kDefaultBackgroundAlpha);
+  ui->backgroundTransparency->setValue(alphaFToTransparencyPercent(kDefaultBackgroundAlpha));
   ui->showBorder->setChecked(kDefaultShowBorder);
   borderColor_->setColor(QColor(kDefaultBorderColor));
   ui->tooltipFontSize->setValue(kDefaultTooltipFontSize);
@@ -84,8 +96,9 @@ void AppearanceSettingsDialog::resetData() {
 void AppearanceSettingsDialog::saveData() {
   model_->setMinIconSize(ui->minSize->value());
   model_->setMaxIconSize(ui->maxSize->value());
+  model_->setSpacingFactor(ui->spacingFactor->value());
   QColor backgroundColor(backgroundColor_->color());
-  backgroundColor.setAlphaF(ui->backgroundAlpha->value());
+  backgroundColor.setAlphaF(transparencyPercentToAlphaF(ui->backgroundTransparency->value()));
   model_->setBackgroundColor(backgroundColor);
   model_->setShowBorder(ui->showBorder->isChecked());
   model_->setBorderColor(borderColor_->color());

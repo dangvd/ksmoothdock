@@ -38,6 +38,7 @@ class AppearanceSettingsDialogTest: public QObject {
     model_ = std::make_unique<MultiDockModel>(configDir.path());
     model_->setMinIconSize(48);
     model_->setMaxIconSize(128);
+    model_->setSpacingFactor(0.5);
     QColor color("white");
     color.setAlphaF(0.42);
     model_->setBackgroundColor(color);
@@ -73,8 +74,9 @@ class AppearanceSettingsDialogTest: public QObject {
 void AppearanceSettingsDialogTest::uiInit() {
   QCOMPARE(dialog_->ui->minSize->value(), 48);
   QCOMPARE(dialog_->ui->maxSize->value(), 128);
+  compareDouble(dialog_->ui->spacingFactor->value(), 0.5);
   QCOMPARE(dialog_->backgroundColor_->color(), QColor("white"));
-  QCOMPARE(dialog_->ui->backgroundAlpha->value(), 0.42);
+  QCOMPARE(dialog_->ui->backgroundTransparency->value(), 58);
   QCOMPARE(dialog_->ui->showBorder->isChecked(), true);
   QCOMPARE(dialog_->borderColor_->color(), QColor("white"));
   QCOMPARE(dialog_->ui->tooltipFontSize->value(), 20);
@@ -83,7 +85,8 @@ void AppearanceSettingsDialogTest::uiInit() {
 void AppearanceSettingsDialogTest::ok() {
   dialog_->ui->minSize->setValue(40);
   dialog_->ui->maxSize->setValue(80);
-  dialog_->ui->backgroundAlpha->setValue(0.1);
+  dialog_->ui->spacingFactor->setValue(0.2);
+  dialog_->ui->backgroundTransparency->setValue(90);
   dialog_->backgroundColor_->setColor(QColor("green"));
   dialog_->ui->showBorder->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
@@ -95,6 +98,7 @@ void AppearanceSettingsDialogTest::ok() {
   // Tests that the model has been updated.
   QCOMPARE(model_->minIconSize(), 40);
   QCOMPARE(model_->maxIconSize(), 80);
+  compareDouble(dialog_->ui->spacingFactor->value(), 0.2);
   QCOMPARE(model_->backgroundColor().rgb(), QColor("green").rgb());
   compareDouble(model_->backgroundColor().alphaF(), 0.1);
   QCOMPARE(model_->showBorder(), false);
@@ -105,7 +109,8 @@ void AppearanceSettingsDialogTest::ok() {
 void AppearanceSettingsDialogTest::apply() {
   dialog_->ui->minSize->setValue(40);
   dialog_->ui->maxSize->setValue(80);
-  dialog_->ui->backgroundAlpha->setValue(0.1);
+  dialog_->ui->spacingFactor->setValue(0.2);
+  dialog_->ui->backgroundTransparency->setValue(90);
   dialog_->backgroundColor_->setColor(QColor("green"));
   dialog_->ui->showBorder->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
@@ -117,6 +122,7 @@ void AppearanceSettingsDialogTest::apply() {
   // Tests that the model has been updated.
   QCOMPARE(model_->minIconSize(), 40);
   QCOMPARE(model_->maxIconSize(), 80);
+  compareDouble(dialog_->ui->spacingFactor->value(), 0.2);
   QCOMPARE(model_->backgroundColor().rgb(), QColor("green").rgb());
   compareDouble(model_->backgroundColor().alphaF(), 0.1);
   QCOMPARE(model_->showBorder(), false);
@@ -127,7 +133,8 @@ void AppearanceSettingsDialogTest::apply() {
 void AppearanceSettingsDialogTest::cancel() {
   dialog_->ui->minSize->setValue(40);
   dialog_->ui->maxSize->setValue(80);
-  dialog_->ui->backgroundAlpha->setValue(0.1);
+  dialog_->ui->spacingFactor->setValue(0.2);
+  dialog_->ui->backgroundTransparency->setValue(90);
   dialog_->backgroundColor_->setColor(QColor("green"));
   dialog_->ui->showBorder->setChecked(false);
   dialog_->borderColor_->setColor(QColor("blue"));
@@ -139,6 +146,7 @@ void AppearanceSettingsDialogTest::cancel() {
   // Tests that the model has not been updated.
   QCOMPARE(model_->minIconSize(), 48);
   QCOMPARE(model_->maxIconSize(), 128);
+  compareDouble(dialog_->ui->spacingFactor->value(), 0.5);
   QCOMPARE(model_->backgroundColor().rgb(), QColor("white").rgb());
   compareDouble(model_->backgroundColor().alphaF(), 0.42);
   QCOMPARE(model_->showBorder(), true);

@@ -282,6 +282,7 @@ class DockPanel : public QWidget {
   bool showClock_;
   int minSize_;
   int maxSize_;
+  float spacingFactor_;  // item spacing as ratio of minSize, in (0, 1) range.
   QColor backgroundColor_;  // including alpha.
   bool showBorder_;
   QColor borderColor_;  // no alpha.

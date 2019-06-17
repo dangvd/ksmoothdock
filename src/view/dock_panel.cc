@@ -683,6 +683,7 @@ void DockPanel::saveDockConfig() {
 void DockPanel::loadAppearanceConfig() {
   minSize_ = model_->minIconSize();
   maxSize_ = model_->maxIconSize();
+  spacingFactor_ = model_->spacingFactor();
   backgroundColor_ = model_->backgroundColor();
   showBorder_ = model_->showBorder();
   borderColor_ = model_->borderColor();
@@ -793,7 +794,7 @@ void DockPanel::initClock() {
 }
 
 void DockPanel::initLayoutVars() {
-  itemSpacing_ = minSize_ / 2;
+  itemSpacing_ = static_cast<int>(minSize_ * spacingFactor_);
   parabolicMaxX_ = static_cast<int>(2.5 * (minSize_ + itemSpacing_));
   numAnimationSteps_ = 20;
   animationSpeed_ = 16;
