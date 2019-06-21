@@ -61,6 +61,10 @@ struct IconOverrideRule {
 template <typename S>
 S loadIconOverrideRulesFromFile(const QString& filename) {
   QFile file(filename);
+  if (!file.exists()) {
+    return S{};
+  }
+
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     std::cerr << "Failed to read icon override rules from file: "
               << filename.toStdString();
