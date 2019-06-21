@@ -34,10 +34,10 @@ int main(int argc, char** argv) {
   KAboutData about(
       "ksmoothdock",
       "KSmoothDock",
-      "5.12 RC1",
+      "5.12 RC2",
       i18n("A cool desktop panel for KDE Plasma 5"),
       KAboutLicense::GPL_V3,
-      i18n("Copyright (C) 2018 Viet Dang (dangvd@gmail.com)"),
+      i18n("Copyright (C) 2019 Viet Dang (dangvd@gmail.com)"),
       "",
       "https://dangvd.github.io/ksmoothdock");
   KAboutData::setApplicationData(about);
