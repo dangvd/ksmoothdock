@@ -19,11 +19,13 @@
 #include "appearance_settings_dialog.h"
 #include "ui_appearance_settings_dialog.h"
 
+#include <cmath>
+
 namespace ksmoothdock {
 
 namespace {
   inline int alphaFToTransparencyPercent(float alphaF) {
-    return static_cast<int>(100 * (1 - alphaF));
+    return static_cast<int>(std::round(100 * (1 - alphaF)));
   }
 
   inline float transparencyPercentToAlphaF(int transparencyPercent) {
