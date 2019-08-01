@@ -210,6 +210,7 @@ void DockPanel::setStrut() {
       setStrut(1);
       break;
     case PanelVisibility::WindowsGoBelow:  // fall through
+    case PanelVisibility::WindowsCanCover_Quiet:
     default:
       setStrut(0);
       break;
@@ -586,6 +587,10 @@ void DockPanel::createMenu() {
       i18n("Windows Can &Cover"), this,
       [this]() { updateVisibility(PanelVisibility::WindowsCanCover); });
   visibilityWindowsCanCoverAction_->setCheckable(true);
+  visibilityWindowsCanCoverQuietAction_ = visibility->addAction(
+      i18n("Windows Can Cover (&Quiet)"), this,
+      [this]() { updateVisibility(PanelVisibility::WindowsCanCover_Quiet); });
+  visibilityWindowsCanCoverQuietAction_->setCheckable(true);
   visibilityWindowsGoBelowAction_ = visibility->addAction(
       i18n("Windows Go &Below"), this,
       [this]() { updateVisibility(PanelVisibility::WindowsGoBelow); });
@@ -634,7 +639,8 @@ void DockPanel::setVisibility(PanelVisibility visibility) {
     case PanelVisibility::WindowsGoBelow:
       KWindowSystem::setState(winId(), NET::KeepAbove);
       break;
-    case PanelVisibility::WindowsCanCover:
+    case PanelVisibility::WindowsCanCover:  // fall through
+    case PanelVisibility::WindowsCanCover_Quiet:
       KWindowSystem::setState(winId(), NET::KeepBelow);
       break;
     default:
@@ -647,6 +653,8 @@ void DockPanel::setVisibility(PanelVisibility visibility) {
       visibility_ == PanelVisibility::AutoHide);
   visibilityWindowsCanCoverAction_->setChecked(
       visibility_ == PanelVisibility::WindowsCanCover);
+  visibilityWindowsCanCoverQuietAction_->setChecked(
+      visibility_ == PanelVisibility::WindowsCanCover_Quiet);
   visibilityWindowsGoBelowAction_->setChecked(
       visibility_ == PanelVisibility::WindowsGoBelow);
 }

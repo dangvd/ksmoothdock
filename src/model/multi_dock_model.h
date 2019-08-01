@@ -41,7 +41,7 @@ namespace ksmoothdock {
 enum class PanelPosition { Top, Bottom, Left, Right };
 
 enum class PanelVisibility { AlwaysVisible, AutoHide, WindowsCanCover,
-                             WindowsGoBelow };
+                             WindowsGoBelow, WindowsCanCover_Quiet };
 
 constexpr int kDefaultMinSize = 48;
 constexpr int kDefaultMaxSize = 128;

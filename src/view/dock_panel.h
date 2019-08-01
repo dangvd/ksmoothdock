@@ -319,6 +319,7 @@ class DockPanel : public QWidget {
   QAction* visibilityAlwaysVisibleAction_;
   QAction* visibilityAutoHideAction_;
   QAction* visibilityWindowsCanCoverAction_;
+  QAction* visibilityWindowsCanCoverQuietAction_;
   QAction* visibilityWindowsGoBelowAction_;
   QAction* applicationMenuAction_;
   QAction* applicationMenuSettings_;
