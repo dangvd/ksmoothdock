@@ -86,16 +86,18 @@ bool TaskHelper::isValidTask(WId wId) {
   }
 
   KWindowInfo info(wId, NET::WMState | NET::WMWindowType);
-  if (info.valid()) {
-    const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
-    if (windowType == NET::Dock || windowType == NET::Desktop) {
-      return false;
-    }
+  if (!info.valid()) {
+    return false;
+  }
 
-    const auto state = info.state();
-    if (state & NET::SkipTaskbar) {
-      return false;
-    }
+  const auto windowType = info.windowType(NET::DockMask | NET::DesktopMask);
+  if (windowType == NET::Dock || windowType == NET::Desktop) {
+    return false;
+  }
+
+  const auto state = info.state();
+  if (state & NET::SkipTaskbar) {
+    return false;
   }
 
   return true;
@@ -113,14 +115,15 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 
   if (currentDesktopOnly) {
     KWindowInfo info(wId, NET::WMDesktop);
-    if (info.valid() && info.desktop() != currentDesktop_ && !info.onAllDesktops()) {
+    if (!info.valid() || (info.desktop() != currentDesktop_ && !info.onAllDesktops())) {
       return false;
     }
   }
 
   if (currentActivityOnly) {
     KWindowInfo info(wId, 0, NET::WM2Activities);
-    if (info.valid() && !info.activities().empty() && !info.activities().contains(currentActivity_)) {
+    if (!info.valid() ||
+        (!info.activities().empty() && !info.activities().contains(currentActivity_))) {
       return false;
     }
   }
