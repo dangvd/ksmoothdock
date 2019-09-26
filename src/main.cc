@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
   KAboutData about(
       "ksmoothdock",
       "KSmoothDock",
-      "5.15",
+      "5.15+ (Development Build)",
       i18n("A cool desktop panel for KDE Plasma 5"),
       KAboutLicense::GPL_V3,
       i18n("Copyright (C) 2019 Viet Dang (dangvd@gmail.com)"),
