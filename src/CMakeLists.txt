@@ -34,6 +34,7 @@ set(SRCS
     view/iconless_dock_item.cc
     view/launcher.cc
     view/multi_dock_view.cc
+    view/program.cc
     view/task.cc
     view/task_manager_settings_dialog.cc
     view/tooltip.cc

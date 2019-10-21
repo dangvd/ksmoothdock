@@ -42,9 +42,23 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
   name_ = command_.left(command_.indexOf(" "));
 }
 
+Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
+    Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
+    int maxSize, const QString& command)
+    : IconBasedDockItem(parent, label, orientation, icon, iconName, minSize,
+          maxSize),
+      model_(model),
+      command_(command),
+      launching_(false) {
+  name_ = command_.left(command_.indexOf(" "));
+}
+
 void Program::draw(QPainter *painter) const {
-  if (launching_ || !tasks_.empty()) {
+  if (launching_ || (!tasks_.empty() && active())) {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
+                        5, size_ / 8, painter);
+  } else if (!tasks_.empty()) {
+    drawHighlightedIcon(model_->backgroundColor().darker(200), left_, top_, getWidth(), getHeight(),
                         5, size_ / 8, painter);
   }
   IconBasedDockItem::draw(painter);

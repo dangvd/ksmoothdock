@@ -21,6 +21,10 @@
 
 #include <vector>
 
+#include <QPixmap>
+
+#include <KWindowSystem>
+
 #include "icon_based_dock_item.h"
 
 #include <model/multi_dock_model.h>
@@ -43,6 +47,10 @@ class Program : public IconBasedDockItem {
       Qt::Orientation orientation, const QString& iconName, int minSize,
       int maxSize, const QString& command);
 
+  Program(DockPanel* parent, MultiDockModel* model, const QString& label,
+      Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
+      int maxSize, const QString& command);
+
   ~Program() override = default;
 
   QString name() const { return name_; }
@@ -57,6 +65,15 @@ class Program : public IconBasedDockItem {
 
   void addTask(const ProgramTask& task) {
     tasks_.push_back(task);
+  }
+
+  bool active() const {
+    for (const ProgramTask& task : tasks_) {
+      if (KWindowSystem::activeWindow() == task.wId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   static void launch(const QString& command);

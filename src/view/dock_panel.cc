@@ -48,6 +48,7 @@
 #include "desktop_selector.h"
 #include "launcher.h"
 #include "multi_dock_view.h"
+#include "program.h"
 #include "task.h"
 #include <utils/command_utils.h>
 #include <utils/task_helper.h>
@@ -511,9 +512,8 @@ void DockPanel::leaveEvent(QEvent* e) {
 
 void DockPanel::initUi() {
   initApplicationMenu();
-  initLaunchers();
   initPager();
-  initTasks();
+  initPrograms();
   initClock();
   initLayoutVars();
   updateLayout();
@@ -713,6 +713,36 @@ void DockPanel::initApplicationMenu() {
   }
 }
 
+void DockPanel::initPrograms() {
+  std::vector<Program*> programs;
+  for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
+    items_.push_back(std::make_unique<Program>(
+        this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
+        maxSize_, launcherConfig.command));
+    programs.push_back(dynamic_cast<Program*>(items_.back().get()));
+  }
+
+  auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
+  for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
+    bool programExists = false;
+    for (auto* program : programs) {
+      if (program->name() == task.program) {
+        program->addTask(ProgramTask(task.wId, task.name, task.demandsAttention));
+        programExists = true;
+        break;
+      }
+    }
+    if (!programExists) {
+      items_.push_back(std::make_unique<Program>(
+          this, model_, task.program, orientation_, task.icon, task.iconName, minSize_,
+          maxSize_, task.program));
+      Program* program = dynamic_cast<Program*>(items_.back().get());
+      program->addTask(ProgramTask(task.wId, task.name, task.demandsAttention));
+      programs.push_back(program);
+    }
+  }
+}
+
 void DockPanel::initPager() {
   if (showPager_) {
     for (int desktop = 1; desktop <= KWindowSystem::numberOfDesktops();
@@ -735,15 +765,18 @@ void DockPanel::initTasks() {
 }
 
 void DockPanel::reloadTasks() {
+  /*
   const int itemsToKeep = applicationMenuItemCount() + launcherItemCount() +
       pagerItemCount();
   items_.resize(itemsToKeep);
   initTasks();
   initClock();
   resizeTaskManager();
+  */
 }
 
 void DockPanel::addTask(WId wId) {
+  /*
   // Check if the task already exists in the list.
   const auto currentPos = findTask(wId);
   if (currentPos != end_task()) {
@@ -771,14 +804,17 @@ void DockPanel::addTask(WId wId) {
                     this, model_, task.name, orientation_, task.icon, task.iconName, minSize_,
                     maxSize_, task.wId, task.program, task.demandsAttention));
   resizeTaskManager();
+  */
 }
 
 void DockPanel::removeTask(WId wId) {
+  /*
   auto taskPosition = findTask(wId);
   if (taskPosition != end_task()) {
     items_.erase(taskPosition);
     resizeTaskManager();
   }
+  */
 }
 
 std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
