@@ -231,11 +231,11 @@ class DockPanel : public QWidget {
 
   void initLaunchers();
   void initApplicationMenu();
-  void initPrograms();
   void initPager();
   void initTasks();
   void reloadTasks();
-  void addTask(WId wId);
+  void addTask(const TaskInfo& task);
+  void addTask(WId wId) { addTask(taskHelper_.getTaskInfo(wId)); }
   void removeTask(WId wId);
   void initClock();
 

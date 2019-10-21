@@ -63,9 +63,9 @@ class Program : public IconBasedDockItem {
 
   void mousePressEvent(QMouseEvent* e) override;
 
-  void addTask(const ProgramTask& task) {
-    tasks_.push_back(task);
-  }
+  bool addTask(const TaskInfo& task) override;
+
+  bool beforeTask(const TaskInfo& task) override;
 
   bool active() const {
     for (const ProgramTask& task : tasks_) {

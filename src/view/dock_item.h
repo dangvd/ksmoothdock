@@ -24,6 +24,8 @@
 #include <QString>
 #include <Qt>
 
+#include <utils/task_helper.h>
+
 namespace ksmoothdock {
 
 class DockPanel;
@@ -56,6 +58,12 @@ class DockItem {
   // (i.e. not dock-specific) config that they need to reload when the config
   // has been changed by another dock (not their parent dock).
   virtual void loadConfig() {}
+
+  // Tries to add the task, e.g. for a Program dock item.
+  virtual bool addTask(const TaskInfo& task) { return false; }
+
+  // Will this item be ordered before the Program item for this task?
+  virtual bool beforeTask(const TaskInfo& task) { return true; }
 
   // This is virtual so dynamic label can be implemented in its subclasses.
   virtual QString getLabel() const { return label_; }

@@ -34,8 +34,7 @@ namespace ksmoothdock {
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
     int maxSize, const QString& command)
-    : IconBasedDockItem(parent, label, orientation, iconName, minSize,
-          maxSize),
+    : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
       launching_(false) {
@@ -45,8 +44,7 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
     int maxSize, const QString& command)
-    : IconBasedDockItem(parent, label, orientation, icon, iconName, minSize,
-          maxSize),
+    : IconBasedDockItem(parent, label, orientation, icon, iconName, minSize, maxSize),
       model_(model),
       command_(command),
       launching_(false) {
@@ -72,6 +70,18 @@ void Program::mousePressEvent(QMouseEvent* e) {
       launch(command_);
     }
   }
+}
+
+bool Program::addTask(const TaskInfo& task) {
+  if (name_ == task.program) {
+    tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
+    return true;
+  }
+  return false;
+}
+
+bool Program::beforeTask(const TaskInfo& task) {
+  return name_ < task.program;
 }
 
 void Program::launch(const QString& command) {

@@ -342,7 +342,7 @@ void DockPanel::removeDock() {
 }
 
 void DockPanel::onWindowAdded(WId wId) {
-  if (showTaskManager() && taskHelper_.isValidTask(wId, screen_)) {
+  if (taskHelper_.isValidTask(wId, screen_)) {
     // Now inserts it.
     addTask(wId);
   }
@@ -513,7 +513,8 @@ void DockPanel::leaveEvent(QEvent* e) {
 void DockPanel::initUi() {
   initApplicationMenu();
   initPager();
-  initPrograms();
+  initLaunchers();
+  initTasks();
   initClock();
   initLayoutVars();
   updateLayout();
@@ -698,14 +699,6 @@ void DockPanel::loadAppearanceConfig() {
   tooltipFontSize_ = model_->tooltipFontSize();
 }
 
-void DockPanel::initLaunchers() {
-  for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
-    items_.push_back(std::make_unique<Launcher>(
-        this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
-        maxSize_, launcherConfig.command));
-  }
-}
-
 void DockPanel::initApplicationMenu() {
   if (showApplicationMenu_) {
     items_.push_back(std::make_unique<ApplicationMenu>(
@@ -713,33 +706,11 @@ void DockPanel::initApplicationMenu() {
   }
 }
 
-void DockPanel::initPrograms() {
-  std::vector<Program*> programs;
+void DockPanel::initLaunchers() {
   for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
     items_.push_back(std::make_unique<Program>(
         this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
         maxSize_, launcherConfig.command));
-    programs.push_back(dynamic_cast<Program*>(items_.back().get()));
-  }
-
-  auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
-  for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
-    bool programExists = false;
-    for (auto* program : programs) {
-      if (program->name() == task.program) {
-        program->addTask(ProgramTask(task.wId, task.name, task.demandsAttention));
-        programExists = true;
-        break;
-      }
-    }
-    if (!programExists) {
-      items_.push_back(std::make_unique<Program>(
-          this, model_, task.program, orientation_, task.icon, task.iconName, minSize_,
-          maxSize_, task.program));
-      Program* program = dynamic_cast<Program*>(items_.back().get());
-      program->addTask(ProgramTask(task.wId, task.name, task.demandsAttention));
-      programs.push_back(program);
-    }
   }
 }
 
@@ -754,13 +725,9 @@ void DockPanel::initPager() {
 }
 
 void DockPanel::initTasks() {
-  if (showTaskManager()) {
-    auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
-    for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
-      items_.push_back(std::make_unique<Task>(
-          this, model_, task.name, orientation_, task.icon, task.iconName, minSize_, maxSize_,
-          task.wId, task.program, task.demandsAttention));
-    }
+  auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
+  for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
+    addTask(task);
   }
 }
 
@@ -775,36 +742,20 @@ void DockPanel::reloadTasks() {
   */
 }
 
-void DockPanel::addTask(WId wId) {
-  /*
-  // Check if the task already exists in the list.
-  const auto currentPos = findTask(wId);
-  if (currentPos != end_task()) {
-    return;
-  }
-
-  // Now add the new task.
-  const auto newTaskInfo = TaskHelper::getBasicTaskInfo(wId);
-  const auto insertPos = std::find_if(begin_task(), end_task(),
-      [&newTaskInfo](const auto& item) {
-    if (item) {
-      const auto* task = dynamic_cast<Task*>(item.get());
-      if (task) {
-        const auto taskInfo = TaskHelper::getBasicTaskInfo(task->wId());
-        if (newTaskInfo < taskInfo) {
-          return true;
-        }
-      }
+void DockPanel::addTask(const TaskInfo& task) {
+  for (const auto& item : items_) {
+    if (item->addTask(task)) {
+      return;
     }
-    return false;
-  });
-  const auto task = taskHelper_.getTaskInfo(wId);
-  items_.insert(insertPos,
-                std::make_unique<Task>(
-                    this, model_, task.name, orientation_, task.icon, task.iconName, minSize_,
-                    maxSize_, task.wId, task.program, task.demandsAttention));
-  resizeTaskManager();
-  */
+  }
+  for (const auto& item : items_) {
+    if (!item->beforeTask(task)) {
+      items_.push_back(std::make_unique<Program>(
+          this, model_, task.program, orientation_, task.icon, task.iconName, minSize_,
+          maxSize_, task.program));
+      items_.back()->addTask(task);
+    }
+  }
 }
 
 void DockPanel::removeTask(WId wId) {
