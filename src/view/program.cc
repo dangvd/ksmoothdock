@@ -67,7 +67,15 @@ void Program::mousePressEvent(QMouseEvent* e) {
     if (command_ == kShowDesktopCommand) {
       KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
     } else {
-      launch(command_);
+      if (tasks_.empty()) {
+        launch(command_);
+      } else {
+        if (active()) {
+          KWindowSystem::minimizeWindow(tasks_[0].wId);
+        } else {
+          KWindowSystem::forceActiveWindow(tasks_[0].wId);
+        }
+      }
     }
   }
 }
@@ -76,6 +84,25 @@ bool Program::addTask(const TaskInfo& task) {
   if (name_ == task.program) {
     tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
     return true;
+  }
+  return false;
+}
+
+bool Program::removeTask(WId wId) {
+  for (int i = 0; i < static_cast<int>(tasks_.size()); ++i) {
+    if (tasks_[i].wId == wId) {
+      tasks_.erase(tasks_.begin() + i);
+      return true;
+    }
+  }
+  return false;
+}
+
+bool Program::hasTask(WId wId) {
+  for (const auto& task : tasks_) {
+    if (task.wId == wId) {
+      return true;
+    }
   }
   return false;
 }

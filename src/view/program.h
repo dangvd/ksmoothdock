@@ -65,6 +65,10 @@ class Program : public IconBasedDockItem {
 
   bool addTask(const TaskInfo& task) override;
 
+  bool removeTask(WId wId) override;
+
+  bool hasTask(WId wId) override;
+
   bool beforeTask(const TaskInfo& task) override;
 
   bool active() const {

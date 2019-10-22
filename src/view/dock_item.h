@@ -59,8 +59,14 @@ class DockItem {
   // has been changed by another dock (not their parent dock).
   virtual void loadConfig() {}
 
-  // Tries to add the task, e.g. for a Program dock item.
+  // Handles adding the task, e.g. for a Program dock item.
   virtual bool addTask(const TaskInfo& task) { return false; }
+
+  // Handles removing the task, e.g. for a Program dock item.
+  virtual bool removeTask(WId wId) { return false; }
+
+  // Does this (Program) dock item already have this task?
+  virtual bool hasTask(WId wId) { return false; }
 
   // Will this item be ordered before the Program item for this task?
   virtual bool beforeTask(const TaskInfo& task) { return true; }

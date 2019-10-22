@@ -349,9 +349,7 @@ void DockPanel::onWindowAdded(WId wId) {
 }
 
 void DockPanel::onWindowRemoved(WId wId) {
-  if (showTaskManager()) {
-    removeTask(wId);
-  }
+  removeTask(wId);
 }
 
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
@@ -743,11 +741,18 @@ void DockPanel::reloadTasks() {
 }
 
 void DockPanel::addTask(const TaskInfo& task) {
-  for (const auto& item : items_) {
+  for (auto& item : items_) {
+    if (item->hasTask(task.wId)) {
+      return;
+    }
+  }
+
+  for (auto& item : items_) {
     if (item->addTask(task)) {
       return;
     }
   }
+
   for (const auto& item : items_) {
     if (!item->beforeTask(task)) {
       items_.push_back(std::make_unique<Program>(
@@ -759,13 +764,11 @@ void DockPanel::addTask(const TaskInfo& task) {
 }
 
 void DockPanel::removeTask(WId wId) {
-  /*
-  auto taskPosition = findTask(wId);
-  if (taskPosition != end_task()) {
-    items_.erase(taskPosition);
-    resizeTaskManager();
+  for (auto& item : items_) {
+    if (item->removeTask(wId)) {
+      return;
+    }
   }
-  */
 }
 
 std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
