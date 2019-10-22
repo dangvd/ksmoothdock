@@ -61,7 +61,7 @@ inline void drawHighlightedIcon(QColor bgColor, int left, int top, int width, in
                                 int padding, int roundedRectRadius, QPainter* painter,
                                 float alpha = 0.42) {
   painter->setRenderHint(QPainter::Antialiasing);
-  QColor fillColor = bgColor.lighter(300);
+  QColor fillColor = bgColor.lighter(500);
   fillColor.setAlphaF(alpha);
   QPainterPath path;
   path.addRoundedRect(
