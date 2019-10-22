@@ -715,22 +715,25 @@ void DockPanel::reloadTasks() {
 void DockPanel::addTask(const TaskInfo& task) {
   std::cout << dockId_ << ": Adding task of: " << task.program.toStdString() << task.wId << std::endl;
 
+  // Checks is the task already exists.
   for (auto& item : items_) {
     if (item->hasTask(task.wId)) {
       return;
     }
   }
 
+  // Tries adding the task to existing programs.
   for (auto& item : items_) {
     if (item->addTask(task)) {
       return;
     }
   }
 
-  for (int i = 0; i < static_cast<int>(items_.size()); ++i) {
+  // Adds a new program.
+  for (int i = 0; i < itemCount(); ++i) {
     if (!items_[i]->beforeTask(task)) {
       items_.insert(items_.begin() + i, std::make_unique<Program>(
-          this, model_, task.program, orientation_, task.icon, task.iconName, minSize_,
+          this, model_, task.program, orientation_, task.icon, minSize_,
           maxSize_, task.program));
       items_[i]->addTask(task);
       break;
@@ -739,8 +742,12 @@ void DockPanel::addTask(const TaskInfo& task) {
 }
 
 void DockPanel::removeTask(WId wId) {
-  for (auto& item : items_) {
-    if (item->removeTask(wId)) {
+  for (int i = 0; i < itemCount(); ++i) {
+    if (items_[i]->removeTask(wId)) {
+      if (items_[i]->shouldBeRemoved()) {
+        items_.erase(items_.begin() + i);
+        resizeTaskManager();
+      }
       return;
     }
   }

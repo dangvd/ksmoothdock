@@ -48,7 +48,7 @@ class Program : public IconBasedDockItem {
       int maxSize, const QString& command);
 
   Program(DockPanel* parent, MultiDockModel* model, const QString& label,
-      Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
+      Qt::Orientation orientation, const QPixmap& icon, int minSize,
       int maxSize, const QString& command);
 
   ~Program() override = default;
@@ -71,6 +71,10 @@ class Program : public IconBasedDockItem {
 
   bool beforeTask(const TaskInfo& task) override;
 
+  bool shouldBeRemoved() override { return taskCount() == 0 && !pinned_; }
+
+  int taskCount() const { return static_cast<int>(tasks_.size()); }
+
   bool active() const { return getActiveTask() >= 0; }
 
   int getActiveTask() const {
@@ -82,6 +86,8 @@ class Program : public IconBasedDockItem {
     return -1;
   }
 
+  bool pinned() { return pinned_; }
+
   static void launch(const QString& command);
   static void lockScreen() { launch(kLockScreenCommand); }
 
@@ -90,6 +96,7 @@ class Program : public IconBasedDockItem {
   QString name_;
   QString command_;
   bool launching_;
+  bool pinned_;
   std::vector<ProgramTask> tasks_;
 
   friend class DockPanel;

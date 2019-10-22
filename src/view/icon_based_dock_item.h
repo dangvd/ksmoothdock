@@ -36,7 +36,7 @@ class IconBasedDockItem : public DockItem {
   IconBasedDockItem(DockPanel* parent, const QString& label, Qt::Orientation orientation,
                     const QString& iconName, int minSize, int maxSize);
   IconBasedDockItem(DockPanel* parent, const QString& label, Qt::Orientation orientation,
-                    const QPixmap& icon, const QString& iconName, int minSize, int maxSize);
+                    const QPixmap& icon, int minSize, int maxSize);
   virtual ~IconBasedDockItem() {}
 
   int getWidthForSize(int size) const override {

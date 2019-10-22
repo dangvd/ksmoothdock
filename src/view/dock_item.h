@@ -71,6 +71,9 @@ class DockItem {
   // Will this item be ordered before the Program item for this task?
   virtual bool beforeTask(const TaskInfo& task) { return true; }
 
+  // Should be removed for example if a Program item has no task and is not pinned.
+  virtual bool shouldBeRemoved() { return false; }
+
   // This is virtual so dynamic label can be implemented in its subclasses.
   virtual QString getLabel() const { return label_; }
   void setLabel(const QString& label) { label_ = label; }

@@ -37,17 +37,19 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
-      launching_(false) {
+      launching_(false),
+      pinned_(true) {
   name_ = command_.left(command_.indexOf(" "));
 }
 
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
-    Qt::Orientation orientation, const QPixmap& icon, const QString& iconName, int minSize,
+    Qt::Orientation orientation, const QPixmap& icon, int minSize,
     int maxSize, const QString& command)
-    : IconBasedDockItem(parent, label, orientation, icon, iconName, minSize, maxSize),
+    : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
       model_(model),
       command_(command),
-      launching_(false) {
+      launching_(false),
+      pinned_(false) {
   name_ = command_.left(command_.indexOf(" "));
 }
 

@@ -145,7 +145,7 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
   const auto name = info.visibleName();
   QPixmap icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
 
-  return TaskInfo(wId, program, name, icon, "", info.state() == NET::DemandsAttention);
+  return TaskInfo(wId, program, name, icon, info.state() == NET::DemandsAttention);
 }
 
 int TaskHelper::getScreen(WId wId) {
