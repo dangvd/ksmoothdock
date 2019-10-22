@@ -143,35 +143,9 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
 
   const auto program = QString(info.windowClassName());
   const auto name = info.visibleName();
-  QPixmap icon;
-  QString iconName;
+  QPixmap icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
 
-  for (const auto& rule : iconOverrideRules_) {
-    if (rule.program.isEmpty() || program == rule.program) {
-      // Check substring matching.
-      if (name.contains(rule.window_name_regex)) {
-        iconName = rule.icon;
-        break;
-      }
-
-      // Check regex matching.
-      try {
-        std::regex re(rule.window_name_regex.toStdString());
-        std::smatch m;
-        std::string sname(name.toStdString());
-        if (std::regex_match(sname, m, re)) {
-          iconName = rule.icon;
-          break;
-        }
-      } catch (const std::regex_error& e) { /* Ignore */ }
-    }
-  }
-
-  if (iconName.isEmpty()) {
-    icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
-  }
-
-  return TaskInfo(wId, program, name, icon, iconName, info.state() == NET::DemandsAttention);
+  return TaskInfo(wId, program, name, icon, "", info.state() == NET::DemandsAttention);
 }
 
 int TaskHelper::getScreen(WId wId) {

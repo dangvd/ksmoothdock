@@ -44,6 +44,7 @@ class Clock : public QObject, public IconlessDockItem {
   void mousePressEvent(QMouseEvent* e) override;
   void loadConfig() override;
   QString getLabel() const override;
+  bool beforeTask(const TaskInfo& task) override { return false; }
 
  public slots:
   void updateTime();

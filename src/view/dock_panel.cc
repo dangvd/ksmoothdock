@@ -182,23 +182,11 @@ void DockPanel::reload() {
 }
 
 void DockPanel::onCurrentDesktopChanged() {
-  if (showTaskManager()) {
-    reloadTasks();
-  } else {
-    // This is to fix the bug that if launched from Plasma desktop (Run),
-    // when the current desktop has changed, docks on the right side won't
-    // show.
-    resize(width(), height());
-    // We also need to repaint anyway to update the border around the current
-    // desktop if pager is on.
-    update();
-  }
+  reloadTasks();
 }
 
 void DockPanel::onCurrentActivityChanged() {
-  if (showTaskManager()) {
-    reloadTasks();
-  }
+  reloadTasks();
 }
 
 void DockPanel::setStrut() {
@@ -345,16 +333,19 @@ void DockPanel::onWindowAdded(WId wId) {
   if (taskHelper_.isValidTask(wId, screen_)) {
     // Now inserts it.
     addTask(wId);
+    resizeTaskManager();
   }
 }
 
 void DockPanel::onWindowRemoved(WId wId) {
   removeTask(wId);
+  // TODO: optimise.
+  // reloadTasks();
 }
 
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
-  if (showTaskManager() && wId != winId() && wId != tooltip_.winId() &&
+  if (wId != winId() && wId != tooltip_.winId() &&
       taskHelper_.isValidTask(wId)) {
     auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
     if (properties & NET::WMDesktop || properties & NET::WMGeometry) {
@@ -362,23 +353,6 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
         addTask(wId);
       } else {
         removeTask(wId);
-      }
-    } else if (properties & NET::WMName || properties & NET::WMIcon || properties & NET::WMState) {
-      auto taskPosition = findTask(wId);
-      if (taskPosition != end_task()) {
-        auto* task = dynamic_cast<Task*>((*taskPosition).get());
-        TaskInfo taskInfo = taskHelper_.getTaskInfo(wId);
-        if (properties & NET::WMName) {
-          task->setLabel(taskInfo.name);
-          if (!taskInfo.iconName.isEmpty() && taskInfo.iconName != task->getIconName()) {
-            task->setIconName(taskInfo.iconName);
-          }
-        } else if (properties & NET::WMIcon) {
-          task->setIcon(taskInfo.icon);
-        } else if (properties & NET::WMState) {
-          task->setDemandsAttention(taskInfo.demandsAttention);
-        }
-        update();
       }
     }
   }
@@ -730,17 +704,17 @@ void DockPanel::initTasks() {
 }
 
 void DockPanel::reloadTasks() {
-  /*
-  const int itemsToKeep = applicationMenuItemCount() + launcherItemCount() +
-      pagerItemCount();
+  const int itemsToKeep = applicationMenuItemCount() + pagerItemCount();
   items_.resize(itemsToKeep);
+  initLaunchers();
   initTasks();
   initClock();
   resizeTaskManager();
-  */
 }
 
 void DockPanel::addTask(const TaskInfo& task) {
+  std::cout << dockId_ << ": Adding task of: " << task.program.toStdString() << task.wId << std::endl;
+
   for (auto& item : items_) {
     if (item->hasTask(task.wId)) {
       return;
@@ -753,12 +727,13 @@ void DockPanel::addTask(const TaskInfo& task) {
     }
   }
 
-  for (const auto& item : items_) {
-    if (!item->beforeTask(task)) {
-      items_.push_back(std::make_unique<Program>(
+  for (int i = 0; i < static_cast<int>(items_.size()); ++i) {
+    if (!items_[i]->beforeTask(task)) {
+      items_.insert(items_.begin() + i, std::make_unique<Program>(
           this, model_, task.program, orientation_, task.icon, task.iconName, minSize_,
           maxSize_, task.program));
-      items_.back()->addTask(task);
+      items_[i]->addTask(task);
+      break;
     }
   }
 }
@@ -1065,7 +1040,6 @@ void DockPanel::resizeTaskManager() {
   }
 
   const int itemsToKeep = (showApplicationMenu_ ? 1 : 0) +
-      model_->dockLauncherConfigs(dockId_).size() +
       (showPager_ ? KWindowSystem::numberOfDesktops() : 0);
   int left = 0;
   int top = 0;

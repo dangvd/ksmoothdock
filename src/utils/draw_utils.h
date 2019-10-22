@@ -58,10 +58,11 @@ inline void drawBorderedText(int x, int y, int width, int height, int flags,
 }
 
 inline void drawHighlightedIcon(QColor bgColor, int left, int top, int width, int height,
-                                int padding, int roundedRectRadius, QPainter* painter) {
+                                int padding, int roundedRectRadius, QPainter* painter,
+                                float alpha = 0.42) {
   painter->setRenderHint(QPainter::Antialiasing);
   QColor fillColor = bgColor.lighter(300);
-  fillColor.setAlphaF(0.42);
+  fillColor.setAlphaF(alpha);
   QPainterPath path;
   path.addRoundedRect(
       QRect(left - padding, top - padding, width + 2 * padding, height + 2 * padding),

@@ -71,13 +71,15 @@ class Program : public IconBasedDockItem {
 
   bool beforeTask(const TaskInfo& task) override;
 
-  bool active() const {
-    for (const ProgramTask& task : tasks_) {
-      if (KWindowSystem::activeWindow() == task.wId) {
-        return true;
+  bool active() const { return getActiveTask() >= 0; }
+
+  int getActiveTask() const {
+    for (int i = 0; i < static_cast<int>(tasks_.size()); ++i) {
+      if (KWindowSystem::activeWindow() == tasks_[i].wId) {
+        return i;
       }
     }
-    return false;
+    return -1;
   }
 
   static void launch(const QString& command);

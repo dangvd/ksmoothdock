@@ -56,8 +56,8 @@ void Program::draw(QPainter *painter) const {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
                         5, size_ / 8, painter);
   } else if (!tasks_.empty()) {
-    drawHighlightedIcon(model_->backgroundColor().darker(200), left_, top_, getWidth(), getHeight(),
-                        5, size_ / 8, painter);
+    drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
+                        5, size_ / 8, painter, 0.25);
   }
   IconBasedDockItem::draw(painter);
 }
@@ -70,8 +70,16 @@ void Program::mousePressEvent(QMouseEvent* e) {
       if (tasks_.empty()) {
         launch(command_);
       } else {
-        if (active()) {
-          KWindowSystem::minimizeWindow(tasks_[0].wId);
+        const auto activeTask = getActiveTask();
+        if (activeTask >= 0) {
+          if (tasks_.size() == 1) {
+            KWindowSystem::minimizeWindow(tasks_[0].wId);
+          } else {
+            // Cycles through tasks.
+            auto nextTask = (activeTask < static_cast<int>(tasks_.size() - 1)) ?
+                  (activeTask + 1) : 0;
+            KWindowSystem::forceActiveWindow(tasks_[nextTask].wId);
+          }
         } else {
           KWindowSystem::forceActiveWindow(tasks_[0].wId);
         }
