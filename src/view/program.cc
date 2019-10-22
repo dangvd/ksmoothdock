@@ -28,6 +28,7 @@
 #include <KMessageBox>
 #include <KWindowSystem>
 
+#include "dock_panel.h"
 #include <utils/draw_utils.h>
 
 namespace ksmoothdock {
@@ -41,6 +42,7 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       launching_(false),
       pinned_(true) {
   name_ = command_.left(command_.indexOf(" "));
+  createMenu();
 }
 
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
@@ -52,6 +54,7 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       launching_(false),
       pinned_(false) {
   name_ = command_.left(command_.indexOf(" "));
+  createMenu();
 }
 
 void Program::draw(QPainter *painter) const {
@@ -93,6 +96,8 @@ void Program::mousePressEvent(QMouseEvent* e) {
         }
       }
     }
+  } else if (e->button() == Qt::RightButton) {
+    menu_.popup(e->globalPos());
   }
 }
 
@@ -132,6 +137,19 @@ void Program::launch(const QString& command) {
     KMessageBox::error(nullptr,
         i18n("Could not run command: ") + command);
   }
+}
+
+void Program::createMenu() {
+  pinAction_ = menu_.addAction(
+      i18n("Pinned"), this,
+      [this] {
+        pinUnpin();
+      });
+  pinAction_->setCheckable(true);
+  pinAction_->setChecked(pinned_);
+
+  menu_.addSeparator();
+  parent_->addPanelSettings(&menu_);
 }
 
 }  // namespace ksmoothdock

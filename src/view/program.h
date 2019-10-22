@@ -21,6 +21,8 @@
 
 #include <vector>
 
+#include <QAction>
+#include <QMenu>
 #include <QPixmap>
 
 #include <KWindowSystem>
@@ -41,7 +43,9 @@ struct ProgramTask {
     : wId(wId2), name(name2), demandsAttention(demandsAttention2) {}
 };
 
-class Program : public IconBasedDockItem {
+class Program : public QObject, public IconBasedDockItem {
+  Q_OBJECT
+
  public:
   Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
@@ -87,17 +91,24 @@ class Program : public IconBasedDockItem {
   }
 
   bool pinned() { return pinned_; }
+  void pinUnpin() { pinned_ = !pinned_; }
 
   static void launch(const QString& command);
   static void lockScreen() { launch(kLockScreenCommand); }
 
  private:
+  void createMenu();
+
   MultiDockModel* model_;
   QString name_;
   QString command_;
   bool launching_;
   bool pinned_;
   std::vector<ProgramTask> tasks_;
+
+  // Context (right-click) menu.
+  QMenu menu_;
+  QAction* pinAction_;
 
   friend class DockPanel;
 };
