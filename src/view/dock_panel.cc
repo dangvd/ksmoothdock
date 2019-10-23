@@ -351,6 +351,7 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
     if (properties & NET::WMDesktop || properties & NET::WMGeometry) {
       if (taskHelper_.isValidTask(wId, screen, model_->currentDesktopTasksOnly())) {
         addTask(wId);
+        resizeTaskManager();
       } else {
         removeTask(wId);
       }
@@ -730,15 +731,12 @@ void DockPanel::addTask(const TaskInfo& task) {
   }
 
   // Adds a new program.
-  for (int i = 0; i < itemCount(); ++i) {
-    if (!items_[i]->beforeTask(task)) {
-      items_.insert(items_.begin() + i, std::make_unique<Program>(
-          this, model_, task.program, orientation_, task.icon, minSize_,
-          maxSize_, task.program));
-      items_[i]->addTask(task);
-      break;
-    }
-  }
+  int i = 0;
+  for (; i < itemCount() && items_[i]->beforeTask(task); ++i);
+  items_.insert(items_.begin() + i, std::make_unique<Program>(
+      this, model_, task.program, orientation_, task.icon, minSize_,
+      maxSize_, task.program));
+  items_[i]->addTask(task);
 }
 
 void DockPanel::removeTask(WId wId) {

@@ -141,6 +141,9 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName | NET::WMState, NET::WM2WindowClass);
 
+  std::cout << info.windowClassClass().toStdString() << " "
+            << info.windowClassName().toStdString() << std::endl;
+
   const auto program = QString(info.windowClassName());
   const auto name = info.visibleName();
   QPixmap icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
