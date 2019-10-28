@@ -371,18 +371,15 @@ class MultiDockModel : public QObject {
   }
 
   void addLauncher(int dockId, const LauncherConfig& launcher) {
-    auto launchers = std::get<3>(dockConfigs_[dockId]);
-    for (unsigned i = 0; i < launchers.size(); ++i) {
-      if (!(launchers[i].name < launcher.command)) {
-        launchers.insert(launchers.begin() + i, launcher);
-        syncDockLaunchersConfig(dockId);
-        return;
-      }
-    }
+    auto& launchers = std::get<3>(dockConfigs_[dockId]);
+    unsigned int i = 0;
+    for (; i < launchers.size() && launchers[i].name < launcher.command; ++i) {}
+    launchers.insert(launchers.begin() + i, launcher);
+    syncDockLaunchersConfig(dockId);
   }
 
   void removeLauncher(int dockId, const QString& command) {
-    auto launchers = std::get<3>(dockConfigs_[dockId]);
+    auto& launchers = std::get<3>(dockConfigs_[dockId]);
     for (unsigned i = 0; i < launchers.size(); ++i) {
       if (launchers[i].command == command) {
         launchers.erase(launchers.begin() + i);
