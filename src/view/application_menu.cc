@@ -21,7 +21,6 @@
 #include <algorithm>
 
 #include <QApplication>
-#include <QDir>
 #include <QDrag>
 #include <QMimeData>
 #include <QStringBuilder>
@@ -34,59 +33,9 @@
 
 #include "dock_panel.h"
 #include "launcher.h"
-#include <utils/command_utils.h>
 #include <utils/draw_utils.h>
 
 namespace ksmoothdock {
-
-const std::vector<Category> ApplicationMenu::kSessionSystemCategories = {
-  {"Session", "Session", "system-switch-user", {
-    {"Lock Screen",
-      "",
-      "system-lock-screen",
-      "qdbus org.kde.screensaver /ScreenSaver Lock",
-      ""},
-    {"Log Out",
-      "",
-      "system-log-out",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 0 3",
-      ""},
-    {"Switch User",
-      "",
-      "system-switch-user",
-      "qdbus org.kde.ksmserver /KSMServer openSwitchUserDialog",
-      ""}
-    }
-  },
-  {"Power", "Power", "system-shutdown", {
-    {"Suspend",
-      "",
-      "system-suspend",
-      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
-      "Suspend",
-      ""},
-    {"Hibernate",
-      "",
-      "system-suspend-hibernate",
-      "qdbus org.kde.Solid.PowerManagement /org/freedesktop/PowerManagement "
-      "Hibernate",
-      ""},
-    {"Reboot",
-      "",
-      "system-reboot",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 1 3",
-      ""},
-    {"Shut Down",
-      "",
-      "system-shutdown",
-      "qdbus org.kde.ksmserver /KSMServer logout -1 2 3",
-      ""}
-    }
-  }
-};
-const ApplicationEntry ApplicationMenu::kSearchEntry = {
-  "Search", "", "system-search", "krunner", ""
-};
 
 int ApplicationMenuStyle::pixelMetric(
     PixelMetric metric, const QStyleOption *option, const QWidget *widget)
@@ -97,25 +46,17 @@ int ApplicationMenuStyle::pixelMetric(
   return QProxyStyle::pixelMetric(metric, option, widget);
 }
 
-bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2) {
-  return e1.name < e2.name;
-}
-
 ApplicationMenu::ApplicationMenu(
     DockPanel *parent, MultiDockModel* model, Qt::Orientation orientation,
-    int minSize, int maxSize, const QStringList& entryDirs)
+    int minSize, int maxSize)
     : IconBasedDockItem(parent, "" /* label */, orientation, "" /* iconName */,
                         minSize, maxSize),
       model_(model),
-      entryDirs_(entryDirs),
-      showingMenu_(false),
-      fileWatcher_(entryDirs) {
+      showingMenu_(false) {
   menu_.setStyle(&style_);
   menu_.setStyleSheet(getStyleSheet());
 
   loadConfig();
-  initCategories();
-  loadEntries();
   buildMenu();
 
   createContextMenu();
@@ -127,9 +68,7 @@ ApplicationMenu::ApplicationMenu(
   connect(&menu_, SIGNAL(aboutToHide()), parent_, SLOT(setStrut()));
   connect(&menu_, &QMenu::aboutToHide, this,
           [this]() { showingMenu_ = false; } );
-  connect(&fileWatcher_, SIGNAL(directoryChanged(const QString&)),
-          this, SLOT(reloadMenu()));
-  connect(&fileWatcher_, SIGNAL(fileChanged(const QString&)),
+  connect(model_, SIGNAL(applicationMenuConfigChanged()),
           this, SLOT(reloadMenu()));
 }
 
@@ -150,10 +89,6 @@ void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
 }
 
 void ApplicationMenu::reloadMenu() {
-  for (auto& category : categories_) {
-    category.entries.clear();
-  }
-  loadEntries();
   menu_.clear();
   buildMenu();
 }
@@ -234,97 +169,11 @@ void ApplicationMenu::loadConfig() {
   setIconName(model_->applicationMenuIcon());
 }
 
-void ApplicationMenu::initCategories() {
-  // We use the main categories as defined in:
-  // https://specifications.freedesktop.org/menu-spec/latest/apa.html
-  static constexpr int kNumCategories = 11;
-  static const char* const kCategories[kNumCategories][3] = {
-    // Name, display name, icon.
-    // Sorted by display name.
-    {"Development", "Development", "applications-development"},
-    {"Education", "Education", "applications-education"},
-    {"Game", "Games", "applications-games"},
-    {"Graphics", "Graphics", "applications-graphics"},
-    {"Network", "Internet", "applications-internet"},
-    {"AudioVideo", "Multimedia", "applications-multimedia"},
-    {"Office", "Office", "applications-office"},
-    {"Science", "Science", "applications-science"},
-    {"Settings", "Settings", "preferences-other"},
-    {"System", "System", "applications-system"},
-    {"Utility", "Utilities", "applications-utilities"},
-  };
-  categories_.reserve(kNumCategories);
-  for (int i = 0; i < kNumCategories; ++i) {
-    categories_.push_back(Category(
-        kCategories[i][0], kCategories[i][1], kCategories[i][2]));
-    categoryMap_[kCategories[i][0]] = i;
-  }
-}
-
-bool ApplicationMenu::loadEntries() {
-  for (const QString& entryDir : entryDirs_) {
-    if (!QDir::root().exists(entryDir)) {
-      continue;
-    }
-
-    QDir dir(entryDir);
-    QStringList files = dir.entryList({"*.desktop"}, QDir::Files, QDir::Name);
-    if (files.isEmpty()) {
-      continue;
-    }
-
-    for (int i = 0; i < files.size(); ++i) {
-      const QString& file = entryDir + "/" + files.at(i);
-      loadEntry(file);
-    }
-  }
-
-  return true;
-}
-
-bool ApplicationMenu::loadEntry(const QString &file) {
-  KDesktopFile desktopFile(file);
-  if (desktopFile.noDisplay()) {
-    return false;
-  }
-
-  if (desktopFile.entryMap("Desktop Entry").contains("Hidden")) {
-    const QString hidden = desktopFile.entryMap("Desktop Entry")["Hidden"];
-    if (hidden.trimmed().toLower() == "true") {
-      return false;
-    }
-  }
-
-  const QStringList categories =
-      desktopFile.entryMap("Desktop Entry")["Categories"]
-          .split(';', QString::SkipEmptyParts);
-  if (categories.isEmpty()) {
-    return false;
-  }
-
-  for (int i = 0; i < categories.size(); ++i) {
-    const std::string category = categories[i].toStdString();
-    if (categoryMap_.count(category) > 0) {
-      const QString command = filterFieldCodes(
-          desktopFile.entryMap("Desktop Entry")["Exec"]);
-      ApplicationEntry newEntry(desktopFile.readName(),
-                                desktopFile.readGenericName(),
-                                desktopFile.readIcon(),
-                                command,
-                                file);
-      auto& entries = categories_[categoryMap_[category]].entries;
-      auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
-      entries.insert(next, newEntry);
-    }
-  }
-  return true;
-}
-
 void ApplicationMenu::buildMenu() {
-  addToMenu(categories_);
+  addToMenu(model_->applicationMenuCategories());
   menu_.addSeparator();
-  addToMenu(kSessionSystemCategories);
-  addEntry(kSearchEntry, &menu_);
+  addToMenu(ApplicationMenuConfig::kSessionSystemCategories);
+  addEntry(ApplicationMenuConfig::kSearchEntry, &menu_);
 }
 
 void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {

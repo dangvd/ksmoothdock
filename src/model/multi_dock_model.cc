@@ -84,6 +84,8 @@ MultiDockModel::MultiDockModel(const QString& configDir)
   }
   loadDocks();
   loadIconOverrideRules();
+  connect(&applicationMenuConfig_, SIGNAL(configChanged()),
+          this, SIGNAL(applicationMenuConfigChanged()));
 }
 
 void MultiDockModel::loadDocks() {

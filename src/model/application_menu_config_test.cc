@@ -1,6 +1,6 @@
 /*
  * This file is part of KSmoothDock.
- * Copyright (C) 2017 Viet Dang (dangvd@gmail.com)
+ * Copyright (C) 2019 Viet Dang (dangvd@gmail.com)
  *
  * KSmoothDock is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,15 @@
  * along with KSmoothDock.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "application_menu.h"
+#include "application_menu_config.h"
 
 #include <memory>
 
 #include <QTemporaryDir>
 #include <QTest>
 
-#include "multi_dock_view.h"
+#include <KConfig>
+#include <KConfigGroup>
 
 namespace ksmoothdock {
 
@@ -32,16 +33,12 @@ constexpr int kMinSize = 64;
 constexpr int kMaxSize = 64;
 constexpr int kNumCategories = 11;
 
-class ApplicationMenuTest: public QObject {
+class ApplicationMenuConfigTest: public QObject {
   Q_OBJECT
 
  private slots:
   void init() {
     QTemporaryDir configDir;
-    model_ = std::make_unique<MultiDockModel>(configDir.path());
-    model_->addDock();
-    view_ = std::make_unique<MultiDockView>(model_.get());
-    dock_ = std::make_unique<DockPanel>(view_.get(), model_.get(), kDockId);
   }
 
   void loadEntries_singleDir();
@@ -66,25 +63,20 @@ class ApplicationMenuTest: public QObject {
     }
     config.sync();
   }
-
-  std::unique_ptr<MultiDockModel> model_;
-  std::unique_ptr<MultiDockView> view_;
-  std::unique_ptr<DockPanel> dock_;
 };
 
-void ApplicationMenuTest::loadEntries_singleDir() {
+void ApplicationMenuConfigTest::loadEntries_singleDir() {
   QTemporaryDir entryDir;
   QVERIFY(entryDir.isValid());
   writeEntry(entryDir.path() + "/1.desktop",
              {"Chrome", "Web Browser", "chrome", "chrome", ""},
              "Network");
 
-  ApplicationMenu applicationMenu(dock_.get(), model_.get(), Qt::Horizontal,
-                                  kMinSize, kMaxSize, { entryDir.path() });
+  ApplicationMenuConfig ApplicationMenuConfig({ entryDir.path() });
 
-  QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
+  QCOMPARE(static_cast<int>(ApplicationMenuConfig.categories_.size()),
            kNumCategories);
-  for (const auto& category : applicationMenu.categories_) {
+  for (const auto& category : ApplicationMenuConfig.categories_) {
     if (category.name == "Network") {
       QCOMPARE(static_cast<int>(category.entries.size()), 1);
     } else {
@@ -93,7 +85,7 @@ void ApplicationMenuTest::loadEntries_singleDir() {
   }
 }
 
-void ApplicationMenuTest::loadEntries_multipleDirs() {
+void ApplicationMenuConfigTest::loadEntries_multipleDirs() {
   QTemporaryDir entryDir1;
   QVERIFY(entryDir1.isValid());
   writeEntry(entryDir1.path() + "/1.desktop",
@@ -130,14 +122,13 @@ void ApplicationMenuTest::loadEntries_multipleDirs() {
              "Network",
              {{"Hidden", "true"}});
 
-  ApplicationMenu applicationMenu(
-      dock_.get(), model_.get(), Qt::Horizontal, kMinSize, kMaxSize,
+  ApplicationMenuConfig ApplicationMenuConfig(
       { entryDir1.path(), entryDir1.path() + "/dir-not-exist", entryDir2.path(),
         entryDir3.path() });
 
-  QCOMPARE(static_cast<int>(applicationMenu.categories_.size()),
+  QCOMPARE(static_cast<int>(ApplicationMenuConfig.categories_.size()),
            kNumCategories);
-  for (const auto& category : applicationMenu.categories_) {
+  for (const auto& category : ApplicationMenuConfig.categories_) {
     if (category.name == "Network") {
       QCOMPARE(static_cast<int>(category.entries.size()), 2);
     } else if (category.name == "Settings") {
@@ -150,5 +141,5 @@ void ApplicationMenuTest::loadEntries_multipleDirs() {
 
 }  // namespace ksmoothdock
 
-QTEST_MAIN(ksmoothdock::ApplicationMenuTest)
-#include "application_menu_test.moc"
+QTEST_MAIN(ksmoothdock::ApplicationMenuConfigTest)
+#include "application_menu_config_test.moc"

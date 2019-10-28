@@ -33,6 +33,7 @@
 #include <KConfigGroup>
 #include <KLocalizedString>
 
+#include "application_menu_config.h"
 #include "config_helper.h"
 #include "icon_override_rule.h"
 
@@ -389,6 +390,10 @@ class MultiDockModel : public QObject {
     emit appearanceChanged();
   }
 
+  std::vector<Category> applicationMenuCategories() const {
+    return applicationMenuConfig_.categories();
+  }
+
  signals:
   // Minor appearance changes that require view update (repaint).
   void appearanceOutdated();
@@ -399,6 +404,7 @@ class MultiDockModel : public QObject {
   // Wallpaper for the current desktop for screen <screen> has been changed.
   // Will require calling Plasma D-Bus to update the wallpaper.
   void wallpaperChanged(int screen);
+  void applicationMenuConfigChanged();
 
  private:
   // Dock config's categories/properties.
@@ -529,6 +535,8 @@ class MultiDockModel : public QObject {
 
   // ID for the next dock.
   int nextDockId_;
+
+  ApplicationMenuConfig applicationMenuConfig_;
 
   std::vector<IconOverrideRule> iconOverrideRules_;
 };

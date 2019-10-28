@@ -18,6 +18,7 @@ find_package(KF5 5.7 REQUIRED COMPONENTS Activities Config CoreAddons DBusAddons
     IconThemes XmlGui WidgetsAddons WindowSystem)
 
 set(SRCS
+    model/application_menu_config.cc
     model/config_helper.cc
     model/multi_dock_model.cc
     view/add_panel_dialog.cc
@@ -93,9 +94,9 @@ add_executable(command_utils_test utils/command_utils_test.cc)
 target_link_libraries(command_utils_test Qt5::Test ksmoothdock_lib ${LIBS})
 add_test(command_utils_test command_utils_test)
 
-add_executable(application_menu_test view/application_menu_test.cc)
-target_link_libraries(application_menu_test Qt5::Test ksmoothdock_lib ${LIBS})
-add_test(application_menu_test application_menu_test)
+add_executable(application_menu_config_test model/application_menu_config_test.cc)
+target_link_libraries(application_menu_config_test Qt5::Test ksmoothdock_lib ${LIBS})
+add_test(application_menu_config_test application_menu_config_test)
 
 add_executable(add_panel_dialog_test view/add_panel_dialog_test.cc)
 target_link_libraries(add_panel_dialog_test Qt5::Test ksmoothdock_lib ${LIBS})
