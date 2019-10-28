@@ -22,6 +22,7 @@
 
 #include <QGuiApplication>
 #include <QProcess>
+#include <QTimer>
 
 #include <KDesktopFile>
 #include <KLocalizedString>
@@ -72,13 +73,18 @@ void Program::mousePressEvent(QMouseEvent* e) {
   if (e->button() == Qt::LeftButton) { // Run the application.
     if (command_ == kShowDesktopCommand) {
       KWindowSystem::setShowingDesktop(!KWindowSystem::showingDesktop());
+    } else if (isCommandLockScreen(command_)) {
+      parent_->leaveEvent(nullptr);
+      QTimer::singleShot(500, []() {
+        lockScreen();
+      });
     } else {
       if (tasks_.empty()) {
-        launch(command_);
+        launch();
       } else {
         const auto mod = QGuiApplication::keyboardModifiers();
         if (mod & Qt::ShiftModifier) {
-          launch(command_);
+          launch();
         } else {
           const auto activeTask = getActiveTask();
           if (activeTask >= 0) {
@@ -132,6 +138,17 @@ bool Program::beforeTask(const TaskInfo& task) {
   return name_ < task.program;
 }
 
+void Program::launch() {
+  launch(command_);
+  parent_->showWaitCursor();
+  setLaunching(true);
+  parent_->update();
+  QTimer::singleShot(500, [this]() {
+    setLaunching(false);
+    parent_->update();
+  });
+}
+
 void Program::launch(const QString& command) {
   if (!QProcess::startDetached(command)) {
     KMessageBox::error(nullptr,
@@ -140,6 +157,9 @@ void Program::launch(const QString& command) {
 }
 
 void Program::createMenu() {
+  menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), parent_,
+                  [this] { parent_->showEditLaunchersDialog(); });
+
   pinAction_ = menu_.addAction(
       i18n("Pinned"), this,
       [this] {

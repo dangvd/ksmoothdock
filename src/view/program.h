@@ -93,6 +93,7 @@ class Program : public QObject, public IconBasedDockItem {
   bool pinned() { return pinned_; }
   void pinUnpin() { pinned_ = !pinned_; }
 
+  void launch();
   static void launch(const QString& command);
   static void lockScreen() { launch(kLockScreenCommand); }
 

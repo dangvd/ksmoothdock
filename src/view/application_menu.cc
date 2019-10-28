@@ -118,6 +118,8 @@ ApplicationMenu::ApplicationMenu(
   loadEntries();
   buildMenu();
 
+  createContextMenu();
+
   connect(&menu_, SIGNAL(aboutToShow()), parent_,
           SLOT(setStrutForApplicationMenu()));
   connect(&menu_, &QMenu::aboutToShow, this,
@@ -142,6 +144,8 @@ void ApplicationMenu::draw(QPainter* painter) const {
 void ApplicationMenu::mousePressEvent(QMouseEvent *e) {
   if (e->button() == Qt::LeftButton) {
     menu_.popup(parent_->applicationMenuPosition(getMenuSize()));
+  } else if (e->button() == Qt::RightButton) {
+    contextMenu_.popup(e->globalPos());
   }
 }
 
@@ -349,6 +353,15 @@ void ApplicationMenu::addEntry(const ApplicationEntry &entry, QMenu *menu) {
 QIcon ApplicationMenu::loadIcon(const QString &icon) {
   return QIcon(KIconLoader::global()->loadIcon(
       icon, KIconLoader::NoGroup, kApplicationMenuIconSize));
+}
+
+void ApplicationMenu::createContextMenu() {
+  contextMenu_.addAction(QIcon::fromTheme("configure"),
+                         i18n("Application Menu &Settings"),
+                         parent_,
+                         [this] { parent_->showApplicationMenuSettingsDialog(); });
+  contextMenu_.addSeparator();
+  parent_->addPanelSettings(&contextMenu_);
 }
 
 }  // namespace ksmoothdock

@@ -34,7 +34,6 @@ constexpr char MultiDockModel::kScreen[];
 constexpr char MultiDockModel::kShowApplicationMenu[];
 constexpr char MultiDockModel::kShowClock[];
 constexpr char MultiDockModel::kShowPager[];
-constexpr char MultiDockModel::kShowTaskManager[];
 constexpr char MultiDockModel::kVisibility[];
 
 constexpr char MultiDockModel::kBackgroundColor[];
@@ -106,13 +105,12 @@ void MultiDockModel::loadDocks() {
 
 void MultiDockModel::addDock(PanelPosition position, int screen,
                              bool showApplicationMenu, bool showPager,
-                             bool showTaskManager, bool showClock) {
+                             bool showClock) {
   auto configs = configHelper_.findNextDockConfigs();
   auto dockId = addDock(configs, position, screen);
   setVisibility(dockId, kDefaultVisibility);
   setShowApplicationMenu(dockId, showApplicationMenu);
   setShowPager(dockId, showPager);
-  setShowTaskManager(dockId, showTaskManager);
   setShowClock(dockId, showClock);
   emit dockAdded(dockId);
 

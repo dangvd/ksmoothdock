@@ -429,37 +429,7 @@ void DockPanel::mousePressEvent(QMouseEvent* e) {
     return;
   }
 
-  Launcher* launcher = dynamic_cast<Launcher*>(items_[i].get());
-  ApplicationMenu* applicationMenu =
-      dynamic_cast<ApplicationMenu*>(items_[i].get());
-  if (e->button() == Qt::LeftButton) {
-    if (launcher && isCommandLockScreen(launcher->command())) {
-      leaveEvent(nullptr);
-      QTimer::singleShot(500, []() {
-        Launcher::lockScreen();
-      });
-    } else {
-      if(launcher &&
-         !isCommandInternal(launcher->command()) &&
-         !isCommandDBus(launcher->command())) {
-        // Acknowledge launching the program.
-        showWaitCursor();
-        launcher->setLaunching(true);
-        update();
-        QTimer::singleShot(500, [this, launcher]() {
-          launcher->setLaunching(false);
-          update();
-        });
-      }
-      items_[i]->mousePressEvent(e);
-    }
-  } else if (e->button() == Qt::RightButton) {
-    if (launcher || applicationMenu) {
-      menu_.popup(e->globalPos());
-    } else {
-      items_[i]->mousePressEvent(e);
-    }
-  }
+  items_[i]->mousePressEvent(e);
 }
 
 void DockPanel::enterEvent (QEvent* e) {
@@ -509,11 +479,6 @@ void DockPanel::createMenu() {
       this, SLOT(removeDock()));
   menu_.addSeparator();
 
-  applicationMenuSettings_ = menu_.addAction(
-      QIcon::fromTheme("configure"), i18n("Application &Menu Settings"), this,
-      SLOT(showApplicationMenuSettingsDialog()));
-  menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), this,
-      SLOT(showEditLaunchersDialog()));
   menu_.addAction(
       QIcon::fromTheme("configure"), i18n("Appearance &Settings"), this,
       SLOT(showAppearanceSettingsDialog()));
@@ -534,7 +499,7 @@ void DockPanel::createMenu() {
 
   const int numScreens = QApplication::desktop()->screenCount();
   if (numScreens > 1) {
-    QMenu* screen = menu_.addMenu(i18n("Screen"));
+    QMenu* screen = menu_.addMenu(i18n("Scr&een"));
     for (int i = 0; i < numScreens; ++i) {
       QAction* action = screen->addAction(
           "Screen " + QString::number(i + 1), this,
@@ -548,7 +513,7 @@ void DockPanel::createMenu() {
     }
   }
 
-  QMenu* visibility = menu_.addMenu(i18n("Visibility"));
+  QMenu* visibility = menu_.addMenu(i18n("&Visibility"));
   visibilityAlwaysVisibleAction_ = visibility->addAction(
       i18n("Always &Visible"), this,
       [this]() { updateVisibility(PanelVisibility::AlwaysVisible); });
@@ -570,16 +535,13 @@ void DockPanel::createMenu() {
       [this]() { updateVisibility(PanelVisibility::WindowsGoBelow); });
   visibilityWindowsGoBelowAction_->setCheckable(true);
 
-  QMenu* extraComponents = menu_.addMenu(i18n("&Extra Components"));
+  QMenu* extraComponents = menu_.addMenu(i18n("&Optional Components"));
   applicationMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
       SLOT(toggleApplicationMenu()));
   applicationMenuAction_->setCheckable(true);
   pagerAction_ = extraComponents->addAction(i18n("Pager"), this,
       SLOT(togglePager()));
   pagerAction_->setCheckable(true);
-  taskManagerAction_ = extraComponents->addAction(i18n("Task Manager"), this,
-      SLOT(toggleTaskManager()));
-  taskManagerAction_->setCheckable(true);
   clockAction_ = extraComponents->addAction(i18n("Clock"), this,
       SLOT(toggleClock()));
   clockAction_->setCheckable(true);
@@ -640,12 +602,9 @@ void DockPanel::loadDockConfig() {
 
   showApplicationMenu_ = model_->showApplicationMenu(dockId_);
   applicationMenuAction_->setChecked(showApplicationMenu_);
-  applicationMenuSettings_->setVisible(showApplicationMenu_);
 
   showPager_ = model_->showPager(dockId_);
   pagerAction_->setChecked(showPager_);
-
-  taskManagerAction_->setChecked(model_->showTaskManager(dockId_));
 
   showClock_ = model_->showClock(dockId_);
   clockAction_->setChecked(showClock_);
@@ -657,7 +616,6 @@ void DockPanel::saveDockConfig() {
   model_->setVisibility(dockId_, visibility_);
   model_->setShowApplicationMenu(dockId_, showApplicationMenu_);
   model_->setShowPager(dockId_, showPager_);
-  model_->setShowTaskManager(dockId_, taskManagerAction_->isChecked());
   model_->setShowClock(dockId_, showClock_);
   model_->saveDockConfig(dockId_);
 }

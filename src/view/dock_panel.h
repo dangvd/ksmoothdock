@@ -104,7 +104,6 @@ class DockPanel : public QWidget {
 
   void toggleApplicationMenu() {
     showApplicationMenu_ = !showApplicationMenu_;
-    applicationMenuSettings_->setVisible(showApplicationMenu_);
     reload();
     saveDockConfig();
   }
@@ -115,12 +114,6 @@ class DockPanel : public QWidget {
     if (showPager_) {
       reload();
     }
-  }
-
-  void toggleTaskManager() {
-    model_->setShowTaskManager(dockId_, taskManagerAction_->isChecked());
-    reload();
-    saveDockConfig();
   }
 
   void toggleClock() {
@@ -137,6 +130,7 @@ class DockPanel : public QWidget {
   // Slot to update zoom animation.
   void updateAnimation();
 
+  void showWaitCursor();
   void resetCursor();
 
   void showOnlineDocumentation();
@@ -219,8 +213,6 @@ class DockPanel : public QWidget {
 
   std::vector<std::unique_ptr<DockItem>>::iterator findTask(WId wId);
 
-  bool showTaskManager() { return model_->showTaskManager(dockId_); }
-
   void initUi();
 
   void createMenu();
@@ -261,8 +253,6 @@ class DockPanel : public QWidget {
   void showTooltip(int x, int y);
   // Shows tool tip for the item at the specified index.
   void showTooltip(int i);
-
-  void showWaitCursor();
 
   // Returns the size given the distance to the mouse.
   int parabolic(int x);
@@ -323,9 +313,7 @@ class DockPanel : public QWidget {
   QAction* visibilityWindowsCanCoverQuietAction_;
   QAction* visibilityWindowsGoBelowAction_;
   QAction* applicationMenuAction_;
-  QAction* applicationMenuSettings_;
   QAction* pagerAction_;
-  QAction* taskManagerAction_;
   QAction* clockAction_;
   // Actions to set the dock on a specific screen.
   std::vector<QAction*> screenActions_;
@@ -364,6 +352,7 @@ class DockPanel : public QWidget {
   int mouseX_;
   int mouseY_;
 
+  friend class Program;  // for leaveEvent.
   friend class DockPanelTest;
   friend class ConfigDialogTest;
   friend class EditLaunchersDialogTest;

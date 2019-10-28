@@ -160,6 +160,8 @@ protected:
 
   QIcon loadIcon(const QString& icon);
 
+  void createContextMenu();
+
   static const std::vector<Category> kSessionSystemCategories;
   static const ApplicationEntry kSearchEntry;
 
@@ -189,6 +191,9 @@ protected:
   QPoint startMousePos_;
   // The desktop file associated with the application entry being dragged.
   QString draggedEntry_;
+
+  // Context (right-click) menu.
+  QMenu contextMenu_;
 
   friend class ApplicationMenuTest;
 };
