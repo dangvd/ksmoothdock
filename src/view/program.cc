@@ -149,6 +149,19 @@ void Program::launch() {
   });
 }
 
+void Program::pinUnpin() {
+  pinned_ = !pinned_;
+  if (pinned_) {
+    // TODO
+    model_->addLauncher(parent_->dockId(), LauncherConfig(name_, "xapp", command_));
+  } else {  // !pinned
+    model_->removeLauncher(parent_->dockId(), command_);
+    if (shouldBeRemoved()) {
+      parent_->update();
+    }
+  }
+}
+
 void Program::launch(const QString& command) {
   if (!QProcess::startDetached(command)) {
     KMessageBox::error(nullptr,

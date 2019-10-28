@@ -67,6 +67,8 @@ class DockPanel : public QWidget {
   QColor borderColor() { return borderColor_; }
   QColor backgroundColor() { return backgroundColor_; }
 
+  int dockId() const { return dockId_; }
+
   // Gets the position to show the application menu.
   QPoint applicationMenuPosition(const QSize& menuSize);
   // Gets the position to show the application menu's sub-menus.

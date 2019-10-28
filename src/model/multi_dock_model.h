@@ -370,6 +370,28 @@ class MultiDockModel : public QObject {
     emit dockLaunchersChanged(dockId);
   }
 
+  void addLauncher(int dockId, const LauncherConfig& launcher) {
+    auto launchers = std::get<3>(dockConfigs_[dockId]);
+    for (unsigned i = 0; i < launchers.size(); ++i) {
+      if (!(launchers[i].name < launcher.command)) {
+        launchers.insert(launchers.begin() + i, launcher);
+        syncDockLaunchersConfig(dockId);
+        return;
+      }
+    }
+  }
+
+  void removeLauncher(int dockId, const QString& command) {
+    auto launchers = std::get<3>(dockConfigs_[dockId]);
+    for (unsigned i = 0; i < launchers.size(); ++i) {
+      if (launchers[i].command == command) {
+        launchers.erase(launchers.begin() + i);
+        syncDockLaunchersConfig(dockId);
+        return;
+      }
+    }
+  }
+
   // Whether any dock has a pager.
   bool hasPager() const;
 
