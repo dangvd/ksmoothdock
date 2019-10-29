@@ -76,14 +76,15 @@ class DockPanel : public QWidget {
                                        const QRect& subMenuGeometry);
   void addPanelSettings(QMenu* menu);
 
+ public slots:
+  // Reloads the items and updates the dock.
+  void reload();
+
   // Checks that the items are still valid, removes an invalid one and updates the dock.
   // Should be called after a program with no task is unpinned.
   // Will return as soon as an invalid one is found.
   void refresh();
-
- public slots:
-  // Reloads the items and updates the dock.
-  void reload();
+  void delayedRefresh();
 
   void onCurrentDesktopChanged();
   void onCurrentActivityChanged();

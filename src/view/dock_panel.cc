@@ -181,6 +181,20 @@ void DockPanel::reload() {
   update();
 }
 
+void DockPanel::refresh() {
+  for (int i = 0; i < itemCount(); ++i) {
+    if (items_[i]->shouldBeRemoved()) {
+      items_.erase(items_.begin() + i);
+      resizeTaskManager();
+      return;
+    }
+  }
+}
+
+void DockPanel::delayedRefresh() {
+  QTimer::singleShot(100 /* msecs */, this, SLOT(refresh()));
+}
+
 void DockPanel::onCurrentDesktopChanged() {
   reloadTasks();
 }
@@ -720,16 +734,6 @@ std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
     }
     return false;
   });
-}
-
-void DockPanel::refresh() {
-  for (int i = 0; i < itemCount(); ++i) {
-    if (items_[i]->shouldBeRemoved()) {
-      items_.erase(items_.begin() + i);
-      resizeTaskManager();
-      return;
-    }
-  }
 }
 
 void DockPanel::initClock() {
