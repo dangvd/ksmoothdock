@@ -285,30 +285,36 @@ void DockPanel::about() {
 void DockPanel::showAppearanceSettingsDialog() {
   appearanceSettingsDialog_.reload();
   appearanceSettingsDialog_.show();
+  KWindowSystem::forceActiveWindow(appearanceSettingsDialog_.winId());
 }
 
 void DockPanel::showEditLaunchersDialog() {
   editLaunchersDialog_.reload();
   editLaunchersDialog_.show();
+  KWindowSystem::forceActiveWindow(editLaunchersDialog_.winId());
 }
 
 void DockPanel::showApplicationMenuSettingsDialog() {
   applicationMenuSettingsDialog_.reload();
   applicationMenuSettingsDialog_.show();
+  KWindowSystem::forceActiveWindow(applicationMenuSettingsDialog_.winId());
 }
 
 void DockPanel::showWallpaperSettingsDialog(int desktop) {
   wallpaperSettingsDialog_.setFor(desktop, screen_);
   wallpaperSettingsDialog_.show();
+  KWindowSystem::forceActiveWindow(wallpaperSettingsDialog_.winId());
 }
 
 void DockPanel::showTaskManagerSettingsDialog() {
   taskManagerSettingsDialog_.show();
+  KWindowSystem::forceActiveWindow(taskManagerSettingsDialog_.winId());
 }
 
 void DockPanel::showIconOverrideRulesDialog() {
   iconOverrideRulesDialog_.reload();
   iconOverrideRulesDialog_.show();
+  KWindowSystem::forceActiveWindow(iconOverrideRulesDialog_.winId());
 }
 
 void DockPanel::addDock() {
