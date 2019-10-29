@@ -353,8 +353,6 @@ void DockPanel::onWindowAdded(WId wId) {
 
 void DockPanel::onWindowRemoved(WId wId) {
   removeTask(wId);
-  // TODO: optimise.
-  // reloadTasks();
 }
 
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
@@ -655,7 +653,7 @@ void DockPanel::initLaunchers() {
   for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
     items_.push_back(std::make_unique<Program>(
         this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
-        maxSize_, launcherConfig.command));
+        maxSize_, launcherConfig.command, /*pinned=*/true));
   }
 }
 
@@ -686,8 +684,6 @@ void DockPanel::reloadTasks() {
 }
 
 void DockPanel::addTask(const TaskInfo& task) {
-  std::cout << dockId_ << ": Adding task of: " << task.program.toStdString() << task.wId << std::endl;
-
   // Checks is the task already exists.
   for (auto& item : items_) {
     if (item->hasTask(task.wId)) {
@@ -705,9 +701,16 @@ void DockPanel::addTask(const TaskInfo& task) {
   // Adds a new program.
   int i = 0;
   for (; i < itemCount() && items_[i]->beforeTask(task); ++i);
-  items_.insert(items_.begin() + i, std::make_unique<Program>(
-      this, model_, task.program, orientation_, task.icon, minSize_,
-      maxSize_, task.program));
+  auto app = model_->findApplication(task.command);
+  if (app) {
+    items_.insert(items_.begin() + i, std::make_unique<Program>(
+        this, model_, app->name, orientation_, app->icon, minSize_,
+        maxSize_, app->command, /*pinned=*/false));
+  } else {
+    items_.insert(items_.begin() + i, std::make_unique<Program>(
+        this, model_, task.program, orientation_, "xapp", minSize_,
+        maxSize_, task.command, /*pinned=*/false));
+  }
   items_[i]->addTask(task);
 }
 

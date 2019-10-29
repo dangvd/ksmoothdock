@@ -36,25 +36,12 @@ namespace ksmoothdock {
 
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
-    int maxSize, const QString& command)
+    int maxSize, const QString& command, bool pinned)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
       launching_(false),
-      pinned_(true) {
-  name_ = command_.left(command_.indexOf(" "));
-  createMenu();
-}
-
-Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
-    Qt::Orientation orientation, const QPixmap& icon, int minSize,
-    int maxSize, const QString& command)
-    : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
-      model_(model),
-      command_(command),
-      launching_(false),
-      pinned_(false) {
-  name_ = command_.left(command_.indexOf(" "));
+      pinned_(pinned) {
   createMenu();
 }
 
@@ -108,7 +95,7 @@ void Program::mousePressEvent(QMouseEvent* e) {
 }
 
 bool Program::addTask(const TaskInfo& task) {
-  if (name_ == task.program) {
+  if (command_ == task.command) {
     tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
     return true;
   }
@@ -135,7 +122,7 @@ bool Program::hasTask(WId wId) {
 }
 
 bool Program::beforeTask(const TaskInfo& task) {
-  return name_ < task.program;
+  return command_ < task.command;
 }
 
 void Program::launch() {
@@ -152,8 +139,7 @@ void Program::launch() {
 void Program::pinUnpin() {
   pinned_ = !pinned_;
   if (pinned_) {
-    // TODO
-    model_->addLauncher(parent_->dockId(), LauncherConfig(name_, "xapp", command_));
+    model_->addLauncher(parent_->dockId(), LauncherConfig(label_, iconName_, command_));
   } else {  // !pinned
     model_->removeLauncher(parent_->dockId(), command_);
     if (shouldBeRemoved()) {

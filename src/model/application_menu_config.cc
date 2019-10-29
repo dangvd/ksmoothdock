@@ -177,6 +177,8 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
       auto& entries = categories_[categoryMap_[category]].entries;
       auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
       entries.insert(next, newEntry);
+
+      entries_[command.toStdString()] = &(*--next);
     }
   }
   return true;
@@ -188,6 +190,11 @@ void ApplicationMenuConfig::reload() {
   }
   loadEntries();
   emit configChanged();
+}
+
+const ApplicationEntry* ApplicationMenuConfig::findApplication(
+    const std::string& command) const {
+  return (entries_.count(command) > 0) ? entries_.at(command) : nullptr;
 }
 
 }  // namespace ksmoothdock

@@ -49,17 +49,9 @@ class Program : public QObject, public IconBasedDockItem {
  public:
   Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
-      int maxSize, const QString& command);
-
-  Program(DockPanel* parent, MultiDockModel* model, const QString& label,
-      Qt::Orientation orientation, const QPixmap& icon, int minSize,
-      int maxSize, const QString& command);
+      int maxSize, const QString& command, bool pinned);
 
   ~Program() override = default;
-
-  QString name() const { return name_; }
-
-  QString command() const { return command_; }
 
   void setLaunching(bool launching) { launching_ = launching; }
 

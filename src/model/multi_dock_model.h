@@ -373,7 +373,7 @@ class MultiDockModel : public QObject {
   void addLauncher(int dockId, const LauncherConfig& launcher) {
     auto& launchers = std::get<3>(dockConfigs_[dockId]);
     unsigned int i = 0;
-    for (; i < launchers.size() && launchers[i].name < launcher.command; ++i) {}
+    for (; i < launchers.size() && launchers[i].command < launcher.command; ++i) {}
     launchers.insert(launchers.begin() + i, launcher);
     syncDockLaunchersConfig(dockId);
   }
@@ -411,6 +411,10 @@ class MultiDockModel : public QObject {
 
   const std::vector<Category>& applicationMenuCategories() const {
     return applicationMenuConfig_.categories();
+  }
+
+  const ApplicationEntry* findApplication(const QString& command) const {
+    return applicationMenuConfig_.findApplication(command);
   }
 
  signals:
