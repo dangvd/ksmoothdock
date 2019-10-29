@@ -80,7 +80,7 @@ class ApplicationMenuConfig : public QObject {
   static const std::vector<Category> kSessionSystemCategories;
   static const ApplicationEntry kSearchEntry;
 
-  std::vector<Category> categories() const { return categories_; }
+  const std::vector<Category>& categories() const { return categories_; }
 
  signals:
   void configChanged();

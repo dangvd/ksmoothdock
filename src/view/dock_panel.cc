@@ -722,6 +722,16 @@ std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
   });
 }
 
+void DockPanel::refresh() {
+  for (int i = 0; i < itemCount(); ++i) {
+    if (items_[i]->shouldBeRemoved()) {
+      items_.erase(items_.begin() + i);
+      resizeTaskManager();
+      return;
+    }
+  }
+}
+
 void DockPanel::initClock() {
   if (showClock_) {
     items_.push_back(std::make_unique<Clock>(

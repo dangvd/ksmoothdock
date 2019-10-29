@@ -409,7 +409,7 @@ class MultiDockModel : public QObject {
     emit appearanceChanged();
   }
 
-  std::vector<Category> applicationMenuCategories() const {
+  const std::vector<Category>& applicationMenuCategories() const {
     return applicationMenuConfig_.categories();
   }
 

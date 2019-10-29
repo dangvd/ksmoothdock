@@ -157,7 +157,7 @@ void Program::pinUnpin() {
   } else {  // !pinned
     model_->removeLauncher(parent_->dockId(), command_);
     if (shouldBeRemoved()) {
-      parent_->update();
+      // TODO
     }
   }
 }
