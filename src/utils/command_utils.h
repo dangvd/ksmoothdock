@@ -19,6 +19,8 @@
 #ifndef KSMOOTHDOCK_COMMAND_UTILS_H_
 #define KSMOOTHDOCK_COMMAND_UTILS_H_
 
+#include <filesystem>
+
 #include <QString>
 
 namespace ksmoothdock {
@@ -44,6 +46,13 @@ inline bool isCommandDBus(const QString& command) {
 
 inline bool isCommandLockScreen(const QString& command) {
   return command == kLockScreenCommand;
+}
+
+inline std::string getTaskCommand(const std::string& appCommand) {
+  namespace fs = std::filesystem;
+  return fs::is_symlink(appCommand) ?
+      fs::path(fs::read_symlink(appCommand)).filename() :
+      fs::path(appCommand).filename();
 }
 
 }  // namespace ksmoothdock

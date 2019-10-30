@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.1)
 
 project(ksmoothdock)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 add_compile_options(-Wall -Werror=return-type)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -46,7 +45,7 @@ add_library(ksmoothdock_lib ${SRCS})
 
 set(LIBS Qt5::DBus Qt5::Gui Qt5::Widgets KF5::Activities KF5::ConfigCore KF5::ConfigGui
     KF5::CoreAddons KF5::DBusAddons KF5::I18n KF5::IconThemes KF5::XmlGui
-    KF5::WidgetsAddons KF5::WindowSystem)
+    KF5::WidgetsAddons KF5::WindowSystem stdc++fs)
 target_link_libraries(ksmoothdock_lib ${LIBS})
 
 add_executable(ksmoothdock main.cc)

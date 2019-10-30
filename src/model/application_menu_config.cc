@@ -19,6 +19,7 @@
 #include "application_menu_config.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include <QApplication>
 #include <QDir>
@@ -178,7 +179,10 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
       auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
       entries.insert(next, newEntry);
 
-      entries_[command.toStdString()] = &(*--next);
+      const auto commandBinary = command.left(command.indexOf(' '));
+      entries_[getTaskCommand(commandBinary.toStdString())] = &(*--next);
+      std::cout << command.toStdString() << " : "
+                << getTaskCommand(commandBinary.toStdString()) << std::endl;
     }
   }
   return true;
