@@ -41,12 +41,20 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       model_(model),
       command_(command),
       launching_(false),
-      pinned_(pinned) {
+      pinned_(pinned),
+      demandsAttention_(false),
+      attentionStrong_(false) {
   createMenu();
+
+  animationTimer_.setInterval(500);
+  connect(&animationTimer_, &QTimer::timeout, this, [this]() {
+    attentionStrong_ = !attentionStrong_;
+    parent_->update();
+  });
 }
 
 void Program::draw(QPainter *painter) const {
-  if (launching_ || (!tasks_.empty() && active())) {
+  if (launching_ || (!tasks_.empty() && active()) || attentionStrong_) {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
                         5, size_ / 8, painter);
   } else if (!tasks_.empty()) {
@@ -97,8 +105,27 @@ void Program::mousePressEvent(QMouseEvent* e) {
 bool Program::addTask(const TaskInfo& task) {
   if (command_ == task.command) {
     tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
+    if (task.demandsAttention) {
+      setDemandsAttention(true);
+    }
     return true;
   }
+  return false;
+}
+
+bool Program::updateTask(const TaskInfo& task) {
+  if (command_ != task.command) {
+    return false;
+  }
+
+  for (auto& existingTask : tasks_) {
+    if (existingTask.wId == task.wId) {
+      existingTask.demandsAttention = task.demandsAttention;
+      updateDemandsAttention();
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -169,6 +196,29 @@ void Program::createMenu() {
 
   menu_.addSeparator();
   parent_->addPanelSettings(&menu_);
+}
+
+void Program::setDemandsAttention(bool value) {
+  if (demandsAttention_ == value) {
+    return;
+  }
+
+  demandsAttention_ = value;
+  if (demandsAttention_) {
+    animationTimer_.start();
+  } else if (animationTimer_.isActive()) {
+    animationTimer_.stop();
+  }
+}
+
+void Program::updateDemandsAttention() {
+  for (const auto& task : tasks_) {
+    if (task.demandsAttention) {
+      setDemandsAttention(true);
+      return;
+    }
+  }
+  setDemandsAttention(false);
 }
 
 }  // namespace ksmoothdock

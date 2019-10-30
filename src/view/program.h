@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QPixmap>
+#include <QTimer>
 
 #include <KWindowSystem>
 
@@ -61,6 +62,8 @@ class Program : public QObject, public IconBasedDockItem {
 
   bool addTask(const TaskInfo& task) override;
 
+  bool updateTask(const TaskInfo& task) override;
+
   bool removeTask(WId wId) override;
 
   bool hasTask(WId wId) override;
@@ -92,6 +95,9 @@ class Program : public QObject, public IconBasedDockItem {
  private:
   void createMenu();
 
+  void setDemandsAttention(bool value);
+  void updateDemandsAttention();
+
   MultiDockModel* model_;
   QString name_;
   QString command_;
@@ -102,6 +108,11 @@ class Program : public QObject, public IconBasedDockItem {
   // Context (right-click) menu.
   QMenu menu_;
   QAction* pinAction_;
+
+  // Demands attention logic.
+  bool demandsAttention_;
+  QTimer animationTimer_;
+  bool attentionStrong_;
 
   friend class DockPanel;
 };

@@ -373,6 +373,8 @@ void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
       } else {
         removeTask(wId);
       }
+    } else if (properties & NET::WMState) {
+      updateTask(wId);
     }
   }
 }
@@ -727,6 +729,15 @@ void DockPanel::removeTask(WId wId) {
         items_.erase(items_.begin() + i);
         resizeTaskManager();
       }
+      return;
+    }
+  }
+}
+
+void DockPanel::updateTask(WId wId) {
+  const TaskInfo& task = taskHelper_.getTaskInfo(wId);
+  for (auto& item : items_) {
+    if (item->updateTask(task)) {
       return;
     }
   }

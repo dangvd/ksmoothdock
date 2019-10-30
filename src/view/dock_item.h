@@ -62,6 +62,9 @@ class DockItem {
   // Handles adding the task, e.g. for a Program dock item.
   virtual bool addTask(const TaskInfo& task) { return false; }
 
+  // Handles updating the task, e.g. for a Program dock item.
+  virtual bool updateTask(const TaskInfo& task) { return false; }
+
   // Handles removing the task, e.g. for a Program dock item.
   virtual bool removeTask(WId wId) { return false; }
 
