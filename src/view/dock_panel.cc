@@ -350,6 +350,10 @@ void DockPanel::removeDock() {
 }
 
 void DockPanel::onWindowAdded(WId wId) {
+  if (!showTaskManager()) {
+    return;
+  }
+
   if (taskHelper_.isValidTask(wId, screen_)) {
     // Now inserts it.
     addTask(wId);
@@ -358,11 +362,19 @@ void DockPanel::onWindowAdded(WId wId) {
 }
 
 void DockPanel::onWindowRemoved(WId wId) {
+  if (!showTaskManager()) {
+    return;
+  }
+
   removeTask(wId);
 }
 
 void DockPanel::onWindowChanged(WId wId, NET::Properties properties,
                                 NET::Properties2 properties2) {
+  if (!showTaskManager()) {
+    return;
+  }
+
   if (wId != winId() && wId != tooltip_.winId() &&
       taskHelper_.isValidTask(wId)) {
     auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
@@ -555,7 +567,7 @@ void DockPanel::createMenu() {
       [this]() { updateVisibility(PanelVisibility::WindowsGoBelow); });
   visibilityWindowsGoBelowAction_->setCheckable(true);
 
-  QMenu* extraComponents = menu_.addMenu(i18n("&Optional Components"));
+  QMenu* extraComponents = menu_.addMenu(i18n("&Optional Features"));
   applicationMenuAction_ = extraComponents->addAction(i18n("Application Menu"), this,
       SLOT(toggleApplicationMenu()));
   applicationMenuAction_->setCheckable(true);
@@ -565,6 +577,9 @@ void DockPanel::createMenu() {
   clockAction_ = extraComponents->addAction(i18n("Clock"), this,
       SLOT(toggleClock()));
   clockAction_->setCheckable(true);
+  taskManagerAction_ = extraComponents->addAction(i18n("Show Running Tasks"), this,
+      SLOT(toggleTaskManager()));
+  taskManagerAction_->setCheckable(true);
 
   menu_.addSeparator();
   menu_.addAction(QIcon::fromTheme("help-contents"),
@@ -626,6 +641,8 @@ void DockPanel::loadDockConfig() {
   showPager_ = model_->showPager(dockId_);
   pagerAction_->setChecked(showPager_);
 
+  taskManagerAction_->setChecked(model_->showTaskManager(dockId_));
+
   showClock_ = model_->showClock(dockId_);
   clockAction_->setChecked(showClock_);
 }
@@ -636,6 +653,7 @@ void DockPanel::saveDockConfig() {
   model_->setVisibility(dockId_, visibility_);
   model_->setShowApplicationMenu(dockId_, showApplicationMenu_);
   model_->setShowPager(dockId_, showPager_);
+  model_->setShowTaskManager(dockId_, taskManagerAction_->isChecked());
   model_->setShowClock(dockId_, showClock_);
   model_->saveDockConfig(dockId_);
 }
@@ -676,6 +694,10 @@ void DockPanel::initPager() {
 }
 
 void DockPanel::initTasks() {
+  if (!showTaskManager()) {
+    return;
+  }
+
   auto screen = model_->currentScreenTasksOnly() ? screen_ : -1;
   for (const auto& task : taskHelper_.loadTasks(screen, model_->currentDesktopTasksOnly())) {
     addTask(task);
@@ -683,6 +705,10 @@ void DockPanel::initTasks() {
 }
 
 void DockPanel::reloadTasks() {
+  if (!showTaskManager()) {
+    return;
+  }
+
   const int itemsToKeep = applicationMenuItemCount() + pagerItemCount();
   items_.resize(itemsToKeep);
   initLaunchers();
