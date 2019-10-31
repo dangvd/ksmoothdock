@@ -179,10 +179,9 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
       auto next = std::lower_bound(entries.begin(), entries.end(), newEntry);
       entries.insert(next, newEntry);
 
-      const auto commandBinary = command.left(command.indexOf(' '));
-      entries_[getTaskCommand(commandBinary.toStdString())] = &(*--next);
+      entries_[newEntry.taskCommand.toStdString()] = &(*--next);
       std::cout << command.toStdString() << " : "
-                << getTaskCommand(commandBinary.toStdString()) << std::endl;
+                << newEntry.taskCommand.toStdString() << std::endl;
     }
   }
   return true;
@@ -198,6 +197,13 @@ void ApplicationMenuConfig::reload() {
 
 const ApplicationEntry* ApplicationMenuConfig::findApplication(
     const std::string& command) const {
+  std::cout << "Finding " << command << std::endl;
+  if (command == "Navigator") {  // Fix for Firefox.
+    return (entries_.count("firefox") > 0) ? entries_.at("firefox") :
+        (entries_.count("firefox-esr") > 0) ? entries_.at("firefox-esr") : nullptr;
+  } else if (command == "Mail") {  // Fix for Thunderbird.
+    return (entries_.count("thunderbird") > 0) ? entries_.at("thunderbird") : nullptr;
+  }
   return (entries_.count(command) > 0) ? entries_.at(command) : nullptr;
 }
 

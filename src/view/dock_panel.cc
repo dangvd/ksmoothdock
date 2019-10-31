@@ -733,9 +733,10 @@ void DockPanel::addTask(const TaskInfo& task) {
   }
 
   // Adds a new program.
-  int i = 0;
-  for (; i < itemCount() && items_[i]->beforeTask(task); ++i);
   auto app = model_->findApplication(task.command);
+  const QString& command = app ? app->taskCommand : task.command;
+  int i = 0;
+  for (; i < itemCount() && items_[i]->beforeTask(command); ++i);
   if (app) {
     items_.insert(items_.begin() + i, std::make_unique<Program>(
         this, model_, app->name, orientation_, app->icon, minSize_,

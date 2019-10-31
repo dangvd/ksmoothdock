@@ -68,7 +68,7 @@ class Program : public QObject, public IconBasedDockItem {
 
   bool hasTask(WId wId) override;
 
-  bool beforeTask(const TaskInfo& task) override;
+  bool beforeTask(const QString& command) override;
 
   bool shouldBeRemoved() override { return taskCount() == 0 && !pinned_; }
 
@@ -101,6 +101,7 @@ class Program : public QObject, public IconBasedDockItem {
   MultiDockModel* model_;
   QString name_;
   QString command_;
+  QString taskCommand_;
   bool launching_;
   bool pinned_;
   std::vector<ProgramTask> tasks_;

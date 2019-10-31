@@ -72,7 +72,7 @@ class DockItem {
   virtual bool hasTask(WId wId) { return false; }
 
   // Will this item be ordered before the Program item for this task?
-  virtual bool beforeTask(const TaskInfo& task) { return true; }
+  virtual bool beforeTask(const QString& command) { return true; }
 
   // Should be removed for example if a Program item has no task and is not pinned.
   virtual bool shouldBeRemoved() { return false; }

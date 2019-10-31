@@ -30,6 +30,7 @@
 #include <KWindowSystem>
 
 #include "dock_panel.h"
+#include <utils/command_utils.h>
 #include <utils/draw_utils.h>
 
 namespace ksmoothdock {
@@ -40,6 +41,7 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
+      taskCommand_(getTaskCommand(command_)),
       launching_(false),
       pinned_(pinned),
       demandsAttention_(false),
@@ -103,7 +105,7 @@ void Program::mousePressEvent(QMouseEvent* e) {
 }
 
 bool Program::addTask(const TaskInfo& task) {
-  if (command_ == task.command) {
+  if (areTheSameCommand(taskCommand_, task.command)) {
     tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
     if (task.demandsAttention) {
       setDemandsAttention(true);
@@ -114,7 +116,7 @@ bool Program::addTask(const TaskInfo& task) {
 }
 
 bool Program::updateTask(const TaskInfo& task) {
-  if (command_ != task.command) {
+  if (!areTheSameCommand(taskCommand_, task.command)) {
     return false;
   }
 
@@ -148,8 +150,8 @@ bool Program::hasTask(WId wId) {
   return false;
 }
 
-bool Program::beforeTask(const TaskInfo& task) {
-  return command_ < task.command;
+bool Program::beforeTask(const QString& command) {
+  return taskCommand_ < command;
 }
 
 void Program::launch() {

@@ -13,6 +13,8 @@
 #include <QString>
 #include <QStringList>
 
+#include <utils/command_utils.h>
+
 namespace ksmoothdock {
 
 // An application entry in the application menu.
@@ -26,8 +28,11 @@ struct ApplicationEntry {
   // Icon name e.g. 'chrome'.
   QString icon;
 
-  // Command to execute e.g. 'chrome'.
+  // Command to execute e.g. '/usr/bin/google-chrome-stable'.
   QString command;
+
+  // The task command, to compare with KWindowInfo.windowClassName, e.g. 'google-chrome'
+  QString taskCommand;
 
   // The path to the desktop file e.g. '/usr/share/applications/chrome.desktop'
   QString desktopFile;
@@ -36,7 +41,7 @@ struct ApplicationEntry {
                    const QString& icon2, const QString& command2,
                    const QString& desktopFile2)
       : name(name2), genericName(genericName2), icon(icon2), command(command2),
-        desktopFile(desktopFile2) {}
+        taskCommand(getTaskCommand(command)), desktopFile(desktopFile2) {}
 };
 
 bool operator<(const ApplicationEntry &e1, const ApplicationEntry &e2);

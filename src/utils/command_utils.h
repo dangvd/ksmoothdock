@@ -50,9 +50,25 @@ inline bool isCommandLockScreen(const QString& command) {
 
 inline std::string getTaskCommand(const std::string& appCommand) {
   namespace fs = std::filesystem;
-  return fs::is_symlink(appCommand) ?
-      fs::path(fs::read_symlink(appCommand)).filename() :
-      fs::path(appCommand).filename();
+  const auto command = appCommand.substr(0, appCommand.find_first_of(' '));
+  return fs::is_symlink(command) ?
+      fs::path(fs::read_symlink(command)).filename() :
+      fs::path(command).filename();
+}
+
+inline QString getTaskCommand(const QString& appCommand) {
+  return QString::fromStdString(getTaskCommand(appCommand.toStdString()));
+}
+
+inline bool areTheSameCommand(const QString& appTaskCommand, const QString& taskCommand) {
+  // Fix for Firefox and Thunderbird.
+  if (taskCommand == "Navigator" && (appTaskCommand == "firefox" || appTaskCommand == "firefox-esr")) {
+    return true;
+  }
+  if (taskCommand == "Mail" && appTaskCommand == "thunderbird") {
+    return true;
+  }
+  return appTaskCommand == taskCommand;
 }
 
 }  // namespace ksmoothdock

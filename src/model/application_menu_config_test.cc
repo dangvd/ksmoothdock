@@ -28,9 +28,6 @@
 
 namespace ksmoothdock {
 
-constexpr int kDockId = 1;
-constexpr int kMinSize = 64;
-constexpr int kMaxSize = 64;
 constexpr int kNumCategories = 11;
 
 class ApplicationMenuConfigTest: public QObject {
