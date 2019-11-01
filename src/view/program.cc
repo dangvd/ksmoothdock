@@ -188,6 +188,9 @@ void Program::createMenu() {
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), parent_,
                   [this] { parent_->showEditLaunchersDialog(); });
 
+  menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
+                  [this] { launch(); });
+
   pinAction_ = menu_.addAction(
       i18n("Pinned"), this,
       [this] {
