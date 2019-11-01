@@ -42,7 +42,6 @@
 #include "appearance_settings_dialog.h"
 #include "dock_item.h"
 #include "edit_launchers_dialog.h"
-#include "icon_override_rules_dialog.h"
 #include "task_manager_settings_dialog.h"
 #include "tooltip.h"
 #include "wallpaper_settings_dialog.h"
@@ -159,7 +158,6 @@ class DockPanel : public QWidget {
   void showApplicationMenuSettingsDialog();
   void showWallpaperSettingsDialog(int desktop);
   void showTaskManagerSettingsDialog();
-  void showIconOverrideRulesDialog();
 
   void addDock();
   void cloneDock();
@@ -210,22 +208,6 @@ class DockPanel : public QWidget {
   int clockItemCount() const {
     return showClock_ ? 1 : 0;
   }
-
-  void reserveItems(int numLaunchers) {
-    items_.reserve(applicationMenuItemCount() + numLaunchers +
-                   pagerItemCount() + clockItemCount());
-  }
-
-  std::vector<std::unique_ptr<DockItem>>::iterator begin_task() {
-    return items_.begin() + applicationMenuItemCount() + launcherItemCount() +
-        pagerItemCount();
-  }
-
-  std::vector<std::unique_ptr<DockItem>>::iterator end_task() {
-    return items_.end() - clockItemCount();
-  }
-
-  std::vector<std::unique_ptr<DockItem>>::iterator findTask(WId wId);
 
   bool showTaskManager() { return model_->showTaskManager(dockId_); }
 
@@ -343,7 +325,6 @@ class DockPanel : public QWidget {
   ApplicationMenuSettingsDialog applicationMenuSettingsDialog_;
   WallpaperSettingsDialog wallpaperSettingsDialog_;
   TaskManagerSettingsDialog taskManagerSettingsDialog_;
-  IconOverrideRulesDialog iconOverrideRulesDialog_;
 
   TaskHelper taskHelper_;
   KActivities::Consumer activityManager_;

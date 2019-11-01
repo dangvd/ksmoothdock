@@ -35,7 +35,6 @@
 
 #include "application_menu_config.h"
 #include "config_helper.h"
-#include "icon_override_rule.h"
 
 namespace ksmoothdock {
 
@@ -402,23 +401,6 @@ class MultiDockModel : public QObject {
   // Whether any dock has a pager.
   bool hasPager() const;
 
-  const std::vector<IconOverrideRule>& iconOverrideRules() const {
-    return iconOverrideRules_;
-  }
-
-  void setIconOverrideRules(const std::vector<IconOverrideRule>& rules) {
-    iconOverrideRules_ = rules;
-  }
-
-  bool hasIconOverrideRules() const {
-    return !iconOverrideRules_.empty();
-  }
-
-  void saveIconOverrideRules() {
-    syncIconOverrideRules();
-    emit appearanceChanged();
-  }
-
   const std::vector<Category>& applicationMenuCategories() const {
     return applicationMenuConfig_.categories();
   }
@@ -536,10 +518,6 @@ class MultiDockModel : public QObject {
 
   void syncDockLaunchersConfig(int dockId);
 
-  void loadIconOverrideRules();
-
-  void syncIconOverrideRules();
-
   static void copyEntry(const QString& key, const KConfigGroup& sourceGroup,
                         KConfigGroup* destGroup) {
     destGroup->writeEntry(key, sourceGroup.readEntry(key));
@@ -571,8 +549,6 @@ class MultiDockModel : public QObject {
   int nextDockId_;
 
   ApplicationMenuConfig applicationMenuConfig_;
-
-  std::vector<IconOverrideRule> iconOverrideRules_;
 };
 
 }  // namespace ksmoothdock

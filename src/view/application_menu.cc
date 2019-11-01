@@ -32,7 +32,7 @@
 #include <KWindowSystem>
 
 #include "dock_panel.h"
-#include "launcher.h"
+#include "program.h"
 #include <utils/draw_utils.h>
 
 namespace ksmoothdock {
@@ -194,7 +194,7 @@ void ApplicationMenu::addToMenu(const std::vector<Category>& categories) {
 void ApplicationMenu::addEntry(const ApplicationEntry &entry, QMenu *menu) {
   QAction* action = menu->addAction(loadIcon(entry.icon), entry.name, this,
                   [&entry]() {
-                    Launcher::launch(entry.command);
+                    Program::launch(entry.command);
                   });
   action->setData(entry.desktopFile);
 }

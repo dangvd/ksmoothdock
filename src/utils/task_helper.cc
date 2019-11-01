@@ -48,9 +48,8 @@ bool TaskInfo::operator<(const TaskInfo& taskInfo) const {
   return program < taskInfo.program;
 }
 
-TaskHelper::TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules)
-    : iconOverrideRules_(iconOverrideRules),
-      currentDesktop_(KWindowSystem::currentDesktop()) {
+TaskHelper::TaskHelper()
+    : currentDesktop_(KWindowSystem::currentDesktop()) {
   // Calling DBus to get current activity. This is more convenient than waiting for
   // KActivities::Consumer's status change then calling it.
   QDBusInterface activityManagerDBus("org.kde.ActivityManager", "/ActivityManager/Activities",

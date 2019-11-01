@@ -29,7 +29,7 @@
 #include <KIconLoader>
 #include <KLocalizedString>
 
-#include "launcher.h"
+#include "program.h"
 #include <utils/command_utils.h>
 
 namespace ksmoothdock {
@@ -208,7 +208,7 @@ void EditLaunchersDialog::updateSelectedLauncher() {
 }
 
 void EditLaunchersDialog::openLink(const QString& link) {
-  Launcher::launch("xdg-open " + link);
+  Program::launch("xdg-open " + link);
 }
 
 void EditLaunchersDialog::browseCommand() {

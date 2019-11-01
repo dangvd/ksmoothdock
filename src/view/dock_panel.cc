@@ -46,10 +46,8 @@
 #include "application_menu.h"
 #include "clock.h"
 #include "desktop_selector.h"
-#include "launcher.h"
 #include "multi_dock_view.h"
 #include "program.h"
-#include "task.h"
 #include <utils/command_utils.h>
 #include <utils/task_helper.h>
 
@@ -74,8 +72,6 @@ DockPanel::DockPanel(MultiDockView* parent, MultiDockModel* model, int dockId)
       applicationMenuSettingsDialog_(this, model),
       wallpaperSettingsDialog_(this, model),
       taskManagerSettingsDialog_(this, model),
-      iconOverrideRulesDialog_(this, model),
-      taskHelper_(model->iconOverrideRules()),
       isMinimized_(true),
       isResizing_(false),
       isEntering_(false),
@@ -274,7 +270,7 @@ void DockPanel::resetCursor() {
 }
 
 void DockPanel::showOnlineDocumentation() {
-  Launcher::launch(
+  Program::launch(
       "xdg-open https://github.com/dangvd/ksmoothdock/wiki/Documentation");
 }
 
@@ -309,12 +305,6 @@ void DockPanel::showWallpaperSettingsDialog(int desktop) {
 void DockPanel::showTaskManagerSettingsDialog() {
   taskManagerSettingsDialog_.show();
   KWindowSystem::forceActiveWindow(taskManagerSettingsDialog_.winId());
-}
-
-void DockPanel::showIconOverrideRulesDialog() {
-  iconOverrideRulesDialog_.reload();
-  iconOverrideRulesDialog_.show();
-  KWindowSystem::forceActiveWindow(iconOverrideRulesDialog_.winId());
 }
 
 void DockPanel::addDock() {
@@ -768,19 +758,6 @@ void DockPanel::updateTask(WId wId) {
       return;
     }
   }
-}
-
-std::vector<std::unique_ptr<DockItem>>::iterator DockPanel::findTask(WId wId) {
-  return std::find_if(begin_task(), end_task(),
-                      [wId](const auto& item) {
-    if (item) {
-      const auto* task = dynamic_cast<Task*>(item.get());
-      if (task && task->wId() == wId) {
-        return true;
-      }
-    }
-    return false;
-  });
 }
 
 void DockPanel::initClock() {

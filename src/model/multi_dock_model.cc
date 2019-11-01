@@ -84,7 +84,6 @@ MultiDockModel::MultiDockModel(const QString& configDir)
     appearanceConfig_.reparseConfiguration();
   }
   loadDocks();
-  loadIconOverrideRules();
   connect(&applicationMenuConfig_, SIGNAL(configChanged()),
           this, SIGNAL(applicationMenuConfigChanged()));
 }
@@ -247,17 +246,6 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
   }
 
   return launchers;
-}
-
-void MultiDockModel::loadIconOverrideRules() {
-  iconOverrideRules_ =
-      loadIconOverrideRulesFromFile<std::vector<IconOverrideRule>>(
-          configHelper_.iconOverrideRulesPath());
-}
-
-void MultiDockModel::syncIconOverrideRules() {
-  saveIconOverrideRulesToFile(configHelper_.iconOverrideRulesPath(),
-                              iconOverrideRules_);
 }
 
 bool MultiDockModel::convertConfig() {

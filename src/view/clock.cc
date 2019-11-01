@@ -30,7 +30,7 @@
 #include <KLocalizedString>
 
 #include "dock_panel.h"
-#include "launcher.h"
+#include "program.h"
 #include <utils/draw_utils.h>
 #include <utils/font_utils.h>
 
@@ -92,7 +92,7 @@ void Clock::updateTime() {
 }
 
 void Clock::setDateAndTime() {
-  Launcher::launch("kcmshell5 clock");
+  Program::launch("kcmshell5 clock");
 }
 
 void Clock::setFontScaleFactor(float fontScaleFactor) {

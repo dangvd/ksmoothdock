@@ -30,12 +30,9 @@ set(SRCS
     view/dock_panel.cc
     view/edit_launchers_dialog.cc
     view/icon_based_dock_item.cc
-    view/icon_override_rules_dialog.cc
     view/iconless_dock_item.cc
-    view/launcher.cc
     view/multi_dock_view.cc
     view/program.cc
-    view/task.cc
     view/task_manager_settings_dialog.cc
     view/tooltip.cc
     view/wallpaper_settings_dialog.cc

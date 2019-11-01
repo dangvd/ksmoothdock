@@ -27,8 +27,6 @@
 
 #include <kactivities/consumer.h>
 
-#include "model/icon_override_rule.h"
-
 namespace ksmoothdock {
 
 struct TaskInfo {
@@ -54,7 +52,7 @@ class TaskHelper : public QObject {
   Q_OBJECT
 
  public:
-  TaskHelper(const std::vector<IconOverrideRule>& iconOverrideRules);
+  TaskHelper();
 
   // Loads running tasks.
   //
@@ -86,8 +84,6 @@ class TaskHelper : public QObject {
   }
 
  private:
-  const std::vector<IconOverrideRule>& iconOverrideRules_;
-
   // KWindowSystem::currentDesktop() is buggy sometimes, for example,
   // on windowAdded() event, so we store it here ourselves.
   int currentDesktop_;
