@@ -188,6 +188,13 @@ void Program::createMenu() {
   menu_.addAction(QIcon::fromTheme("configure"), i18n("Edit &Launchers"), parent_,
                   [this] { parent_->showEditLaunchersDialog(); });
 
+  if (model_->showTaskManager(parent_->dockId())) {
+    menu_.addAction(QIcon::fromTheme("configure"),
+                    i18n("Task Manager &Settings"),
+                    parent_,
+                    [this] { parent_->showTaskManagerSettingsDialog(); });
+  }
+
   menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
                   [this] { launch(); });
 

@@ -35,10 +35,8 @@ TaskManagerSettingsDialog::TaskManagerSettingsDialog(QWidget* parent, MultiDockM
   isSingleScreen_ = (QApplication::desktop()->screenCount() == 1);
   ui->showCurrentScreenOnly->setVisible(!isSingleScreen_);
   if (isSingleScreen_) {
-    ui->sortLabel->move(40, 180);
-    ui->sortProgramName->move(80, 220);
-    ui->buttonBox->move(40, 320);
-    resize(600, 380);
+    ui->buttonBox->move(40, 200);
+    resize(600, 260);
   }
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)),
       this, SLOT(buttonClicked(QAbstractButton*)));
