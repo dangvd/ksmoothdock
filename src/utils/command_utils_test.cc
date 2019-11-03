@@ -27,8 +27,9 @@ class CommandUtilsTest: public QObject {
 
  private slots:
   void testIsCommandDBus();
-
   void testFilterFieldCodes();
+  void testGetTaskCommand();
+  void testAreTheSameCommand();
 };
 
 void CommandUtilsTest::testIsCommandDBus() {
@@ -42,6 +43,20 @@ void CommandUtilsTest::testFilterFieldCodes() {
            QString("google-chrome --new-window"));
   QCOMPARE(filterFieldCodes("dolphin %u"), QString("dolphin"));
   QCOMPARE(filterFieldCodes("kate -b %U"), QString("kate"));
+}
+
+void CommandUtilsTest::testGetTaskCommand() {
+  QCOMPARE(getTaskCommand(QString("google-chrome")), QString("google-chrome"));
+  QCOMPARE(getTaskCommand(QString("/usr/bin/google-chrome")), QString("google-chrome"));
+  QCOMPARE(getTaskCommand(QString("/usr/bin/google-chrome http://google.com")),
+           QString("google-chrome"));
+}
+
+void CommandUtilsTest::testAreTheSameCommand() {
+  QVERIFY(areTheSameCommand("google-chrome", "google-chrome"));
+  QVERIFY(areTheSameCommand("firefox", "Navigator"));
+  QVERIFY(areTheSameCommand("firefox-esr", "Navigator"));
+  QVERIFY(areTheSameCommand("thunderbird", "Mail"));
 }
 
 }  // namespace ksmoothdock
