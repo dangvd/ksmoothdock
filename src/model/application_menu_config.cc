@@ -180,8 +180,6 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
       entries.insert(next, newEntry);
 
       entries_[newEntry.taskCommand.toStdString()] = &(*--next);
-      std::cout << command.toStdString() << " : "
-                << newEntry.taskCommand.toStdString() << std::endl;
     }
   }
   return true;
@@ -197,7 +195,6 @@ void ApplicationMenuConfig::reload() {
 
 const ApplicationEntry* ApplicationMenuConfig::findApplication(
     const std::string& command) const {
-  std::cout << "Finding " << command << std::endl;
   if (command == "Navigator") {  // Fix for Firefox.
     return (entries_.count("firefox") > 0) ? entries_.at("firefox") :
         (entries_.count("firefox-esr") > 0) ? entries_.at("firefox-esr") : nullptr;
