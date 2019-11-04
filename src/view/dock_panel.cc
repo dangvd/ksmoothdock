@@ -333,8 +333,7 @@ void DockPanel::removeDock() {
         KStandardGuiItem::yes(),
         KStandardGuiItem::no(),
         "confirmRemoveDock") == KMessageBox::Yes) {
-    disconnect(KWindowSystem::self(), 0, this, 0);
-    close();
+    deleteLater();
     model_->removeDock(dockId_);
   }
 }
