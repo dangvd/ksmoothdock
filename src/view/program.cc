@@ -195,8 +195,10 @@ void Program::createMenu() {
                     [this] { parent_->showTaskManagerSettingsDialog(); });
   }
 
-  menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
-                  [this] { launch(); });
+  if (!isCommandInternal(command_) && !isCommandDBus(command_)) {
+    menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
+                    [this] { launch(); });
+  }
 
   pinAction_ = menu_.addAction(
       i18n("Pinned"), this,
