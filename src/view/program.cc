@@ -37,11 +37,11 @@ namespace ksmoothdock {
 
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
-    int maxSize, const QString& command, bool pinned)
+    int maxSize, const QString& command, const QString& taskCommand, bool pinned)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
-      taskCommand_(getTaskCommand(command_)),
+      taskCommand_(taskCommand),
       launching_(false),
       pinned_(pinned),
       demandsAttention_(false),

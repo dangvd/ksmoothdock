@@ -50,7 +50,7 @@ class Program : public QObject, public IconBasedDockItem {
  public:
   Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
-      int maxSize, const QString& command, bool pinned);
+      int maxSize, const QString& command, const QString& taskCommand, bool pinned);
 
   ~Program() override = default;
 

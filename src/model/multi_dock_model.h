@@ -35,6 +35,7 @@
 
 #include "application_menu_config.h"
 #include "config_helper.h"
+#include <utils/command_utils.h>
 
 namespace ksmoothdock {
 
@@ -75,11 +76,13 @@ struct LauncherConfig {
   QString name;
   QString icon;
   QString command;
+  QString taskCommand;
 
   LauncherConfig() = default;
   LauncherConfig(const QString& name2, const QString& icon2,
                  const QString& command2)
-      : name(name2), icon(icon2), command(command2) {}
+      : name(name2), icon(icon2), command(command2),
+        taskCommand(getTaskCommand(command)) {}
   LauncherConfig(const QString& desktopFile);
 
   // Saves to file in desktop file format.
@@ -382,7 +385,7 @@ class MultiDockModel : public QObject {
   void addLauncher(int dockId, const LauncherConfig& launcher) {
     auto& launchers = std::get<3>(dockConfigs_[dockId]);
     unsigned int i = 0;
-    for (; i < launchers.size() && launchers[i].command < launcher.command; ++i) {}
+    for (; i < launchers.size() && launchers[i].taskCommand < launcher.taskCommand; ++i) {}
     launchers.insert(launchers.begin() + i, launcher);
     syncDockLaunchersConfig(dockId);
   }
