@@ -60,6 +60,8 @@ class Program : public QObject, public IconBasedDockItem {
 
   void mousePressEvent(QMouseEvent* e) override;
 
+  QString getLabel() const override;
+
   bool addTask(const TaskInfo& task) override;
 
   bool updateTask(const TaskInfo& task) override;

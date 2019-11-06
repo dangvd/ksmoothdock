@@ -106,6 +106,13 @@ void Program::mousePressEvent(QMouseEvent* e) {
   }
 }
 
+QString Program::getLabel() const {
+  const unsigned taskCount = tasks_.size();
+  return (taskCount > 1) ?
+      label_ + " (" + QString::number(tasks_.size()) + " instances)" :
+      label_;
+}
+
 bool Program::addTask(const TaskInfo& task) {
   if (areTheSameCommand(taskCommand_, task.command)) {
     tasks_.push_back(ProgramTask(task.wId, task.name, task.demandsAttention));
