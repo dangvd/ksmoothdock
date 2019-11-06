@@ -94,7 +94,9 @@ void Program::mousePressEvent(QMouseEvent* e) {
               KWindowSystem::forceActiveWindow(tasks_[nextTask].wId);
             }
           } else {
-            KWindowSystem::forceActiveWindow(tasks_[0].wId);
+            for (unsigned i = 0; i < tasks_.size(); ++i) {
+              KWindowSystem::forceActiveWindow(tasks_[i].wId);
+            }
           }
         }
       }
