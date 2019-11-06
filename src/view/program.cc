@@ -205,7 +205,7 @@ void Program::createMenu() {
   }
 
   if (!isCommandInternal(command_) && !isCommandDBus(command_)) {
-    menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
+    menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Instance"), this,
                     [this] { launch(); });
   }
 
