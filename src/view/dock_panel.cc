@@ -276,6 +276,7 @@ void DockPanel::showOnlineDocumentation() {
 
 void DockPanel::about() {
   aboutDialog_.show();
+  KWindowSystem::forceActiveWindow(aboutDialog_.winId());
 }
 
 void DockPanel::showAppearanceSettingsDialog() {
