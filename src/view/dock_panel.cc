@@ -276,6 +276,7 @@ void DockPanel::showOnlineDocumentation() {
 
 void DockPanel::about() {
   aboutDialog_.show();
+  KWindowSystem::forceActiveWindow(aboutDialog_.winId());
 }
 
 void DockPanel::showAppearanceSettingsDialog() {
@@ -668,7 +669,7 @@ void DockPanel::initLaunchers() {
   for (const auto& launcherConfig : model_->dockLauncherConfigs(dockId_)) {
     items_.push_back(std::make_unique<Program>(
         this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
-        maxSize_, launcherConfig.command, /*pinned=*/true));
+        maxSize_, launcherConfig.command, launcherConfig.taskCommand, /*pinned=*/true));
   }
 }
 
@@ -729,11 +730,11 @@ void DockPanel::addTask(const TaskInfo& task) {
   if (app) {
     items_.insert(items_.begin() + i, std::make_unique<Program>(
         this, model_, app->name, orientation_, app->icon, minSize_,
-        maxSize_, app->command, /*pinned=*/false));
+        maxSize_, app->command, app->taskCommand, /*pinned=*/false));
   } else {
     items_.insert(items_.begin() + i, std::make_unique<Program>(
         this, model_, task.program, orientation_, "xapp", minSize_,
-        maxSize_, task.command, /*pinned=*/false));
+        maxSize_, task.command, task.command, /*pinned=*/false));
   }
   items_[i]->addTask(task);
 }

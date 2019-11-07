@@ -37,11 +37,11 @@ namespace ksmoothdock {
 
 Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
     Qt::Orientation orientation, const QString& iconName, int minSize,
-    int maxSize, const QString& command, bool pinned)
+    int maxSize, const QString& command, const QString& taskCommand, bool pinned)
     : IconBasedDockItem(parent, label, orientation, iconName, minSize, maxSize),
       model_(model),
       command_(command),
-      taskCommand_(getTaskCommand(command_)),
+      taskCommand_(taskCommand),
       launching_(false),
       pinned_(pinned),
       demandsAttention_(false),
@@ -94,7 +94,9 @@ void Program::mousePressEvent(QMouseEvent* e) {
               KWindowSystem::forceActiveWindow(tasks_[nextTask].wId);
             }
           } else {
-            KWindowSystem::forceActiveWindow(tasks_[0].wId);
+            for (unsigned i = 0; i < tasks_.size(); ++i) {
+              KWindowSystem::forceActiveWindow(tasks_[i].wId);
+            }
           }
         }
       }
@@ -102,6 +104,13 @@ void Program::mousePressEvent(QMouseEvent* e) {
   } else if (e->button() == Qt::RightButton) {
     menu_.popup(e->globalPos());
   }
+}
+
+QString Program::getLabel() const {
+  const unsigned taskCount = tasks_.size();
+  return (taskCount > 1) ?
+      label_ + " (" + QString::number(tasks_.size()) + " instances)" :
+      label_;
 }
 
 bool Program::addTask(const TaskInfo& task) {
@@ -196,7 +205,7 @@ void Program::createMenu() {
   }
 
   if (!isCommandInternal(command_) && !isCommandDBus(command_)) {
-    menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Task"), this,
+    menu_.addAction(QIcon::fromTheme("list-add"), i18n("&New Instance"), this,
                     [this] { launch(); });
   }
 

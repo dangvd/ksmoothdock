@@ -50,7 +50,7 @@ class Program : public QObject, public IconBasedDockItem {
  public:
   Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       Qt::Orientation orientation, const QString& iconName, int minSize,
-      int maxSize, const QString& command, bool pinned);
+      int maxSize, const QString& command, const QString& taskCommand, bool pinned);
 
   ~Program() override = default;
 
@@ -59,6 +59,8 @@ class Program : public QObject, public IconBasedDockItem {
   void draw(QPainter* painter) const override;
 
   void mousePressEvent(QMouseEvent* e) override;
+
+  QString getLabel() const override;
 
   bool addTask(const TaskInfo& task) override;
 

@@ -63,6 +63,7 @@ LauncherConfig::LauncherConfig(const QString& desktopFile) {
   name = file.readName();
   icon = file.readIcon();
   command = filterFieldCodes(file.entryMap("Desktop Entry")["Exec"]);
+  taskCommand = getTaskCommand(command);
 }
 
 void LauncherConfig::saveToFile(const QString &filePath) const {
