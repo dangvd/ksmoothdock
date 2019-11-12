@@ -18,10 +18,9 @@
 
 #include "wallpaper_helper.h"
 
-#include <QApplication>
 #include <QDBusMessage>
-#include <QDesktopWidget>
 #include <QFile>
+#include <QGuiApplication>
 
 #include <KMessageBox>
 #include <KWindowSystem>
@@ -43,7 +42,7 @@ void WallpaperHelper::setPlasmaWallpapers() {
     return;
   }
 
-  for (int screen = 0; screen < QApplication::desktop()->screenCount();
+  for (int screen = 0; screen < QGuiApplication::screens().size();
        ++screen) {
     if (!doSetPlasmaWallpaper(screen)) {
       return;

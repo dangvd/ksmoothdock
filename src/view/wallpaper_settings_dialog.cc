@@ -21,12 +21,12 @@
 
 #include <algorithm>
 
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QPixmap>
+#include <QScreen>
 
 #include <KWindowSystem>
 
@@ -44,7 +44,7 @@ WallpaperSettingsDialog::WallpaperSettingsDialog(QWidget* parent,
   populateDesktopList();
 
   // Populate screen list.
-  const int screenCount = QApplication::desktop()->screenCount();
+  const int screenCount = QGuiApplication::screens().size();
   for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
   }
@@ -120,7 +120,7 @@ void WallpaperSettingsDialog::browseWallpaper() {
 }
 
 void WallpaperSettingsDialog::adjustUiForScreen() {
-  const auto screenGeometry = QApplication::desktop()->screenGeometry(screen());
+  const auto screenGeometry = QGuiApplication::screens()[screen()]->geometry();
   const int w = ui->preview->width();
   const int h = w * screenGeometry.height() / screenGeometry.width();
   const int delta = h - ui->preview->height();

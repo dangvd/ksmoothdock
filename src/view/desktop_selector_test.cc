@@ -22,8 +22,6 @@
 #include <cstdlib>
 #include <memory>
 
-#include <QApplication>
-#include <QDesktopWidget>
 #include <QTemporaryDir>
 #include <QTemporaryFile>
 #include <QTest>
@@ -70,8 +68,8 @@ void DesktopSelectorTest::setIconScaled() {
                                   kMinSize, kMaxSize, kDesktop, kScreen);
 
   QCOMPARE(desktopSelector.getIcon(kMinSize).height(), kMinSize);
-  const int desktopWidth = QApplication::desktop()->screenGeometry().width();
-  const int desktopHeight = QApplication::desktop()->screenGeometry().height();
+  const int desktopWidth = dock_->screenGeometry().width();
+  const int desktopHeight = dock_->screenGeometry().height();
   // Gives room to rounding difference.
   QVERIFY(std::abs(desktopSelector.getIcon(kMinSize).width() -
                    desktopWidth * kMinSize / desktopHeight) <= 1);

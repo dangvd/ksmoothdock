@@ -24,14 +24,14 @@
 #include <iostream>
 #include <utility>
 
-#include <QApplication>
 #include <QColor>
 #include <QCursor>
-#include <QDesktopWidget>
+#include <QGuiApplication>
 #include <QIcon>
 #include <QListWidgetItem>
 #include <QPainter>
 #include <QProcess>
+#include <QScreen>
 #include <QSize>
 #include <QStringList>
 #include <QVariant>
@@ -238,7 +238,7 @@ void DockPanel::setScreen(int screen) {
   for (int i = 0; i < static_cast<int>(screenActions_.size()); ++i) {
     screenActions_[i]->setChecked(i == screen);
   }
-  screenGeometry_ = QApplication::desktop()->screenGeometry(screen);
+  screenGeometry_ = QGuiApplication::screens()[screen]->geometry();
 }
 
 void DockPanel::updateAnimation() {
@@ -519,7 +519,7 @@ void DockPanel::createMenu() {
       [this]() { updatePosition(PanelPosition::Right); });
   positionRight_->setCheckable(true);
 
-  const int numScreens = QApplication::desktop()->screenCount();
+  const int numScreens = QGuiApplication::screens().size();
   if (numScreens > 1) {
     QMenu* screen = menu_.addMenu(i18n("Scr&een"));
     for (int i = 0; i < numScreens; ++i) {

@@ -19,8 +19,7 @@
 #include "add_panel_dialog.h"
 #include "ui_add_panel_dialog.h"
 
-#include <QApplication>
-#include <QDesktopWidget>
+#include <QGuiApplication>
 
 #include <KLocalizedString>
 
@@ -36,7 +35,7 @@ AddPanelDialog::AddPanelDialog(QWidget* parent, MultiDockModel* model,
   ui->setupUi(this);
 
   // Populate screen list.
-  const int screenCount = QApplication::desktop()->screenCount();
+  const int screenCount = QGuiApplication::screens().size();
   for (int i = 1; i <= screenCount; ++i) {
     ui->screen->addItem(QString::number(i));
   }

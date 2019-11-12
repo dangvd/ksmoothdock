@@ -23,10 +23,10 @@
 #include <regex>
 #include <utility>
 
-#include <QApplication>
 #include <QDBusInterface>
 #include <QDBusReply>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 
 #include <KWindowSystem>
 
@@ -151,8 +151,8 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
 }
 
 int TaskHelper::getScreen(WId wId) {
-  const auto* desktop = QApplication::desktop();
-  const auto screenCount = desktop->screenCount();
+  const auto screens = QGuiApplication::screens();
+  const auto screenCount = screens.size();
   if (screenCount == 1) {
     return 0;
   }
@@ -160,7 +160,7 @@ int TaskHelper::getScreen(WId wId) {
   KWindowInfo info(wId, NET::WMFrameExtents);
   const auto& geometry = info.frameGeometry();
   for (int screen = 0; screen < screenCount; ++screen) {
-    const auto& screenGeometry = desktop->screenGeometry(screen);
+    const auto& screenGeometry = screens[screen]->geometry();
     if (screenGeometry.intersects(geometry)) {
       return screen;
     }

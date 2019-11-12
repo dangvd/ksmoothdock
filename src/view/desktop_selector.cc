@@ -18,10 +18,8 @@
 
 #include "desktop_selector.h"
 
-#include <QApplication>
 #include <QBrush>
 #include <QColor>
-#include <QDesktopWidget>
 #include <QFile>
 #include <QIcon>
 #include <QPainter>
@@ -45,8 +43,8 @@ DesktopSelector::DesktopSelector(DockPanel* parent, MultiDockModel* model,
       model_(model),
       desktop_(desktop),
       screen_(screen),
-      desktopWidth_(QApplication::desktop()->screenGeometry().width()),
-      desktopHeight_(QApplication::desktop()->screenGeometry().height()),
+      desktopWidth_(parent->screenGeometry().width()),
+      desktopHeight_(parent->screenGeometry().height()),
       hasCustomWallpaper_(false) {
   createMenu();
   loadConfig();

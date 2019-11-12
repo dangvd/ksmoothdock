@@ -68,6 +68,8 @@ class DockPanel : public QWidget {
 
   int dockId() const { return dockId_; }
 
+  QRect screenGeometry() { return screenGeometry_; }
+
   // Gets the position to show the application menu.
   QPoint applicationMenuPosition(const QSize& menuSize);
   // Gets the position to show the application menu's sub-menus.

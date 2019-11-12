@@ -19,8 +19,7 @@
 #include "task_manager_settings_dialog.h"
 #include "ui_task_manager_settings_dialog.h"
 
-#include <QApplication>
-#include <QDesktopWidget>
+#include <QGuiApplication>
 
 namespace ksmoothdock {
 
@@ -32,7 +31,7 @@ TaskManagerSettingsDialog::TaskManagerSettingsDialog(QWidget* parent, MultiDockM
   ui->setupUi(this);
 
   // Adjust the UI for single/multi-screen.
-  isSingleScreen_ = (QApplication::desktop()->screenCount() == 1);
+  isSingleScreen_ = (QGuiApplication::screens().size() == 1);
   ui->showCurrentScreenOnly->setVisible(!isSingleScreen_);
   if (isSingleScreen_) {
     ui->buttonBox->move(40, 200);
