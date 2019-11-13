@@ -99,6 +99,7 @@ class EditLaunchersDialog : public QDialog {
   void updateInternalCommand(int index);
   void updateDBusCommand(int index);
   void updateWebCommand(int index);
+  void updateDirCommand(int index);
   void resetCommandLists();
 
  private:
@@ -115,6 +116,7 @@ class EditLaunchersDialog : public QDialog {
   void populateInternalCommands();
   void populateDBusCommands();
   void populateWebCommands();
+  void populateDirCommands();
 
   void clearItemDetails();
 

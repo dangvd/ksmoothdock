@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1120</width>
-    <height>580</height>
+    <width>1118</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>520</y>
+     <y>580</y>
      <width>960</width>
-     <height>32</height>
+     <height>35</height>
     </rect>
    </property>
    <property name="orientation">
@@ -36,9 +36,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>475</y>
-     <width>351</width>
-     <height>23</height>
+     <y>530</y>
+     <width>350</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -103,9 +103,9 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>30</y>
-     <width>72</width>
-     <height>23</height>
+     <y>25</y>
+     <width>100</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -126,9 +126,9 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>110</y>
-     <width>101</width>
-     <height>23</height>
+     <y>105</y>
+     <width>100</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -192,9 +192,9 @@
    <property name="geometry">
     <rect>
      <x>570</x>
-     <y>418</y>
-     <width>72</width>
-     <height>23</height>
+     <y>470</y>
+     <width>100</width>
+     <height>30</height>
     </rect>
    </property>
    <property name="text">
@@ -214,7 +214,18 @@
     <string>Remove All</string>
    </property>
    <property name="icon">
-    <iconset theme="edit-delete"/>
+    <iconset theme="edit-delete">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="dirCommands">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>380</y>
+     <width>371</width>
+     <height>35</height>
+    </rect>
    </property>
   </widget>
  </widget>

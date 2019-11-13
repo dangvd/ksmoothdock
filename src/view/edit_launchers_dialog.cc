@@ -19,6 +19,7 @@
 #include "edit_launchers_dialog.h"
 #include "ui_edit_launchers_dialog.h"
 
+#include <QDir>
 #include <QFileDialog>
 #include <QMimeData>
 #include <QUrl>
@@ -99,7 +100,7 @@ EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
   qRegisterMetaTypeStreamOperators<LauncherInfo>("LauncherInfo");
 
   launchers_ = new LauncherList(this);
-  launchers_->setGeometry(QRect(20, 20, 351, 451));
+  launchers_->setGeometry(QRect(20, 20, 350, 495));
   connect(
       launchers_,
       SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
@@ -136,9 +137,12 @@ EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
   populateWebCommands();
   connect(ui->webCommands, SIGNAL(currentIndexChanged(int)),
       this, SLOT(updateWebCommand(int)));
+  populateDirCommands();
+  connect(ui->dirCommands, SIGNAL(currentIndexChanged(int)),
+      this, SLOT(updateDirCommand(int)));
 
   icon_ = new KIconButton(this);
-  icon_->setGeometry(QRect(680, 390, 80, 80));
+  icon_->setGeometry(QRect(680, 445, 80, 80));
 
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));
@@ -232,6 +236,7 @@ void EditLaunchersDialog::updateInternalCommand(int index) {
 
     ui->dbusCommands->setCurrentIndex(0);
     ui->webCommands->setCurrentIndex(0);
+    ui->dirCommands->setCurrentIndex(0);
   }
 }
 
@@ -245,6 +250,7 @@ void EditLaunchersDialog::updateDBusCommand(int index) {
 
     ui->internalCommands->setCurrentIndex(0);
     ui->webCommands->setCurrentIndex(0);
+    ui->dirCommands->setCurrentIndex(0);
   }
 }
 
@@ -258,6 +264,21 @@ void EditLaunchersDialog::updateWebCommand(int index) {
 
     ui->internalCommands->setCurrentIndex(0);
     ui->dbusCommands->setCurrentIndex(0);
+    ui->dirCommands->setCurrentIndex(0);
+  }
+}
+
+void EditLaunchersDialog::updateDirCommand(int index) {
+  if (index > 0) {  // Excludes header.
+    ui->name->setText(ui->dirCommands->itemText(index));
+    LauncherInfo info =
+        ui->dirCommands->itemData(index).value<LauncherInfo>();
+    ui->command->setText(info.command);
+    icon_->setIcon(info.iconName);
+
+    ui->internalCommands->setCurrentIndex(0);
+    ui->dbusCommands->setCurrentIndex(0);
+    ui->webCommands->setCurrentIndex(0);
   }
 }
 
@@ -265,6 +286,7 @@ void EditLaunchersDialog::resetCommandLists() {
   ui->internalCommands->setCurrentIndex(0);
   ui->dbusCommands->setCurrentIndex(0);
   ui->webCommands->setCurrentIndex(0);
+  ui->dirCommands->setCurrentIndex(0);
 }
 
 void EditLaunchersDialog::loadData() {
@@ -425,6 +447,32 @@ void EditLaunchersDialog::populateWebCommands() {
     ui->webCommands->addItem(
         getListItemIcon(kItems[i][1]),
         i18n(kItems[i][0]),
+        QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
+  }
+}
+
+void EditLaunchersDialog::populateDirCommands() {
+  static const int kNumItems = 4;
+  static const QString kItems[kNumItems][3] = {
+    // Name, icon, shortcut-to-dir command.
+    {"Desktop",
+      "user-desktop",
+      "dolphin \"" + QDir::homePath() + "/Desktop\""},
+    {"Documents",
+      "folder-documents",
+      "dolphin \"" + QDir::homePath() + "/Documents\""},
+    {"Pictures",
+      "folder-images",
+      "dolphin \"" + QDir::homePath() + "/Pictures\""},
+    {"Videos",
+      "folder-videos",
+      "dolphin \"" + QDir::homePath() + "/Videos\""},
+  };
+  ui->dirCommands->addItem(i18n("Create a shortcut to a directory"));  // header
+  for (int i = 0; i < kNumItems; ++i) {
+    ui->dirCommands->addItem(
+        getListItemIcon(kItems[i][1]),
+        i18n(kItems[i][0].toStdString().c_str()),
         QVariant::fromValue(LauncherInfo(kItems[i][1], kItems[i][2])));
   }
 }
