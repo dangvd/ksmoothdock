@@ -19,6 +19,7 @@
 #include "tooltip.h"
 
 #include <QApplication>
+#include <QFontMetrics>
 #include <QPainter>
 
 #include <KWindowSystem>
@@ -67,7 +68,7 @@ void Tooltip::setText(const QString& text) {
 
 void Tooltip::updateLayout() {
   QFontMetrics metrics(font_);
-  int w = metrics.width(text_) + 2 * kPadding;
+  int w = metrics.horizontalAdvance(text_) + 2 * kPadding;
   int h = metrics.height() + 2 * kPadding;
 
   resize(w,h);
