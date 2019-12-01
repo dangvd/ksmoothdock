@@ -44,7 +44,8 @@ Clock::Clock(DockPanel* parent, MultiDockModel* model,
     : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
                        kWhRatio),
       model_(model),
-      calendar_(parent) {
+      calendar_(parent),
+      fontFamilyGroup_(this) {
   createMenu();
   loadConfig();
 
@@ -147,6 +148,17 @@ void Clock::createMenu() {
                                          this,
                                          SLOT(setSmallFont()));
   smallFontAction_->setCheckable(true);
+
+  QMenu* fontFamily = menu_.addMenu(i18n("Font Family"));
+  for (const auto family : getBaseFontFamilies()) {
+    auto fontFamilyAction = fontFamily->addAction(family, this, [this, family]{
+      model_->setClockFontFamily(family);
+      model_->saveAppearanceConfig(true /* repaintOnly */);
+    });
+    fontFamilyAction->setCheckable(true);
+    fontFamilyAction->setActionGroup(&fontFamilyGroup_);
+    fontFamilyAction->setChecked(family == model_->clockFontFamily());
+  }
 
   menu_.addSeparator();
   parent_->addPanelSettings(&menu_);

@@ -22,6 +22,7 @@
 #include "iconless_dock_item.h"
 
 #include <QAction>
+#include <QActionGroup>
 #include <QMenu>
 #include <QObject>
 #include <QString>
@@ -83,6 +84,8 @@ class Clock : public QObject, public IconlessDockItem {
   QAction* largeFontAction_;
   QAction* mediumFontAction_;
   QAction* smallFontAction_;
+
+  QActionGroup fontFamilyGroup_;
 };
 
 }  // namespace ksmoothdock

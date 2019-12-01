@@ -20,8 +20,10 @@
 #define KSMOOTHDOCK_FONT_UTILS_H_
 
 #include <algorithm>
+#include <vector>
 
 #include <QFont>
+#include <QFontDatabase>
 #include <QFontMetrics>
 #include <QRect>
 #include <QString>
@@ -44,6 +46,30 @@ inline QFont adjustFontSize(int w, int h, const QString& referenceString,
   }
 
   return font;
+}
+
+// Gets the list of base font families, i.e. just 'Noto Sans'
+// instead of 'Noto Sans Bold', 'Noto Sans CJK' etc.
+inline std::vector<QString> getBaseFontFamilies() {
+  std::vector<QString> baseFamilies;
+  QFontDatabase database;
+  const auto families = database.families(QFontDatabase::Latin);
+  for (int i = 0; i < families.size(); ++i) {
+    bool isBaseFont = true;
+    const auto family = families.at(i);
+    if (database.isSmoothlyScalable(family)) {
+      for (int j = 0; j < families.size(); ++j) {
+        if (family.startsWith(families[j] + ' ')) {
+          isBaseFont = false;
+          break;
+        }
+      }
+      if (isBaseFont) {
+        baseFamilies.push_back(family);
+      }
+    }
+  }
+  return baseFamilies;
 }
 
 }  // namespace ksmoothdock
