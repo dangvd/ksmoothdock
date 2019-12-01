@@ -60,7 +60,8 @@ void Clock::draw(QPainter *painter) const {
   const QString referenceTime = QTime(8, 8).toString(timeFormat);
 
   painter->setFont(adjustFontSize(getWidth(), getHeight(), referenceTime,
-                                  model_->clockFontScaleFactor()));
+                                  model_->clockFontScaleFactor(),
+                                  model_->clockFontFamily()));
   painter->setRenderHint(QPainter::TextAntialiasing);
 
   if (size_ > minSize_) {

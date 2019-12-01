@@ -271,6 +271,14 @@ class MultiDockModel : public QObject {
     setAppearanceProperty(kClockCategory, kFontScaleFactor, value);
   }
 
+  QString clockFontFamily() const {
+    return appearanceProperty(kClockCategory, kClockFontFamily, QString());
+  }
+
+  void setClockFontFamily(const QString& value) {
+    setAppearanceProperty(kClockCategory, kClockFontFamily, value);
+  }
+
   void saveAppearanceConfig(bool repaintOnly = false) {
     syncAppearanceConfig();
     if (repaintOnly) {
@@ -463,6 +471,7 @@ class MultiDockModel : public QObject {
   static constexpr char kClockCategory[] = "Clock";
   static constexpr char kUse24HourClock[] = "use24HourClock";
   static constexpr char kFontScaleFactor[] = "fontScaleFactor";
+  static constexpr char kClockFontFamily[] = "clockFontFamily";
 
   template <typename T>
   T appearanceProperty(QString category, QString name, T defaultValue) const {

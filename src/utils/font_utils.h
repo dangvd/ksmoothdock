@@ -31,7 +31,7 @@ namespace ksmoothdock {
 // Returns a QFont with font size adjusted automatically according to the given
 // width, height, reference string and scale factor.
 inline QFont adjustFontSize(int w, int h, const QString& referenceString,
-                            float scaleFactor) {
+                            float scaleFactor, const QString& fontFamily = "") {
   QFont font;
   QFontMetrics metrics(font);
   const QRect& rect = metrics.tightBoundingRect(referenceString);
@@ -39,6 +39,9 @@ inline QFont adjustFontSize(int w, int h, const QString& referenceString,
   font.setPointSize(std::min(font.pointSize() * w / rect.width(),
                              font.pointSize() * h / rect.height()));
   font.setPointSize(static_cast<int>(font.pointSize() * scaleFactor));
+  if (!fontFamily.isEmpty()) {
+    font.setFamily(fontFamily);
+  }
 
   return font;
 }
