@@ -133,7 +133,6 @@ bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
 
 QString ApplicationMenu::getStyleSheet() {
   QColor bgColor = parent_->backgroundColor();
-  bgColor.setAlphaF(0.42);
   QColor borderColor = parent_->borderColor();
   return " \
 QMenu { \
