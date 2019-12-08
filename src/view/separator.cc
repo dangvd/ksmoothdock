@@ -50,12 +50,4 @@ void Separator::draw(QPainter* painter) const {
   painter->fillRect(x, y, w, h, model_->borderColor());
 }
 
-void Separator::mousePressEvent(QMouseEvent* e) {
-
-}
-
-void Separator::createMenu() {
-
-}
-
 }  // namespace ksmoothdock

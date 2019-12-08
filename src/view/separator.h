@@ -21,12 +21,6 @@
 
 #include "iconless_dock_item.h"
 
-#include <QAction>
-#include <QMenu>
-#include <QObject>
-#include <QString>
-
-#include "calendar.h"
 #include <model/multi_dock_model.h>
 
 namespace ksmoothdock {
@@ -41,21 +35,15 @@ class Separator : public QObject, public IconlessDockItem {
   virtual ~Separator() = default;
 
   void draw(QPainter* painter) const override;
-  void mousePressEvent(QMouseEvent* e) override;
+
+  void mousePressEvent(QMouseEvent* e) override { /* no-op */ }
+
   bool beforeTask(const QString& command) override { return false; }
 
  private:
   static constexpr float kWhRatio = 0.1;
 
-  // Creates the context menu.
-  void createMenu();
-
   MultiDockModel* model_;
-
-  // Context menu.
-  QMenu menu_;
-
-  QAction* removeAction_;
 };
 
 }  // namespace ksmoothdock
