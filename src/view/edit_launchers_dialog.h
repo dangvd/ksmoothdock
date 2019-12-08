@@ -89,6 +89,7 @@ class EditLaunchersDialog : public QDialog {
       QListWidgetItem* previous);
 
   void addLauncher();
+  void addSeparator();
   void removeSelectedLauncher();
   void removeAllLaunchers();
   void updateSelectedLauncher();

@@ -120,6 +120,7 @@ EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
   connect(ui->launchersNote, SIGNAL(linkActivated(const QString&)),
           this, SLOT(openLink(const QString&)));
   connect(ui->add, SIGNAL(clicked()), this, SLOT(addLauncher()));
+  connect(ui->addSeparator, SIGNAL(clicked()), this, SLOT(addSeparator()));
   connect(ui->remove, SIGNAL(clicked()), this, SLOT(removeSelectedLauncher()));
   connect(ui->removeAll, SIGNAL(clicked()), this, SLOT(removeAllLaunchers()));
   connect(ui->update, SIGNAL(clicked()), this, SLOT(updateSelectedLauncher()));
@@ -142,7 +143,7 @@ EditLaunchersDialog::EditLaunchersDialog(QWidget* parent, MultiDockModel* model,
       this, SLOT(updateDirCommand(int)));
 
   icon_ = new KIconButton(this);
-  icon_->setGeometry(QRect(680, 445, 80, 80));
+  icon_->setGeometry(QRect(760, 445, 80, 80));
 
   connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this,
       SLOT(buttonClicked(QAbstractButton*)));
@@ -187,6 +188,10 @@ void EditLaunchersDialog::refreshSelectedLauncher(QListWidgetItem* current,
 void EditLaunchersDialog::addLauncher() {
   addLauncher(i18n("New Launcher"), "", "xorg");
   resetCommandLists();
+}
+
+void EditLaunchersDialog::addSeparator() {
+  addLauncher(i18n("Separator"), "SEPARATOR", "xorg");
 }
 
 void EditLaunchersDialog::removeSelectedLauncher() {
