@@ -62,10 +62,6 @@ class DockPanel : public QWidget {
 
   void resize(int w, int h);
 
-  bool showBorder() { return showBorder_; }
-  QColor borderColor() { return borderColor_; }
-  QColor backgroundColor() { return backgroundColor_; }
-
   int dockId() const { return dockId_; }
   PanelPosition position() const { return position_; }
 

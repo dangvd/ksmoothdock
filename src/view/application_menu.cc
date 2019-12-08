@@ -132,8 +132,8 @@ bool ApplicationMenu::eventFilter(QObject* object, QEvent* event) {
 }
 
 QString ApplicationMenu::getStyleSheet() {
-  QColor bgColor = parent_->backgroundColor();
-  QColor borderColor = parent_->borderColor();
+  QColor bgColor = model_->backgroundColor();
+  QColor borderColor = model_->borderColor();
   return " \
 QMenu { \
   background-color: " % bgColor.name(QColor::HexArgb) % ";"

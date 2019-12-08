@@ -72,7 +72,7 @@ void DesktopSelector::draw(QPainter* painter) const {
 
   // Draw the border for the current desktop.
   if (isCurrentDesktop()) {
-    painter->setPen(parent_->borderColor());
+    painter->setPen(model_->borderColor());
     painter->drawRect(left_ - 1, top_ - 1, getWidth() + 1, getHeight() + 1);
   }
 }
