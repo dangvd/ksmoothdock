@@ -227,7 +227,7 @@ std::vector<LauncherConfig> MultiDockModel::loadDockLaunchers(
 }
 
 std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
-  static constexpr int kNumItems = 7;
+  static constexpr int kNumItems = 10;
   static const char* kItems[kNumItems][3] = {
     // Name, icon, command.
     {"Show Desktop", "user-desktop", kShowDesktopCommand},
@@ -236,7 +236,10 @@ std::vector<LauncherConfig> MultiDockModel::createDefaultLaunchers() {
     {"Text Editor", "kate", "kate"},
     {"Web Browser", "internet-web-browser", "firefox"},
     {"Multimedia Player", "applications-multimedia", "dragon"},
-    {"System Settings", "preferences-system", "systemsettings5"}
+    {"System Settings", "preferences-system", "systemsettings5"},
+    {"Separator", "xorg", "SEPARATOR"},
+    {"System - Lock Screen", "system-lock-screen", "qdbus org.kde.screensaver /ScreenSaver Lock"},
+    {"System - Shut Down", "system-shutdown", "qdbus org.kde.ksmserver /KSMServer logout -1 2 3"},
   };
 
   std::vector<LauncherConfig> launchers;
