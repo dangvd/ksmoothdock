@@ -45,7 +45,7 @@ class Separator : public QObject, public IconlessDockItem {
   bool beforeTask(const QString& command) override { return false; }
 
  private:
-  static constexpr float kWhRatio = 2.8;
+  static constexpr float kWhRatio = 0.1;
 
   // Creates the context menu.
   void createMenu();

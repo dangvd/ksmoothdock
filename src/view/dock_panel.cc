@@ -48,6 +48,7 @@
 #include "desktop_selector.h"
 #include "multi_dock_view.h"
 #include "program.h"
+#include "separator.h"
 #include <utils/command_utils.h>
 #include <utils/task_helper.h>
 
@@ -671,6 +672,8 @@ void DockPanel::initLaunchers() {
         this, model_, launcherConfig.name, orientation_, launcherConfig.icon, minSize_,
         maxSize_, launcherConfig.command, launcherConfig.taskCommand, /*pinned=*/true));
   }
+  // TODO(dangvd): remove this test code.
+  items_.push_back(std::make_unique<Separator>(this, model_, orientation_, minSize_, maxSize_));
 }
 
 void DockPanel::initPager() {

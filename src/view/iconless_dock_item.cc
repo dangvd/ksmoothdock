@@ -25,7 +25,9 @@ int IconlessDockItem::getWidthForSize(int size) const {
 }
 
 int IconlessDockItem::getHeightForSize(int size) const {
-  return isHorizontal() ? size : static_cast<int>(size / whRatio_);
+  return isHorizontal() ? size : static_cast<int>(reverseWhRatio_
+      ? (size * whRatio_)
+      : (size / whRatio_));
 }
 
 }  // namespace ksmoothdock

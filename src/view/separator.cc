@@ -18,15 +18,36 @@
 
 #include "separator.h"
 
+#include "dock_panel.h"
+
 namespace ksmoothdock {
+
+constexpr float Separator::kWhRatio;
 
 Separator::Separator(DockPanel* parent, MultiDockModel* model, Qt::Orientation orientation,
                      int minSize, int maxSize)
-    : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize, kWhRatio),
+    : IconlessDockItem(parent, "" /* label */, orientation, minSize, maxSize,
+                       kWhRatio, /*reverseWhRatio=*/ true),
       model_(model) {}
 
 void Separator::draw(QPainter* painter) const {
-
+  int x, y, w, h;
+  if (orientation_ == Qt::Horizontal) {
+    x = left_ + getWidth() / 2;
+    y = (parent_->position() == PanelPosition::Top)
+        ? top_
+        : getHeight() - getMinHeight() + top_;
+    w = 1;
+    h = getMinHeight();
+  } else {  // Vertical.
+    x = (parent_->position() == PanelPosition::Left)
+        ? left_
+        : getWidth() - getMinWidth() + left_;
+    y = top_ + getHeight() / 2;
+    w = getMinWidth();
+    h = 1;
+  }
+  painter->fillRect(x, y, w, h, model_->borderColor());
 }
 
 void Separator::mousePressEvent(QMouseEvent* e) {

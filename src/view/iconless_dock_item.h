@@ -27,9 +27,10 @@ namespace ksmoothdock {
 class IconlessDockItem : public DockItem {
  public:
   IconlessDockItem(DockPanel* parent, const QString& label,
-      Qt::Orientation orientation, int minSize, int maxSize, float whRatio)
+      Qt::Orientation orientation, int minSize, int maxSize,
+      float whRatio, bool reverseWhRatio = false)
       : DockItem(parent, label, orientation, minSize, maxSize),
-        whRatio_(whRatio) {}
+        whRatio_(whRatio), reverseWhRatio_(reverseWhRatio) {}
   virtual ~IconlessDockItem() {}
 
   int getWidthForSize(int size) const override;
@@ -38,6 +39,9 @@ class IconlessDockItem : public DockItem {
  protected:
   // Width/height ratio.
   float whRatio_;
+
+  // Iff true, reverse width/height ratio when the orientation is vertical.
+  bool reverseWhRatio_;
 };
 
 }  // namespace ksmoothdock

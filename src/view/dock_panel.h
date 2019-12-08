@@ -67,6 +67,7 @@ class DockPanel : public QWidget {
   QColor backgroundColor() { return backgroundColor_; }
 
   int dockId() const { return dockId_; }
+  PanelPosition position() const { return position_; }
 
   QRect screenGeometry() { return screenGeometry_; }
 
