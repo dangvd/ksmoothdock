@@ -31,7 +31,7 @@
 namespace ksmoothdock {
 
 constexpr int kDockId = 1;
-constexpr int kDefaultLauncherCount = 7;
+constexpr int kDefaultLauncherCount = 10;
 
 class EditLaunchersDialogTest: public QObject {
   Q_OBJECT
