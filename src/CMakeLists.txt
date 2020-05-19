@@ -52,8 +52,8 @@ target_link_libraries(ksmoothdock ksmoothdock_lib ${LIBS})
 
 # Install
 
-install(TARGETS ksmoothdock RUNTIME DESTINATION bin)
-install(FILES ksd.ksmoothdock.desktop DESTINATION /usr/share/applications)
+install(TARGETS ksmoothdock RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ksd.ksmoothdock.desktop DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
 
 # Uninstall
 
