@@ -86,7 +86,7 @@ void Clock::mousePressEvent(QMouseEvent *e) {
 }
 
 QString Clock::getLabel() const {
-  return QDate::currentDate().toString(Qt::SystemLocaleLongDate);
+  return QLocale::system().toString(QDate::currentDate(), QLocale::ShortFormat);
 }
 
 void Clock::updateTime() {

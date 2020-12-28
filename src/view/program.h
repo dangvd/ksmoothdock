@@ -91,7 +91,10 @@ class Program : public QObject, public IconBasedDockItem {
   void pinUnpin();
 
   void launch();
-  static void launch(const QString& command);
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+  static QStringList splitCommand(QStringView command);
+#endif
+  static void launch(const QString& commandLine);
   static void lockScreen() { launch(kLockScreenCommand); }
 
  private:
