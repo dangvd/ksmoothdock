@@ -186,10 +186,60 @@ void Program::pinUnpin() {
   }
 }
 
-void Program::launch(const QString& command) {
-  if (!QProcess::startDetached(command)) {
+// Code from Qt 6.0 QProcess::splitCommand
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+QStringList Program::splitCommand(QStringView command)
+{
+  QStringList args;
+  QString tmp;
+  int quoteCount = 0;
+  bool inQuote = false;
+
+  // handle quoting. tokens can be surrounded by double quotes
+  // "hello world". three consecutive double quotes represent
+  // the quote character itself.
+  for (int i = 0; i < command.size(); ++i) {
+    if (command.at(i) == QLatin1Char('"')) {
+      ++quoteCount;
+      if (quoteCount == 3) {
+        // third consecutive quote
+        quoteCount = 0;
+        tmp += command.at(i);
+      }
+      continue;
+    }
+    if (quoteCount) {
+      if (quoteCount == 1)
+        inQuote = !inQuote;
+      quoteCount = 0;
+    }
+    if (!inQuote && command.at(i).isSpace()) {
+      if (!tmp.isEmpty()) {
+        args += tmp;
+        tmp.clear();
+      }
+    } else {
+      tmp += command.at(i);
+    }
+  }
+  if (!tmp.isEmpty())
+    args += tmp;
+
+  return args;
+}
+#endif
+
+void Program::launch(const QString& commandLine) {
+  // Code from Qt 6.0 QProcess::startCommand
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
+  QStringList args = splitCommand(commandLine);
+#else
+  QStringList args = QProcess::splitCommand(commandLine);
+#endif
+  const QString program = args.takeFirst();
+  if (!QProcess::startDetached(program, args)) {
     KMessageBox::error(nullptr,
-        i18n("Could not run command: ") + command);
+        i18n("Could not run command: ") + commandLine);
   }
 }
 

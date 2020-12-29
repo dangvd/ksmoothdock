@@ -122,7 +122,7 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
   }
 
   if (currentActivityOnly) {
-    KWindowInfo info(wId, 0, NET::WM2Activities);
+    KWindowInfo info(wId, QFlags<NET::Property>(), NET::WM2Activities);
     if (!info.valid() ||
         (!info.activities().empty() && !info.activities().contains(currentActivity_))) {
       return false;
@@ -133,7 +133,7 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 }
 
 /* static */ TaskInfo TaskHelper::getBasicTaskInfo(WId wId) {
-  KWindowInfo info(wId, 0, NET::WM2WindowClass);
+  KWindowInfo info(wId, QFlags<NET::Property>(), NET::WM2WindowClass);
   const auto program = QString(info.windowClassName());
   return TaskInfo(wId, program);
 }

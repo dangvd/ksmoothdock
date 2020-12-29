@@ -157,10 +157,16 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
       return false;
     }
   }
-
+  // Qt::SkipEmptyParts was introduced in Qt 5.14
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
   const QStringList categories =
       desktopFile.entryMap("Desktop Entry")["Categories"]
-          .split(';', QString::SkipEmptyParts);
+          .split(';', Qt::SkipEmptyParts);
+#else
+  const QStringList categories =
+      desktopFile.entryMap("Desktop Entry")["Categories"]
+        .split(';', QString::SkipEmptyParts);
+#endif
   if (categories.isEmpty()) {
     return false;
   }
