@@ -42,7 +42,6 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
       model_(model),
       command_(command),
       taskCommand_(taskCommand),
-      launching_(false),
       pinned_(pinned),
       demandsAttention_(false),
       attentionStrong_(false) {
@@ -56,7 +55,7 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
 }
 
 void Program::draw(QPainter *painter) const {
-  if (launching_ || (!tasks_.empty() && active()) || attentionStrong_) {
+  if ((!tasks_.empty() && active()) || attentionStrong_) {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
                         5, size_ / 8, painter);
   } else if (!tasks_.empty()) {
@@ -166,12 +165,7 @@ bool Program::beforeTask(const QString& command) {
 void Program::launch() {
   launch(command_);
   parent_->showWaitCursor();
-  setLaunching(true);
   parent_->update();
-  QTimer::singleShot(500, [this]() {
-    setLaunching(false);
-    parent_->update();
-  });
 }
 
 void Program::pinUnpin() {

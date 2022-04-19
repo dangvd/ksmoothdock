@@ -54,8 +54,6 @@ class Program : public QObject, public IconBasedDockItem {
 
   ~Program() override = default;
 
-  void setLaunching(bool launching) { launching_ = launching; }
-
   void draw(QPainter* painter) const override;
 
   void mousePressEvent(QMouseEvent* e) override;
@@ -104,7 +102,6 @@ class Program : public QObject, public IconBasedDockItem {
   QString name_;
   QString command_;
   QString taskCommand_;
-  bool launching_;
   bool pinned_;
   std::vector<ProgramTask> tasks_;
 
