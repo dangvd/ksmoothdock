@@ -143,7 +143,7 @@ TaskInfo TaskHelper::getTaskInfo(WId wId) const {
   KWindowInfo info(wId, NET::WMVisibleName | NET::WMState, NET::WM2WindowClass);
 
   const auto program = QString(info.windowClassClass());
-  const auto command = QString(info.windowClassName());
+  const auto command = QString(info.windowClassName()).toLower();
   const auto name = info.visibleName();
   QPixmap icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
 

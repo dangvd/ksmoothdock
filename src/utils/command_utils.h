@@ -62,10 +62,10 @@ inline QString getTaskCommand(const QString& appCommand) {
 
 inline bool areTheSameCommand(const QString& appTaskCommand, const QString& taskCommand) {
   // Fix for Firefox and Thunderbird.
-  if (taskCommand == "Navigator" && (appTaskCommand == "firefox" || appTaskCommand == "firefox-esr")) {
+  if (taskCommand == "navigator" && (appTaskCommand == "firefox" || appTaskCommand == "firefox-esr")) {
     return true;
   }
-  if (taskCommand == "Mail" && appTaskCommand == "thunderbird") {
+  if (taskCommand == "mail" && appTaskCommand == "thunderbird") {
     return true;
   }
   return appTaskCommand == taskCommand;
