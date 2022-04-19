@@ -86,7 +86,7 @@ void Clock::mousePressEvent(QMouseEvent *e) {
 }
 
 QString Clock::getLabel() const {
-  return QDate::currentDate().toString(Qt::SystemLocaleLongDate);
+  return QLocale::system().toString(QDate::currentDate(), QLocale::LongFormat);
 }
 
 void Clock::updateTime() {
@@ -150,7 +150,7 @@ void Clock::createMenu() {
   smallFontAction_->setCheckable(true);
 
   QMenu* fontFamily = menu_.addMenu(i18n("Font Family"));
-  for (const auto family : getBaseFontFamilies()) {
+  for (const auto& family : getBaseFontFamilies()) {
     auto fontFamilyAction = fontFamily->addAction(family, this, [this, family]{
       model_->setClockFontFamily(family);
       model_->saveAppearanceConfig(true /* repaintOnly */);

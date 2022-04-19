@@ -187,7 +187,8 @@ void Program::pinUnpin() {
 }
 
 void Program::launch(const QString& command) {
-  if (!QProcess::startDetached(command)) {
+  QStringList list = QProcess::splitCommand(command);
+  if (!QProcess::startDetached(list.at(0), list.mid(1))) {
     KMessageBox::error(nullptr,
         i18n("Could not run command: ") + command);
   }

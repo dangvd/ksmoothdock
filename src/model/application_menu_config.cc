@@ -160,7 +160,7 @@ bool ApplicationMenuConfig::loadEntry(const QString &file) {
 
   const QStringList categories =
       desktopFile.entryMap("Desktop Entry")["Categories"]
-          .split(';', QString::SkipEmptyParts);
+          .split(';', Qt::SkipEmptyParts);
   if (categories.isEmpty()) {
     return false;
   }
