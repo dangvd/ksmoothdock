@@ -32,6 +32,18 @@
 
 namespace ksmoothdock {
 
+namespace {
+
+QString getProgram(const KWindowInfo& info) {
+  return QString(info.windowClassName());
+}
+
+QString getCommand(const KWindowInfo& info) {
+  return QString(info.windowClassClass()).toLower();
+}
+
+}  // namespace
+
 bool TaskInfo::operator<(const TaskInfo& taskInfo) const {
   if (program == taskInfo.program) {
     // If same program, sort by creation time.
@@ -100,8 +112,7 @@ bool TaskHelper::isValidTask(WId wId) {
   }
 
   // Filters out KSmoothDock dialogs.
-  const auto command = QString(info.windowClassName());
-  return command != "ksmoothdock";
+  return getCommand(info) != "ksmoothdock";
 }
 
 bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
@@ -134,16 +145,15 @@ bool TaskHelper::isValidTask(WId wId, int screen, bool currentDesktopOnly,
 
 /* static */ TaskInfo TaskHelper::getBasicTaskInfo(WId wId) {
   KWindowInfo info(wId, NET::Properties(), NET::WM2WindowClass);
-  const auto program = QString(info.windowClassName());
-  return TaskInfo(wId, program);
+  return TaskInfo(wId, getProgram(info));
 }
 
 TaskInfo TaskHelper::getTaskInfo(WId wId) const {
   static constexpr int kIconLoadSize = 128;
   KWindowInfo info(wId, NET::WMVisibleName | NET::WMState, NET::WM2WindowClass);
 
-  const auto program = QString(info.windowClassClass());
-  const auto command = QString(info.windowClassName()).toLower();
+  const auto program = getProgram(info);
+  const auto command = getCommand(info);
   const auto name = info.visibleName();
   QPixmap icon = KWindowSystem::icon(wId, kIconLoadSize, kIconLoadSize, true /* scale */);
 

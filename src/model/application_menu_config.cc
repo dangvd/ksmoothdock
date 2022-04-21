@@ -195,11 +195,8 @@ void ApplicationMenuConfig::reload() {
 
 const ApplicationEntry* ApplicationMenuConfig::findApplication(
     const std::string& command) const {
-  if (command == "navigator") {  // Fix for Firefox.
-    return (entries_.count("firefox") > 0) ? entries_.at("firefox") :
-        (entries_.count("firefox-esr") > 0) ? entries_.at("firefox-esr") : nullptr;
-  } else if (command == "mail") {  // Fix for Thunderbird.
-    return (entries_.count("thunderbird") > 0) ? entries_.at("thunderbird") : nullptr;
+  if (command == "systemsettings") {  // Fix for System Settings.
+    return (entries_.count("systemsettings5") > 0) ? entries_.at("systemsettings5") : nullptr;
   }
   return (entries_.count(command) > 0) ? entries_.at(command) : nullptr;
 }
