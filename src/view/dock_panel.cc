@@ -737,9 +737,16 @@ void DockPanel::addTask(const TaskInfo& task) {
         this, model_, app->name, orientation_, app->icon, minSize_,
         maxSize_, app->command, app->taskCommand, /*pinned=*/false));
   } else {
-    items_.insert(items_.begin() + i, std::make_unique<Program>(
-        this, model_, task.program, orientation_, "xapp", minSize_,
-        maxSize_, task.command, task.command, /*pinned=*/false));
+      if (task.icon.isNull()) {
+          items_.insert(items_.begin() + i, std::make_unique<Program>(
+                        this, model_, task.program, orientation_, "xapp", minSize_,
+                        maxSize_, task.command, task.command, /*pinned=*/false));
+      }
+      else {
+          items_.insert(items_.begin() + i, std::make_unique<Program>(
+                        this, model_, task.program, orientation_, task.icon, minSize_,
+                        maxSize_, task.command, task.command, /*pinned=*/false));
+      }
   }
   items_[i]->addTask(task);
 }

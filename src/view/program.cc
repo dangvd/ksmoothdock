@@ -54,6 +54,26 @@ Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
   });
 }
 
+Program::Program(DockPanel* parent, MultiDockModel* model, const QString& label,
+                 Qt::Orientation orientation, const QPixmap& icon, int minSize,
+                 int maxSize, const QString& command, const QString& taskCommand, bool pinned)
+    : IconBasedDockItem(parent, label, orientation, icon, minSize, maxSize),
+      model_(model),
+      command_(command),
+      taskCommand_(taskCommand),
+      pinned_(pinned),
+      demandsAttention_(false),
+      attentionStrong_(false) {
+    createMenu();
+
+    animationTimer_.setInterval(500);
+    connect(&animationTimer_, &QTimer::timeout, this, [this]() {
+        attentionStrong_ = !attentionStrong_;
+        parent_->update();
+    });
+}
+
+
 void Program::draw(QPainter *painter) const {
   if ((!tasks_.empty() && active()) || attentionStrong_) {
     drawHighlightedIcon(model_->backgroundColor(), left_, top_, getWidth(), getHeight(),
