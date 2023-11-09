@@ -328,13 +328,13 @@ void DockPanel::removeDock() {
     return;
   }
 
-  if (KMessageBox::questionYesNo(
+  if (KMessageBox::questionTwoActions(
         nullptr,
         i18n("Do you really want to remove this panel?"),
         i18n("Remove Panel"),
-        KStandardGuiItem::yes(),
-        KStandardGuiItem::no(),
-        "confirmRemoveDock") == KMessageBox::Yes) {
+        KStandardGuiItem::remove(),
+        KStandardGuiItem::cancel(),
+        "confirmRemoveDock") == KMessageBox::PrimaryAction) {
     deleteLater();
     model_->removeDock(dockId_);
   }
